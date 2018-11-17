@@ -1,22 +1,7 @@
-﻿using System;
-
-namespace SmartFleet.Core.Contracts.Commands
+﻿namespace SmartFleet.Core.Contracts.Commands
 {
-    public class CreateNewBoxGps:BaseEntity
+    public class CreateNewBoxGps: CeateGpsStatement
     {
-        public double Latitude { get; set; }
-        public double Longitude { get; set; }
-        public double Speed { get; set; }
-        public DateTime TimeStampUtc { get; set; }
-        public string IMEI { get; set; }
-        public string SerialNumber { get; set; }
-        public int Angle { get; set; }
-        public double Heading { get; set; }
-        public string Address { get; set; }
-        public string Region { get; set; }
-        public string State { get; set; }
-        public double Direction { get; set; }
-        public string CustomerName { get; set; }
         public double Altitude { get; set; }
     }
 }

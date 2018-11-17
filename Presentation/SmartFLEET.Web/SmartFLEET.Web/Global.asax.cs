@@ -439,7 +439,7 @@ namespace SmartFLEET.Web
                             TokenScope.Namespace);
                     });
 
-                sbc.ReceiveEndpoint(host, "web.endpoint", e =>
+                sbc.ReceiveEndpoint(host, "web.dev.endpoint", e =>
                 {
                     // Configure your consumer(s)
                     ConsumerExtensions.Consumer<SignalRHandler>(e);

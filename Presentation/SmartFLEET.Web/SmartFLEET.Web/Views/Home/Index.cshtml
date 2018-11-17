@@ -199,7 +199,6 @@
                 }
             });
             loadData(0.67);
-            thisIcon.options.iconUrl = '../assets/vehicles/TractorTruckMovingLeft.png';
             // load a tile layer
             var OpenStreetMap_Mapnik = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
                 {
@@ -212,6 +211,7 @@
             hub.client.receiveGpsStatements = function(gpsStatement) {
                 console.log(gpsStatement);
                 removeMarker(gpsStatement);
+                thisIcon.options.iconUrl = gpsStatement.ImageUri;
                 //for (var i = 0; i < markers.length; i++) {
                 //    map.removeLayer(markers[i]);
                 //}

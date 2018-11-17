@@ -7,7 +7,6 @@ using MassTransit.AzureServiceBusTransport;
 using Microsoft.ServiceBus;
 using SmartFleet.Core.Data;
 using SmartFleet.Core.Infrastructure.Registration;
-using SmartFleet.Data;
 using SmartFleet.Data.Dbcontextccope.Implementations;
 
 namespace DenormalizerService.Infrastructure
@@ -36,7 +35,7 @@ namespace DenormalizerService.Infrastructure
                                     TokenScope.Namespace);
                             });
 
-                        sbc.ReceiveEndpoint(host, "denormalizer.endpoint", e =>
+                        sbc.ReceiveEndpoint(host, "denormalizer.dev.endpoint", e =>
                         {
                             // Configure your consumer(s)
                             ConsumerExtensions.Consumer<DenormalizerHandler>(e);

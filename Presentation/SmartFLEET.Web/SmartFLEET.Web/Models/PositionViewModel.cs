@@ -63,7 +63,7 @@ namespace SmartFLEET.Web.Models
 
 
         private void SetVehicleImage(Vehicle vehicle)
-        {
+         {
             switch (vehicle.VehicleType)
             {
                 case VehicleType.Track:

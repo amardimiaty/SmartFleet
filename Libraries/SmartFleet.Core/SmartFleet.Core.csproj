@@ -140,6 +140,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BaseEntity.cs" />
+    <Compile Include="Contracts\Commands\CeateGpsStatement.cs" />
     <Compile Include="Contracts\Commands\CreateBoxCommand.cs" />
     <Compile Include="Contracts\Commands\CreateTeltonikaGps.cs" />
     <Compile Include="Contracts\Commands\CreateNewBoxGps.cs" />
