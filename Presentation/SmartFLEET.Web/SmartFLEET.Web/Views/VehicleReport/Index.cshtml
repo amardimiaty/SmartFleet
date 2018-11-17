@@ -1,0 +1,38 @@
+﻿<style>
+    .ui-widget-header {
+        border-color: transparent !important;
+        background: whitesmoke !important;
+    }
+</style>
+<div class="progress" id="prg">
+    <div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+
+    </div>
+</div>
+
+<div style="display: none;margin: -10px" id="daily-report">
+ <ul  >
+     <li><a  href="#home">Synthèse</a></li>
+
+     <li><a  href="#target">Trajets</a></li>
+
+     </ul>
+    <div >
+        <div id="home" style="width: 100%;">
+            @{
+                Html.RenderPartial("_Synthesis");
+            }
+        </div>
+
+        <div id="target" style="padding: 15px">
+
+            @{
+                Html.RenderPartial("_Targets");
+            }
+
+        </div>
+
+
+    </div>
+              
+</div>

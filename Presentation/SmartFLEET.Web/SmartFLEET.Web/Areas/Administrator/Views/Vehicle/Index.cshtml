@@ -1,0 +1,81 @@
+﻿
+<div class="box" style="padding:10px" >
+    <h3>Liste des véhicules</h3>
+
+    <p>
+
+        <div class="col-md-12">
+            <div class="panel panel-default" style="margin-top: 5px">
+                <ul class="list-group">
+                    <li class="list-group-item">
+                        <button type="button" class="btn  btn-sm" data-toggle="modal" data-target="#vehicleModal"><i style="color:green" class=" fa fa-plus"></i> Nouveau</button>
+
+
+                    </li>
+                </ul>
+            </div>
+            <input type="hidden" id="dicID" value="0" />
+            <table id="dicTable" class="table table-bordered table-striped" cellspacing="0"></table>
+        </div>
+    </p>
+    <table id="vehicle-list" class="table table-bordered table-striped table-responsive">
+        <thead>
+        <tr>
+            <th>
+                Marque
+            </th>
+            <th>
+                Modèle
+            </th>
+            <th>
+               VehicleName
+            </th>
+            <th>
+             Vin
+            </th>
+            <th>
+               LicensePlate
+            </th>
+            <th>
+               CreationDate
+            </th>
+            <th>
+               InitServiceDate
+            </th>
+            <th>
+                Customer name
+            </th>
+            <th>
+                VehicleType
+            </th>
+            
+            <th></th>
+        </tr>
+        </thead>
+        <tr ng-repeat="item in vehicles">
+            <td>{{item.Brand}}</td>
+            <td>{{item.Model}}</td>
+            <td><a  ui-sref="vehicleDetail({vehicleId:item.Id})" >{{item.VehicleName}}</a></td>
+            <td>{{item.Vin}}</td>
+            <td>{{item.LicensePlate}}</td>
+            <td>{{item.CreationDate}}</td>
+            <td>{{item.InitServiceDate}}</td>
+            <td>{{item.Customer}}</td>
+            <td>{{item.VehicleType}}</td>
+        </tr>
+
+       
+        
+    </table>
+    @{
+        Html.RenderPartial("_CreateModal");
+
+    }
+</div>
+
+
+<script>
+    $(document).ready(function() {
+        //$('#vehicle-list').DataTable();
+    })
+</script>

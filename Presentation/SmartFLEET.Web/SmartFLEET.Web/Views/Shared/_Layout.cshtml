@@ -1,0 +1,48 @@
+﻿@using RHManagementSystem.HtmlExtenssions
+@using SmartFleet.Core.Domain.Vehicles
+<!DOCTYPE html>
+<html >
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title - Mon application ASP.NET</title>
+    
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+</head>
+
+<body ng-app="smart-fleet" class="hold-transition skin-blue-light ">
+    @RenderPage("_menu.cshtml")
+
+        @RenderBody()
+
+<link href="~/Scripts/leafjs/leaflet.css" rel="stylesheet" />
+    <link href="~/Content/bootstrap-notifications.min.css" rel="stylesheet" />
+<link href="~/Content/skywalk-docs.min.css" rel="stylesheet" />
+    <link href="~/Content/icofont.min.css" rel="stylesheet" />
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/bootstrap")
+    <script src="~/Scripts/jq-layout.js"></script>
+    @RenderSection("scripts", required: false)
+<script src="~/Scripts/app/googleMap.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('body').layout({
+                applyDemoStyles: true,
+                onresize: function() {
+                    //if ($("#jBox2").is(":visible")) {
+                    //    $("#jBox2").width($('#map').width() -10);
+                       
+                    //}; 
+                }
+            });
+
+
+            // initialize the map
+
+
+        });
+    </script>
+</body>
+</html>

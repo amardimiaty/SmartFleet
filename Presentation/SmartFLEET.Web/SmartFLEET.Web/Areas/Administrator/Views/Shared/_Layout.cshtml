@@ -1,0 +1,60 @@
+﻿<!DOCTYPE html>
+<html ng-app="smart-admin">
+<head>
+    <title>@Page.Title</title>
+    @Scripts.Render("~/bundles/jquery")
+    @Styles.Render("~/Content/cssadmin")
+    @* @Styles.Render("~/Content/kendo")*@
+   
+    @Scripts.Render("~/bundles/modernizr")
+    @Scripts.Render("~/bundles/bootstrap")
+    @Scripts.Render("~/bundles/jsApp")
+<script src="~/Scripts/myJavaScript.js"></script>
+    <script src="~/Scripts/app/adminApp.js"></script>
+    <script src="~/Scripts/app/customer/customerService.js"></script>
+    <script src="~/Scripts/app/user/userService.js"></script>
+    <script src="~/Scripts/app/vehicle/vehicleService.js"></script>
+    <script src="~/Scripts/app/vehicle/vehicleController.js"></script>
+    <script src="~/Scripts/app/vehicle/vehicleDetailController.js"></script>
+
+    <script src="~/Scripts/app/user/userController.js"></script>
+    <script src="~/Scripts/app/customer/customerController.js"></script>
+    <style>
+        input.ng-invalid.ng-touched, textarea.ng-invalid.ng-touched {
+            border: 2px solid red;
+
+        }
+        
+    </style>
+</head>
+
+<body   class="hold-transition skin-blue-light  sidebar-mini" style="font-size: 13px;">
+<header class="main-header">
+    @{
+        Html.RenderPartial("_AdminNavBar");
+    }
+</header>
+
+<aside class="main-sidebar">
+    <!-- sidebar: style can be found in sidebar.less -->
+    @{
+        Html.RenderPartial("_adminSideBar");
+    }
+    <!-- /.sidebar -->
+</aside>
+
+
+<div class="content-wrapper">
+    <div class="" style="font-size: 13px">
+        @RenderBody()
+    </div>
+    <hr />
+    
+</div>
+
+
+
+
+
+</body>
+</html>

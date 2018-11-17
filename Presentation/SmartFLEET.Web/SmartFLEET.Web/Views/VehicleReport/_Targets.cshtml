@@ -1,0 +1,74 @@
+﻿
+<style>
+    .stop-flag {
+        color: red
+    }
+    .move-flag {
+        color: green
+    }
+</style>
+<table id="report-tbl" class="table table-striped table-bordered">
+    <thead>
+    <tr>
+        <th>
+            Etat de .Cond
+        
+        </th>
+
+        <th>
+            Tmp. Départ
+        </th>
+        <th>
+            Tmp. Arrivée
+        </th>
+        <th>
+            Distance (Km)
+        </th>
+        <th>
+            Vitesse max (Km/H)
+        </th>
+        <th>
+            Adresse départ
+        </th>
+        <th>
+            Adresse Arrivée
+        </th>
+        <th>
+            Durrée
+        </th>
+    </tr>
+    </thead>
+
+    <tr ng-repeat="item in targetList">
+        <td>
+            <i class="fa fa-flag" ng-class="item.MotionStatus=='Arrêt'?'stop-flag': 'move-flag'"></i> {{item.MotionStatus}}
+        </td>
+
+        <td>
+           {{item.StartPeriod1}}
+        </td>
+        <td>
+            {{item.EndPeriod1}}
+        </td>
+        <td>
+            {{item.Distance}}
+        </td>
+       
+        <td>
+            {{item.Speed}}
+        </td>
+        <td style="max-width: 100px">
+            {{item.ArrivalAddres}}
+        </td>
+        <td style="max-width: 100px">
+            {{item.StartAddres}}
+        </td>
+        <td>
+            {{item.Duration}}
+        </td>
+       
+
+        </tr>
+
+
+</table>
