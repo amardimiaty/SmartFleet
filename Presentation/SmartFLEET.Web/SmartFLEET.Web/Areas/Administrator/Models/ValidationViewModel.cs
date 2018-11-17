@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 
-namespace SmartFLEET.Web.Administrator.Models
+namespace SmartFLEET.Web.Areas.Administrator.Models
 {
     public class ValidationViewModel
     {

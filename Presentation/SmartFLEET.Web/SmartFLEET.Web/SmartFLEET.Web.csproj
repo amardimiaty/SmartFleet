@@ -2712,6 +2712,10 @@
       <Project>{770f75a9-b482-4e94-8356-761106ede207}</Project>
       <Name>SmartFleet.Service</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\SmartFleet.Web.Framework\SmartFleet.Web.Framework.csproj">
+      <Project>{1968e0cf-2109-472d-a36d-34192264a897}</Project>
+      <Name>SmartFleet.Web.Framework</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Service Include="{4A0DDDB5-7A95-4FBF-97CC-616D07737A77}" />

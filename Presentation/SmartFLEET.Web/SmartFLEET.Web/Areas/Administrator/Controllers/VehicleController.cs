@@ -8,7 +8,6 @@ using AutoMapper;
 using SmartFleet.Core.Domain.Vehicles;
 using SmartFleet.Data;
 using SmartFleet.Service.Vehicles;
-using SmartFLEET.Web.Administrator.Models;
 using SmartFLEET.Web.Areas.Administrator.Models;
 using SmartFLEET.Web.Controllers;
 

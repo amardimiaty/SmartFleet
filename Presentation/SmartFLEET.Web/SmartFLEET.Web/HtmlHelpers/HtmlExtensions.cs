@@ -11,7 +11,7 @@ using System.Web.WebPages;
 using Microsoft.Ajax.Utilities;
 using SmartFleet.Core.Domain.Vehicles;
 
-namespace RHManagementSystem.HtmlExtenssions
+namespace SmartFLEET.Web.HtmlHelpers
 {
     public static class HtmlExtensions
     {

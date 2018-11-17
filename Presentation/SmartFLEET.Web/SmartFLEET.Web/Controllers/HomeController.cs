@@ -56,9 +56,16 @@ namespace SmartFLEET.Web.Controllers
             var nodes = new List<JsTreeModel>();
             nodes.Add(new JsTreeModel()
             {
-                id = Guid.Empty.ToString(),
+                id = "vehicles"+Guid.Empty,
                 parent = "#",
                 text = "Vehicules",
+
+            });
+            nodes.Add(new JsTreeModel()
+            {
+                id ="drivers"+ Guid.Empty,
+                parent = "#",
+                text = "Condcuteurs",
 
             });
             if (cst == null) return Json(nodes, JsonRequestBehavior.AllowGet);
@@ -69,7 +76,7 @@ namespace SmartFLEET.Web.Controllers
                 var node  = new JsTreeModel();
                 node.id = vehicle.Id.ToString();
                 node.text = vehicle.VehicleName == string.Empty ? vehicle.LicensePlate :"  "+ vehicle.VehicleName;
-                node.parent = Guid.Empty.ToString();
+                node.parent = "vehicles" + Guid.Empty;
                 node.icon = "la la-car ";
                 nodes.Add(node);
             }
