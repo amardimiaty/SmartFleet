@@ -65,7 +65,7 @@ namespace SmartFLEET.Web.DailyRports
                         }
                         else
                         {
-                            trgt.StartAddres = (currentStatus == MotionStatus.Stopped) ? targets.LastOrDefault()?.StartAddres : targets.LastOrDefault()?.ArrivalAddres;
+                            trgt.StartAddres = targets.LastOrDefault()?.ArrivalAddres;
                         }
 
                         trgt.Latitude = position.Lat;
@@ -124,12 +124,24 @@ namespace SmartFLEET.Web.DailyRports
                 if (firstItem != null)
                     targets.FirstOrDefault().BeginService = firstItem.StartPeriod1;
                 // ReSharper disable once PossibleNullReferenceException
-                targets.LastOrDefault().EndService = targets.LastOrDefault().StartPeriod;
-                targets.LastOrDefault().EndPeriod = startPeriod.Date.AddDays(1).AddTicks(-1).ToString("O");
-                targets.LastOrDefault().EndPeriod1 = startPeriod.Date.AddDays(1).AddTicks(-1).ToString("g");
-                targets.LastOrDefault().EndService = targets.LastOrDefault().StartPeriod1;
                 //   targets.LastOrDefault().Duration = (position.Timestamp - startPeriod).TotalSeconds;
+                if (targets.LastOrDefault().MotionStatus == "Stopped")
+                {
+                    targets.LastOrDefault().EndService = targets.LastOrDefault().StartPeriod;
+                    targets.LastOrDefault().EndPeriod = startPeriod.Date.AddDays(1).AddTicks(-1).ToString("O");
+                    targets.LastOrDefault().EndPeriod1 = startPeriod.Date.AddDays(1).AddTicks(-1).ToString("g");
+                    targets.LastOrDefault().EndService = targets.LastOrDefault().StartPeriod1;
+                    targets.LastOrDefault().Duration = (startPeriod.Date.AddDays(1).AddTicks(-1) - DateTime.Parse(targets.LastOrDefault().StartPeriod)).TotalSeconds;
 
+                }
+                else
+                {
+                    var end = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, cstZone);
+                    targets.LastOrDefault().Duration = (end - DateTime.Parse(targets.LastOrDefault().StartPeriod)).TotalSeconds;
+                    targets.LastOrDefault().EndPeriod = end.ToString("O");
+                    targets.LastOrDefault().EndPeriod1 = end.ToString("g");
+
+                }
             }
             else
             {

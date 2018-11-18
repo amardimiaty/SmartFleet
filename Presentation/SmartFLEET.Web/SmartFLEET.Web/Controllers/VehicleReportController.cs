@@ -174,7 +174,7 @@ namespace SmartFLEET.Web.Controllers
                     pTable.AddCell(cell);
                 }
 
-                foreach (var position in report.Positions)
+                foreach (var position in report.Positions.OrderBy(x=>x.StartPeriod))
                 {
                     pTable.AddCell(ItextSharpHelper.Cell(position.MotionStatus == "Stopped"? "Arrêt":"Conduite", BaseColor.BLACK));
                     pTable.AddCell(ItextSharpHelper.Cell(DateTime.Parse(position.StartPeriod).ToShortTimeString().ToString(), BaseColor.BLACK));

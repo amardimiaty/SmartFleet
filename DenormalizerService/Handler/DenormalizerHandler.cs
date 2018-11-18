@@ -13,7 +13,8 @@ using SmartFleet.Data;
 
 namespace DenormalizerService.Handler
 {
-    public class DenormalizerHandler : IConsumer<CreateTk103Gps>, IConsumer<CreateNewBoxGps>
+    public class DenormalizerHandler : IConsumer<CreateTk103Gps>, 
+        IConsumer<CreateNewBoxGps>
     {
         private readonly IDbContextScopeFactory _dbContextScopeFactory;
         private readonly ReverseGeoCodingService _geoCodingService;
@@ -31,8 +32,15 @@ namespace DenormalizerService.Handler
             using (var contextFScope = _dbContextScopeFactory.Create())
             {
                 _db = contextFScope.DbContexts.Get<SmartFleetObjectContext>();
-                var box = await _db.Boxes.FirstOrDefaultAsync(x => x.SerialNumber == context.Message.SerialNumber)
-                    .ConfigureAwait(false);
+                Box box;
+                using (DbContextTransaction scope = _db.Database.BeginTransaction())
+                {
+                     box = await _db.Boxes.FirstOrDefaultAsync(x => x.SerialNumber == context.Message.SerialNumber)
+                        .ConfigureAwait(false);
+                    scope.Commit();
+
+                }
+
                 if (box == null)
                 {
                     box = new Box();
@@ -88,8 +96,14 @@ namespace DenormalizerService.Handler
             using (var contextFScope = _dbContextScopeFactory.Create())
             {
                 _db = contextFScope.DbContexts.Get<SmartFleetObjectContext>();
-                var box = await _db.Boxes.FirstOrDefaultAsync(x => x.Imei == context.Message.IMEI)
-                    .ConfigureAwait(false);
+                Box box;
+                using (DbContextTransaction scope = _db.Database.BeginTransaction())
+                {
+                    box = await _db.Boxes.FirstOrDefaultAsync(x => x.SerialNumber == context.Message.SerialNumber)
+                        .ConfigureAwait(false);
+                    scope.Commit();
+
+                }
                 if (box == null)
                 {
                     box = new Box();

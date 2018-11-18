@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
+using Magnum.Validation;
 using SmartFleet.Core.Contracts.Commands;
 
 namespace SmartFleet.Core.Protocols.NewBox
@@ -29,12 +31,19 @@ namespace SmartFleet.Core.Protocols.NewBox
             var sec = Int32.Parse(date.Substring(12, 2));
             return new DateTime(y, m, d, h, min, sec);
         }
-
+        private static bool IsNumeric(string terminalId)
+        {
+            Regex regex = new Regex(@"^\d+$");
+            var result = regex.IsMatch(terminalId);
+            return  result;
+        }
         private CreateNewBoxGps ParseData(string data)
         {
             // 1,20181113142519.000,36.276813,1.676847,190.400,0.28,78.3,1,,1.5,1.8,0.9,,10,6,,,24,
             var array = data.Split(',');
             var result = new CreateNewBoxGps();
+            if (!IsNumeric(array[0]) )
+                throw new ValidationException("IMEI format is not valid");
             result.IMEI = array[0];
             result.TimeStampUtc = ParseTimeStamp(array[1]);
             result.Latitude = Convert.ToDouble(array[2]);

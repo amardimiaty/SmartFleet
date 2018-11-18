@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using SmartFleet.Core.Domain.Movement;
 using SmartFleet.Core.Domain.Vehicles;
-using SmartFleet.Core.Geofence;
 using SmartFLEET.Web.Models;
 
 namespace SmartFLEET.Web.DailyRports
