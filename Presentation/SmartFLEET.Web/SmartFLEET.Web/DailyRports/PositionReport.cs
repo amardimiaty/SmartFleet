@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using SmartFleet.Core.Domain.Movement;
 using SmartFleet.Core.Geofence;
 using SmartFLEET.Web.Models;
@@ -10,28 +9,23 @@ namespace SmartFLEET.Web.DailyRports
 {
     public class PositionReport
     {
-        public async Task<List<PositionViewModel>> PositionViewModels(List<Position> positionsOfVehicle )
+        public  List<PositionViewModel> PositionViewModels(List<Position> positionsOfVehicle )
         {
             var positions = new List<PositionViewModel>();
 
             // get current account's vehicles
             foreach (var p in positionsOfVehicle )
-            {
-                positions.Add(new PositionViewModel(p,p.Vehicle));
-            }
-         
+                positions.Add(new PositionViewModel(p, p.Vehicle));
+
             return positions;
         }
         
-        public async Task<List<TargetViewModel>> GetTargetViewModels(List<Position> positions, DateTime startPeriod, string vehicleName)
+        public List<TargetViewModel> GetTargetViewModels(List<Position> positions, DateTime startPeriod, string vehicleName)
         {
             string timeZone = "W. Central Africa Standard Time";
             TimeZoneInfo cstZone = TimeZoneInfo.FindSystemTimeZoneById(timeZone);
             foreach (var position in positions)
-            {
                 position.Timestamp = TimeZoneInfo.ConvertTimeFromUtc(position.Timestamp, cstZone);
-
-            }
             var targets = new List<TargetViewModel>();
             var currentStatus = positions.FirstOrDefault()?.MotionStatus;
             var maxSpeed = positions.FirstOrDefault()?.Speed;
@@ -58,16 +52,10 @@ namespace SmartFLEET.Web.DailyRports
                     if (targets.LastOrDefault()?.MotionStatus != currentStatus.ToString())
                     {
                         if (i == 1)
-                        {
-                         //   var address = await reverseGeoCodingService.ExecuteQuery(position.Lat, position.Long);
                             trgt.StartAddres = position.Address;
-
-                        }
                         else
-                        {
                             trgt.StartAddres = targets.LastOrDefault()?.ArrivalAddres;
-                        }
-
+                        
                         trgt.Latitude = position.Lat;
                         trgt.Logitude = position.Long;
                         targets.Add(trgt);
@@ -128,10 +116,18 @@ namespace SmartFLEET.Web.DailyRports
                 if (targets.LastOrDefault().MotionStatus == "Stopped")
                 {
                     targets.LastOrDefault().EndService = targets.LastOrDefault().StartPeriod;
-                    targets.LastOrDefault().EndPeriod = startPeriod.Date.AddDays(1).AddTicks(-1).ToString("O");
-                    targets.LastOrDefault().EndPeriod1 = startPeriod.Date.AddDays(1).AddTicks(-1).ToString("g");
+                    targets.LastOrDefault().EndPeriod = startPeriod.Date != DateTime.Now.Date
+                        ? startPeriod.Date.AddDays(1).AddTicks(-1).ToString("O")
+                        : DateTime.Now.Date.AddDays(1).AddTicks(-1).ToString("O");
+
+                    targets.LastOrDefault().EndPeriod1 = startPeriod.Date != DateTime.Now.Date
+                        ? startPeriod.Date.AddDays(1).AddTicks(-1).ToString("g")
+                        : DateTime.Now.Date.AddDays(1).AddTicks(-1).ToString("g");
+
                     targets.LastOrDefault().EndService = targets.LastOrDefault().StartPeriod1;
-                    targets.LastOrDefault().Duration = (startPeriod.Date.AddDays(1).AddTicks(-1) - DateTime.Parse(targets.LastOrDefault().StartPeriod)).TotalSeconds;
+                    targets.LastOrDefault().Duration =
+                        (startPeriod.Date.AddDays(1).AddTicks(-1) - DateTime.Parse(targets.LastOrDefault().StartPeriod))
+                        .TotalSeconds;
 
                 }
                 else

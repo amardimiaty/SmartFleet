@@ -2,16 +2,13 @@
 using System.Collections.Generic;
 using System.Configuration;
 using System.Diagnostics;
-using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Web.Http;
 using System.Web.Mvc;
 using System.Web.Optimization;
 using System.Web.Routing;
 using Autofac;
 using Autofac.Integration.Mvc;
-using Autofac.Integration.WebApi;
 using AutoMapper;
 using MassTransit;
 using MassTransit.AzureServiceBusTransport;
@@ -31,7 +28,6 @@ using SmartFleet.Service.Customers;
 using SmartFleet.Service.Tracking;
 using SmartFleet.Service.Vehicles;
 using SmartFLEET.Web.Automapper;
-using SmartFLEET.Web.Helpers;
 using SmartFLEET.Web.Hubs;
 
 namespace SmartFLEET.Web
@@ -384,9 +380,11 @@ namespace SmartFLEET.Web
              builder.RegisterType<UserManager<IdentityUser>>();
             builder.RegisterType<AuthenticationService>().As<IAuthenticationService>();
             builder.RegisterGeneric(typeof(EfRepository<>)).As(typeof(IRepository<>)).InstancePerLifetimeScope();
-            builder.RegisterType<VehicleService>().As<IVehicleService>();
             builder.RegisterType<DbContextScopeFactory>().As<IDbContextScopeFactory>();
             builder.RegisterType<ReverseGeoCodingService>().As<ReverseGeoCodingService>();
+            builder.RegisterType<VehicleService>().As<IVehicleService>();
+            builder.RegisterType<CustomerService>().As<ICustomerService>();
+
             builder.RegisterType<PositionService>().As<IPositionService>();
             builder.RegisterType<CustomerService>().As<ICustomerService>();
 

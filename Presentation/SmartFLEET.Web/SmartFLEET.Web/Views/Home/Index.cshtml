@@ -85,7 +85,11 @@
             Html.RenderPartial("_CreateDriver");
         }
     </div> 
-    
+    <div style="display: none; margin: -15px" id="chrnogram">
+        @{
+            Html.RenderPartial("_PositionTimeLine");
+        }
+    </div> 
      
   
    
@@ -107,12 +111,14 @@
         $(document).ready(function() {
             initJstree();
             initMap();
+        //    $("#accordion").accordion();
             $("#vehicles").select2({
                 // width: 175
             
             });
             $("#vehicles-pos").select2();
             $("#daily-report").tabs();
+            $("#position-sec").tabs();
 
             //   initSignalR();
             $("#startPeriod").datepicker({
@@ -294,10 +300,10 @@
                 '<div class="col-md-12" id="gps-activity" style="width: 99%"><div id="wait"></div> </div></div>';
             return new jBox('Modal',
                 {
-                    content: content,
+                    content: $("#chrnogram"),
                     id: 'jBox1',
                     width: width,
-                    height: 160,
+                    height: 190,
                     position: { x: 'right', y: 'bottom' },
                     offset: { x: -15, y: -30 },
                     overlay: false,
@@ -308,7 +314,7 @@
                     addClass: '.jbox-t',
                     // closeOnClick: 'box',
                     onCloseComplete: function() {
-                        this.destroy();
+                        //this.destroy();
                     }
                 });
 
@@ -371,7 +377,8 @@
                     ////         if ($(currantNav).attr('id') == "report") return;
 
 
-                    if (anchorId != '00000000-0000-0000-0000-000000000000') {
+                    if (anchorId != 'vehicles-00000000-0000-0000-0000-000000000000'
+                        && anchorId != 'drivers-00000000-0000-0000-0000-000000000000') {
                         markerFunction(anchorId);
 
                         if (!positionModalOpend) {
@@ -513,7 +520,7 @@
                         {
                             activity = "Conduite";
                             style =
-                                "background-color:#048b9a;height:40px;border-color:transparent!important; border-radius:0;margin-top: 20px;border-width:0!important;";
+                                "background-color:#048b9a;height:30px;border-color:transparent!important; border-radius:0;margin-top: 20px;border-width:0!important;";
                         }
                         break;
                     default:
@@ -567,7 +574,7 @@
                 });
             var result = new vis.DataSet(data);
             //  console.log(end);
-            InitTimelineChart(container, result, start, end, 93);
+            InitTimelineChart(container, result, start, end, 83);
         }
 
         function secondsToHms(seconds) {

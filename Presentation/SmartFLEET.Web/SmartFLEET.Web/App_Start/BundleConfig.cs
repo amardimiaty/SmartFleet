@@ -77,7 +77,7 @@ namespace SmartFLEET.Web
                 ));
 
             bundles.Add(new StyleBundle("~/Content/css").Include(
-                "~/Content/bootstrap.min.css",
+              //  "~/Content/bootstrap.min.css",
             //    "~/Content/bootstrap-theme.min.css",
                 "~/dist/css/skins/_all-skins.min.css",
 

@@ -12,7 +12,6 @@ using Microsoft.ServiceBus;
 using Microsoft.WindowsAzure.ServiceRuntime;
 using Serilog;
 using Serilog.Core;
-using SmartFleet.Core.Contracts.Commands;
 using SmartFleet.Core.Protocols.NewBox;
 using SmartFleet.Core.Protocols.Tk1003;
 
@@ -20,27 +19,24 @@ namespace SmartFleet.TcpWorker
 {
     public class WorkerRole : RoleEntryPoint
     {
-        private readonly CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
-        private readonly ManualResetEvent runCompleteEvent = new ManualResetEvent(false);
+        private readonly CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
+        private readonly ManualResetEvent _runCompleteEvent = new ManualResetEvent(false);
         private static IBusControl _bus;
-        private TcpListener listener;
+        private TcpListener _listener;
         private static Logger _log;
+        /// <summary>
+        /// 
+        /// </summary>
+        // ReSharper disable once MethodNameNotMeaningful
         public override void Run()
         {
-            Trace.TraceInformation("SmartFleet.TcpWorker is running");
-             _log = new LoggerConfiguration()
-               // .WriteTo.Console()
-                .WriteTo.File("tcp-worker-role.txt")
-                .CreateLogger();
+            InitLog();
 
-            //  Thread.Sleep(300000);
             try
             {
-                if (listener == null)
+                if (_listener == null)
                 {
-                    listener = new TcpListener(RoleEnvironment.CurrentRoleInstance
-                        .InstanceEndpoints["Smartfleet.server"].IPEndpoint);
-                    listener.Start();
+                    StartTcpListner();
                 }
 
                 InitBus();
@@ -48,7 +44,7 @@ namespace SmartFleet.TcpWorker
 
                 while (true) // Add your exit flag here
                 {
-                    var client = listener.AcceptTcpClient();
+                    var client = _listener.AcceptTcpClient();
                     ThreadPool.QueueUserWorkItem(ThreadProc, client);
                 }
             }
@@ -59,10 +55,23 @@ namespace SmartFleet.TcpWorker
             }
             finally
             {
-                this.runCompleteEvent.Set();
+                _runCompleteEvent.Set();
             }
-          
-         
+        }
+
+        private static void InitLog()
+        {
+            _log = new LoggerConfiguration()
+                // .WriteTo.Console()
+                .WriteTo.File("tcp-worker-role.txt")
+                .CreateLogger();
+        }
+
+        private void StartTcpListner()
+        {
+            _listener = new TcpListener(RoleEnvironment.CurrentRoleInstance
+                .InstanceEndpoints["Smartfleet.server"].IPEndpoint);
+            _listener.Start();
         }
 
         private static void InitBus()
@@ -73,7 +82,7 @@ namespace SmartFleet.TcpWorker
                     ConfigurationManager.AppSettings["AzureSbNamespace"],
                     ConfigurationManager.AppSettings["AzureSbPath"]);
 
-                var host = sbc.Host(serviceUri,
+                sbc.Host(serviceUri,
                     h =>
                     {
                         h.TokenProvider = TokenProvider.CreateSharedAccessSignatureTokenProvider(
@@ -84,7 +93,10 @@ namespace SmartFleet.TcpWorker
                     });
             });
         }
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="state"></param>
         private static void ThreadProc(object state)
         {
             var client = ((TcpClient)state);
@@ -95,7 +107,7 @@ namespace SmartFleet.TcpWorker
 
             try
             {
-                _log.Information(dataReceived + " at :" +  DateTime.Now);
+               // _log.Information(dataReceived + " at :" +  DateTime.Now);
 
 
 
@@ -108,7 +120,7 @@ namespace SmartFleet.TcpWorker
                     foreach (var r in result)
                     {
                         //   Task.Run(async () => { await SendCommand(stream, r.Value, client); });
-                        _bus.Publish<CreateNewBoxGps>(r);
+                        _bus.Publish(r);
                     }
                 }
                 else
@@ -121,14 +133,14 @@ namespace SmartFleet.TcpWorker
                         Task.Run(async () => { await SendCommand(stream, r.Value, client); });
                         foreach (var createTk103Gpse in r.Key)
                         {
-                            _bus.Publish<CreateTk103Gps>(createTk103Gpse);
+                            _bus.Publish(createTk103Gpse);
                         }
                     }
                 }
             }
             catch (Exception e)
             {
-                _log.Error(e+" at:" + DateTime.Now);
+                _log.Error("error message :"+ e .Message+" details:"+ e.InnerException +  " at:" + DateTime.Now);
 
                 Console.WriteLine(e);
                 //client.Close();
@@ -165,23 +177,15 @@ namespace SmartFleet.TcpWorker
         {
             Trace.TraceInformation("SmartFleet.TcpWorker is stopping");
 
-            this.cancellationTokenSource.Cancel();
-            this.runCompleteEvent.WaitOne();
-            listener.Stop();
+            _cancellationTokenSource.Cancel();
+            _runCompleteEvent.WaitOne();
+            _listener.Stop();
             _bus.StopAsync();
             base.OnStop();
 
             Trace.TraceInformation("SmartFleet.TcpWorker has stopped");
         }
 
-        private async Task RunAsync(CancellationToken cancellationToken)
-        {
-            // TODO: Remplacez le texte suivant par votre propre logique.
-            while (!cancellationToken.IsCancellationRequested)
-            {
-                Trace.TraceInformation("Working");
-                await Task.Delay(1000);
-            }
-        }
+      
     }
 }

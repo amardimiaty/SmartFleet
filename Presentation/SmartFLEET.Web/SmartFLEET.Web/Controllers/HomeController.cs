@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data.Entity;
 using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using AutoMapper;
-using SmartFleet.Data;
+using SmartFleet.Service.Customers;
 using SmartFleet.Service.Tracking;
+using SmartFleet.Service.Vehicles;
 using SmartFLEET.Web.DailyRports;
 using SmartFLEET.Web.Models;
 
@@ -17,20 +17,27 @@ namespace SmartFLEET.Web.Controllers
     [Authorize(Roles = "user,customer")]
     public class HomeController : BaseController
     {
-        private readonly IPositionService _positionService;
+        public static string CurrentGroup { get; set; }
 
-        public HomeController(SmartFleetObjectContext objectContext, IMapper mapper, IPositionService positionService) : base(objectContext, mapper)
+        private readonly IPositionService _positionService;
+        private readonly ICustomerService _customerService;
+        private readonly IVehicleService _vehicleService;
+
+        public HomeController(IMapper mapper,
+            IPositionService positionService, 
+            ICustomerService customerService , 
+            IVehicleService vehicleService) : base( mapper)
         {
             _positionService = positionService;
+            _customerService = customerService;
+            _vehicleService = vehicleService;
         }
 
-        public  static string CurrentGroup { get; set; }
-
+     
         [HttpGet]
         public ActionResult Index()
         {
-            var cst = ObjectContext.UserAccounts.Include(x => x.Customer)
-                .FirstOrDefault(x => x.UserName == User.Identity.Name)?.Customer;
+            var cst = _customerService.GetOwnerCustomer(User.Identity.Name);
             CurrentGroup = cst?.Name;
             ViewBag.GroupName = CurrentGroup;
             return View();
@@ -39,50 +46,50 @@ namespace SmartFLEET.Web.Controllers
         public async Task<JsonResult> AllVehiclesWithLastPosition()
         {
             var report = new PositionReport();
-            var positions = await report.PositionViewModels(await _positionService.GetLastVehiclPosition(User.Identity.Name));
-
+            var positions =  report.PositionViewModels(await _positionService.GetLastVehiclPosition(User.Identity.Name));
             return Json(positions, JsonRequestBehavior.AllowGet);
         }
-
-      
         /// <summary>
         /// 
         /// </summary>
         /// <returns></returns>
         public async Task<JsonResult> LoadNodes()
         {
-            var cst = ObjectContext.UserAccounts.Include(x => x.Customer)
-                .FirstOrDefault(x => x.UserName == User.Identity.Name)?.Customer;
+            var cst = _customerService.GetOwnerCustomer(User.Identity.Name);
             var nodes = new List<JsTreeModel>();
-            nodes.Add(new JsTreeModel()
+            nodes.Add(new JsTreeModel
             {
-                id = "vehicles"+Guid.Empty,
+                id = "vehicles-"+Guid.Empty,
                 parent = "#",
                 text = "Vehicules",
 
             });
-            nodes.Add(new JsTreeModel()
+            nodes.Add(new JsTreeModel
             {
-                id ="drivers"+ Guid.Empty,
+                id ="drivers-"+ Guid.Empty,
                 parent = "#",
                 text = "Condcuteurs",
 
             });
-            if (cst == null) return Json(nodes, JsonRequestBehavior.AllowGet);
+            if (cst == null)
+                return Json(nodes, JsonRequestBehavior.AllowGet);
 
-            var vehicles = await ObjectContext.Vehicles.Where(x => x.CustomerId == cst.Id).ToArrayAsync();
+            var vehicles = await _vehicleService.GetVehiclesFromCustomer(cst.Id);
             foreach (var vehicle in vehicles)
             {
                 var node  = new JsTreeModel();
                 node.id = vehicle.Id.ToString();
-                node.text = vehicle.VehicleName == string.Empty ? vehicle.LicensePlate :"  "+ vehicle.VehicleName;
-                node.parent = "vehicles" + Guid.Empty;
+                node.text = vehicle.VehicleName == string.Empty ? vehicle.LicensePlate :" "+ vehicle.VehicleName;
+                node.parent = "vehicles-" + Guid.Empty;
                 node.icon = "la la-car ";
                 nodes.Add(node);
             }
 
             return Json(nodes, JsonRequestBehavior.AllowGet);
         }
+
+       
+
 
         public async Task<JsonResult> GetTargetByPeriod(string vehicleId)
         {
@@ -100,20 +107,17 @@ namespace SmartFLEET.Web.Controllers
                 //throw;
             }
 
-            var vehicle = await ObjectContext.Vehicles.FindAsync(id);
+            var vehicle = await _vehicleService.GetVehicleById(id);
             var positions = await _positionService.GetVehiclePositionsByPeriod(id, startPeriod, endPeriod);
             if (!positions.Any())
                 return Json(new List<TargetViewModel>(), JsonRequestBehavior.AllowGet);
             var gpsCollection = positions.Select(x =>
                 new { Latitude = x.Lat, Longitude = x.Long, GpsStatement = x.Timestamp.ToString("O") });
             var positionReport = new PositionReport();
-            return Json(new { Periods = await positionReport.GetTargetViewModels(positions, startPeriod, vehicle.VehicleName), GpsCollection = gpsCollection }, JsonRequestBehavior.AllowGet);
+            return Json(new { Periods =  positionReport.GetTargetViewModels(positions, startPeriod, vehicle.VehicleName), GpsCollection = gpsCollection }, JsonRequestBehavior.AllowGet);
 
         }
 
-       
-
         
-      
     }
 }

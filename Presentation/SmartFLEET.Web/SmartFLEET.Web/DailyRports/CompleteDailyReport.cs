@@ -21,7 +21,7 @@ namespace SmartFLEET.Web.DailyRports
             VehicleName = vehicle.VehicleName;
             Positions = new List<TargetViewModel>();
             var positionReport = new PositionReport();
-            Positions.AddRange( positionReport.GetTargetViewModels(positions, positions.FirstOrDefault().Timestamp.Date, vehicle.VehicleName).Result);
+            Positions.AddRange( positionReport.GetTargetViewModels(positions, positions.FirstOrDefault().Timestamp.Date, vehicle.VehicleName));
             Distance = Positions.Where(x=>x.MotionStatus == MotionStatus.Moving.ToString()).Sum(x => x.Distance);
             Distance = Math.Round(Distance, 2);
 

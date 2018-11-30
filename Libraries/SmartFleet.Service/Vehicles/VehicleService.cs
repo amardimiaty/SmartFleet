@@ -1,28 +1,23 @@
 ﻿using System;
 using System.Data.Entity;
-using System.Data.Entity.Migrations;
 using System.Diagnostics;
+using System.Linq;
 using System.Threading.Tasks;
 using SmartFleet.Core.Data;
 using SmartFleet.Core.Domain.Gpsdevices;
 using SmartFleet.Core.Domain.Vehicles;
 using SmartFleet.Data;
-using SmartFleet.Data.Dbcontextccope.Implementations;
 
 namespace SmartFleet.Service.Vehicles
 {
     public class VehicleService : IVehicleService
     {
-        private readonly IRepository<Vehicle> _vehicleRepository;
-        private readonly IRepository<Box> _boxRepository;
         private readonly IDbContextScopeFactory _dbContextScopeFactory;
         private SmartFleetObjectContext _db;
 
-        public VehicleService(IRepository<Vehicle> vehicleRepository, IRepository<Box> boxRepository)
+        public VehicleService(IDbContextScopeFactory dbContextScopeFactory)
         {
-            _vehicleRepository = vehicleRepository;
-            _boxRepository = boxRepository;
-            _dbContextScopeFactory = new DbContextScopeFactory();
+             _dbContextScopeFactory = dbContextScopeFactory;
         }
 
         public async Task<bool> AddNewVehicle(Vehicle vehicle)
@@ -56,6 +51,23 @@ namespace SmartFleet.Service.Vehicles
             {
                 Debug.WriteLine(e.Message);
                 return false;
+            }
+        }
+
+        public async Task<Vehicle[]> GetVehiclesFromCustomer(Guid customerId)
+        {
+            using (var contextFScope = _dbContextScopeFactory.Create())
+            {
+                _db = contextFScope.DbContexts.Get<SmartFleetObjectContext>();
+                return await _db.Vehicles.Where(x => x.CustomerId == customerId).ToArrayAsync();
+            }
+        }
+        public async Task<Vehicle> GetVehicleById(Guid id)
+        {
+            using (var contextFScope = _dbContextScopeFactory.Create())
+            {
+                _db = contextFScope.DbContexts.Get<SmartFleetObjectContext>();
+                return await _db.Vehicles.FindAsync(id);
             }
         }
     }

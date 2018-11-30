@@ -44,7 +44,7 @@ namespace SmartFLEET.Web.Controllers
             var gpsCollection = positions.Select(x =>
                 new { Latitude = x.Lat, Longitude = x.Long, GpsStatement = x.Timestamp.ToString("O") });
             var positionReport = new PositionReport();
-            return Json(new {Vehiclename = vehicle?.VehicleName, Periods = await positionReport.GetTargetViewModels(positions, startPeriod, vehicle.VehicleName), GpsCollection = gpsCollection }, JsonRequestBehavior.AllowGet);
+            return Json(new {Vehiclename = vehicle?.VehicleName, Periods =  positionReport.GetTargetViewModels(positions, startPeriod, vehicle.VehicleName), GpsCollection = gpsCollection }, JsonRequestBehavior.AllowGet);
 
         }
 

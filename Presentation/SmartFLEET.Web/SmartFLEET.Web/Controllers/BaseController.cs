@@ -21,7 +21,11 @@ namespace SmartFLEET.Web.Controllers
             ObjectContext = objectContext;
             Mapper = mapper;
         }
-        
+        public BaseController( IMapper mapper)
+        {
+            Mapper = mapper;
+        }
+
 
         #region All queries
 

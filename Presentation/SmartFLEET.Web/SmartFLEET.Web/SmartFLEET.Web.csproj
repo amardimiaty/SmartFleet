@@ -2688,6 +2688,7 @@
     <Content Include="Scripts\popper-utils.js.map" />
     <Content Include="Views\Home\_PositionByPeriodFrm.cshtml" />
     <Content Include="Views\Home\_CreateDriver.cshtml" />
+    <Content Include="Views\Home\_PositionTimeLine.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Areas\Administrator\Views\Brand\" />
