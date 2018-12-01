@@ -14,6 +14,8 @@ using Serilog;
 using Serilog.Core;
 using SmartFleet.Core.Protocols.NewBox;
 using SmartFleet.Core.Protocols.Tk1003;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
 
 namespace SmartFleet.TcpWorker
 {
@@ -24,6 +26,7 @@ namespace SmartFleet.TcpWorker
         private static IBusControl _bus;
         private TcpListener _listener;
         private static Logger _log;
+        private static bool arduinoBox = false;
         /// <summary>
         /// 
         /// </summary>
@@ -35,10 +38,8 @@ namespace SmartFleet.TcpWorker
             try
             {
                 if (_listener == null)
-                {
                     StartTcpListner();
-                }
-
+              
                 InitBus();
                 _bus.Start();
 
@@ -107,44 +108,54 @@ namespace SmartFleet.TcpWorker
 
             try
             {
-               // _log.Information(dataReceived + " at :" +  DateTime.Now);
-
-
-
-                if (dataReceived.Contains(","))
+                 // il s'agit du format de nouveaux boitiers créent par khaled
+                if (dataReceived.Contains(",") && !dataReceived.Contains("("))
                 {
-                    // il s'agit du format de nouveaux boitiers créent par khaled
-                    NewBoxParser parser =  new NewBoxParser();
-                    dataReceived= dataReceived.Replace("\r\n", "").Replace("\r", "").Replace("\n", "");
-                    var result = parser.Parse(dataReceived.Split('\r'));
-                    foreach (var r in result)
+                    arduinoBox = true;
+                    NewBoxParser parser = new NewBoxParser();
+                    dataReceived = dataReceived.Replace("\r\n", "").Replace("\r", "").Replace("\n", "");
+                    try
                     {
-                        //   Task.Run(async () => { await SendCommand(stream, r.Value, client); });
-                        _bus.Publish(r);
+                        var result = parser.Parse(dataReceived.Split('\r'));
+                        foreach (var r in result)
+                            _bus.Publish(r);
+                       
                     }
+                    catch (ValidationException e)
+                    {
+                        _log.Error("error message :" + e.Message + " details:" + e.InnerException + " at:" + DateTime.Now);
+                        //throw;
+                    }
+
+
                 }
                 else
                 {
                     // boitier GT02A
                     Tk1003Parser parser = new Tk1003Parser();
+                    arduinoBox = false;
                     var result = parser.Parse(dataReceived.Split('\r'));
+                    // envoyer une message de reception et une déconnexion aux clients
+                    if (client.Connected)
+                        Task.Run(async () => { await SendCommand(stream, result.FirstOrDefault().Value, client); });
+
                     foreach (var r in result)
                     {
-                        Task.Run(async () => { await SendCommand(stream, r.Value, client); });
                         foreach (var createTk103Gpse in r.Key)
-                        {
                             _bus.Publish(createTk103Gpse);
-                        }
                     }
+                  
+                    // client.Close();
                 }
             }
             catch (Exception e)
             {
-                _log.Error("error message :"+ e .Message+" details:"+ e.InnerException +  " at:" + DateTime.Now);
-
+                _log.Error("error message :" + e.Message + " details:" + e.InnerException + " at:" + DateTime.Now);
                 Console.WriteLine(e);
-                //client.Close();
+                if(!arduinoBox)
+                    client.Close();
             }
+            
 
 
             // Console.ReadLine();

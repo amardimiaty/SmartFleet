@@ -5,30 +5,36 @@ using System.Web;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.Owin.Security;
-using SmartFleet.Core.Domain.Users;
 
 namespace SmartFleet.Service.Authentication
 {
     public class AuthenticationService : IAuthenticationService
     {
         private readonly UserManager<IdentityUser> _userManager;
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="userManager"></param>
         public AuthenticationService(UserManager<IdentityUser> userManager)
         {
             _userManager = userManager;
         }
-        private IAuthenticationManager AuthenticationManager
-        {
-            get
-            {
-                return HttpContext.Current.GetOwinContext().Authentication;
-            }
-        }
-
+        private IAuthenticationManager AuthenticationManager => HttpContext.Current.GetOwinContext().Authentication;
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
         public IEnumerable<string> GetRoleByUserId(string userId)
         {
             return  _userManager.GetRoles(userId);
-        }
+        }/// <summary>
+        /// 
+        /// </summary>
+        /// <param name="userName"></param>
+        /// <param name="password"></param>
+        /// <param name="remember"></param>
+        /// <returns></returns>
         public async Task<IdentityUser>  Authentication(string userName, string password, bool remember)
         {
             var user = await _userManager.FindByNameAsync(userName);
@@ -38,6 +44,11 @@ namespace SmartFleet.Service.Authentication
             Authenticate(user, remember);
             return user;
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="result"></param>
+        /// <param name="remember"></param>
         private void Authenticate(IdentityUser result, bool remember)
         {
             if (result == null) return;
@@ -57,6 +68,9 @@ namespace SmartFleet.Service.Authentication
             }
             AuthenticationManager.SignIn(new AuthenticationProperties { IsPersistent = remember }, identity);
         }
+        /// <summary>
+        /// 
+        /// </summary>
         public void Logout()
         {
             AuthenticationManager.SignOut(DefaultAuthenticationTypes.ApplicationCookie);

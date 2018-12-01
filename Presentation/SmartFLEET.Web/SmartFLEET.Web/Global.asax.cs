@@ -24,16 +24,31 @@ using SmartFleet.Core.ReverseGeoCoding;
 using SmartFleet.Data;
 using SmartFleet.Data.Dbcontextccope.Implementations;
 using SmartFleet.Service.Authentication;
+using SmartFleet.Service.Common;
 using SmartFleet.Service.Customers;
 using SmartFleet.Service.Tracking;
 using SmartFleet.Service.Vehicles;
 using SmartFLEET.Web.Automapper;
 using SmartFLEET.Web.Hubs;
+using System.Web;
 
 namespace SmartFLEET.Web
 {
     public class MvcApplication : System.Web.HttpApplication
     {
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        protected void Application_AuthenticateRequest(object sender, System.EventArgs e)
+        {
+            // Skip authenticating all ext.axd embedded resources (.js, .css, images)
+            if (HttpContext.Current.Request.FilePath.EndsWith("/ext.axd"))
+            {
+                HttpContext.Current.SkipAuthorization = true;
+            }
+        }
         private Dictionary<string, string> GetModels()
         {
             var models = new Dictionary<string, string>();
@@ -387,7 +402,7 @@ namespace SmartFLEET.Web
 
             builder.RegisterType<PositionService>().As<IPositionService>();
             builder.RegisterType<CustomerService>().As<ICustomerService>();
-
+            builder.RegisterType<PdfService>().As<IPdfService>();
             #endregion
 
             #region automapper

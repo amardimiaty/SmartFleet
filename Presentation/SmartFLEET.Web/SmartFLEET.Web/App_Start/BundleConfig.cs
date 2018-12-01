@@ -28,7 +28,6 @@ namespace SmartFLEET.Web
             bundles.Add(new ScriptBundle("~/bundles/bootstrap").Include(
                 "~/Scripts/bootstrap.js",
                 "~/dist/plugins/jQueryUI/jquery-ui.min.js",
-
                 "~/Scripts/respond.js",
                 "~/Scripts/jq-layout.js",
                 "~/Scripts/leafjs/leaflet.js",
@@ -64,23 +63,10 @@ namespace SmartFLEET.Web
                 "~/Scripts/app/mainApp.js"));
             bundles.Add(new ScriptBundle("~/bundles/jsApp").Include(
                 "~/dist/js/app.min.js"
-                //init angular
-                //"~/Scripts/app/adminApp.js",
-                ////Services
-                //"~/Scripts/app/customer/customerService.js",
-                //"~/Scripts/app/vehicle/vehicleService.js",
-                //"~/Scripts/app/user/userService.js",
-                ////controllers
-                //"~/Scripts/app/customer/customerController.js",
-                //"~/Scripts/app/vehicle/vehicleController.js",
-                //"~/Scripts/app/user/userController.js"
                 ));
 
             bundles.Add(new StyleBundle("~/Content/css").Include(
-              //  "~/Content/bootstrap.min.css",
-            //    "~/Content/bootstrap-theme.min.css",
                 "~/dist/css/skins/_all-skins.min.css",
-
                 "~/Content/validationEngine.jquery.css",
                 "~/Content/font-awesome.css",
                 "~/Content/mySite.css",
@@ -103,7 +89,6 @@ namespace SmartFLEET.Web
                 "~/Scripts/datatables/css/dataTables.bootstrap.css",
                 "~/Content/font-awesome.css",
                 "~/Content/mySite.css",
-              //  "~/Content/bootstrap-theme.min.css",
                 "~/font-awesome/css/font-awesome.min.css",
                 "~/dist/css/skins/_all-skins.min.css",
                 "~/dist/css/AdminLTE.min.css",

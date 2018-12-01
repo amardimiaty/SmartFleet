@@ -3,7 +3,6 @@ using System.ComponentModel;
 using System.Data.Entity;
 using System.Threading.Tasks;
 using System.Web.Http;
-using System.Web.Http.Results;
 using AutoMapper;
 using SmartFleet.Core.Domain.Vehicles;
 using SmartFleet.Data;

@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using SmartFleet.Core.Data;
 using SmartFleet.Core.Domain.Gpsdevices;
 using SmartFleet.Core.Domain.Movement;
-using SmartFleet.Core.Domain.Users;
 using SmartFleet.Core.Domain.Vehicles;
 using SmartFleet.Core.ReverseGeoCoding;
 using SmartFleet.Data;
@@ -16,15 +15,23 @@ namespace SmartFleet.Service.Tracking
     public class PositionService : IPositionService
     {
         private readonly IRepository<Position> _positionRepository;
-
         private readonly SmartFleetObjectContext _objectContext;
-
         // private readonly IRepository<User> _userAccountRepository;
         private readonly IRepository<Box> _gpsDeviceRepository;
         private readonly ReverseGeoCodingService _geoCodingService;
         private readonly IRepository<Vehicle> _vehicleRepository;
-
-        public PositionService(IRepository<Position> positionRepository, ReverseGeoCodingService geoCodingService, SmartFleetObjectContext objectContext, IRepository<Box> gpsDeviceRepository, 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="positionRepository"></param>
+        /// <param name="geoCodingService"></param>
+        /// <param name="objectContext"></param>
+        /// <param name="gpsDeviceRepository"></param>
+        /// <param name="vehicleRepository"></param>
+        public PositionService(IRepository<Position> positionRepository, 
+            ReverseGeoCodingService geoCodingService,
+            SmartFleetObjectContext objectContext,
+            IRepository<Box> gpsDeviceRepository, 
             IRepository<Vehicle> vehicleRepository)
         {
             _positionRepository = positionRepository;

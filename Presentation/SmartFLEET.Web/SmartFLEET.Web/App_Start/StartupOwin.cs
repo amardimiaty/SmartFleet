@@ -1,13 +1,19 @@
 ﻿using Microsoft.AspNet.Identity;
 using Microsoft.Owin;
-using Microsoft.Owin.Extensions;
 using Microsoft.Owin.Security.Cookies;
 using Owin;
 
 namespace SmartFLEET.Web
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public partial class Startup
     {
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="app"></param>
         public void ConfigureAuthentication(IAppBuilder app)
         {
             app.UseCookieAuthentication(new CookieAuthenticationOptions

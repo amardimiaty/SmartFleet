@@ -1,5 +1,4 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using AutoMapper;
 using SmartFleet.Core.Contracts.Commands;
 using SmartFleet.Core.Domain.Customers;
@@ -9,8 +8,14 @@ using SmartFLEET.Web.Models;
 
 namespace SmartFLEET.Web.Automapper
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public class SmartFleetAdminMappings : Profile
     {
+        /// <summary>
+        /// 
+        /// </summary>
         public SmartFleetAdminMappings()
         {
             CreateMap<AddVehicleViewModel, Vehicle>()

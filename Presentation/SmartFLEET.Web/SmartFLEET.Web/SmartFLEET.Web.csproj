@@ -71,6 +71,12 @@
     <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <HintPath>..\..\..\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
     </Reference>
+    <Reference Include="Ext.Net, Version=4.7.1.0, Culture=neutral, PublicKeyToken=2e12ce3d0176cd87, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\Ext.NET.MVC.4.7.1\lib\net46\Ext.Net.dll</HintPath>
+    </Reference>
+    <Reference Include="Ext.Net.Utilities, Version=2.5.0.0, Culture=neutral, PublicKeyToken=2c34ac34702a3c23, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\Ext.NET.Utilities.2.5.0\lib\Ext.Net.Utilities.dll</HintPath>
+    </Reference>
     <Reference Include="FluentValidation, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7de548da2fbae0f0, processorArchitecture=MSIL">
       <HintPath>..\..\..\packages\FluentValidation.8.0.100\lib\net45\FluentValidation.dll</HintPath>
     </Reference>
@@ -266,12 +272,19 @@
     </Reference>
     <Reference Include="System.Net.Http.WebRequest">
     </Reference>
+    <Reference Include="Transformer.NET, Version=2.1.1.22883, Culture=neutral, PublicKeyToken=e274d618e7c603a7, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\Transformer.NET.2.1.1\lib\net35\Transformer.NET.dll</HintPath>
+    </Reference>
+    <Reference Include="WebActivatorEx, Version=2.0.0.0, Culture=neutral, PublicKeyToken=7b26dc2a43f6a0d4, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\WebActivatorEx.2.2.0\lib\net40\WebActivatorEx.dll</HintPath>
+    </Reference>
     <Reference Include="WebGrease, Version=1.5.2.14234, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\..\..\packages\WebGrease.1.5.2\lib\WebGrease.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App_Start\BundleConfig.cs" />
+    <Compile Include="App_Start\ExtNetConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\StartupOwin.cs" />
@@ -310,6 +323,7 @@
     <Compile Include="Areas\HelpPage\SampleGeneration\SampleDirection.cs" />
     <Compile Include="Areas\HelpPage\SampleGeneration\TextSample.cs" />
     <Compile Include="Areas\HelpPage\XmlDocumentationProvider.cs" />
+    <Compile Include="Controllers\ExtNetController.cs" />
     <Compile Include="Helpers\AzureServiceBusModule.cs" />
     <Compile Include="Automapper\SmartFleetAdminMappings.cs" />
     <Compile Include="Areas\Administrator\Controllers\AdminController.cs" />
@@ -337,11 +351,11 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="Helpers\ItextSharpHelper.cs" />
     <Compile Include="HtmlHelpers\HtmlExtensions.cs" />
     <Compile Include="Hubs\SignalRHandler.cs" />
     <Compile Include="Hubs\SignalRHubManager.cs" />
     <Compile Include="Models\Account\LoginModel.cs" />
+    <Compile Include="Models\ExtNetModel.cs" />
     <Compile Include="Models\JsTreeModel.cs" />
     <Compile Include="Models\PositionViewModel.cs" />
     <Compile Include="Models\TargetViewModel.cs" />
@@ -350,76 +364,12 @@
     <Compile Include="TokensHndler\TokenValidationHandler.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="admin-lte\css\AdminLTE.css" />
-    <Content Include="admin-lte\css\AdminLTE.min.css" />
-    <Content Include="admin-lte\css\alt\AdminLTE-bootstrap-social.css" />
-    <Content Include="admin-lte\css\alt\AdminLTE-bootstrap-social.min.css" />
-    <Content Include="admin-lte\css\alt\AdminLTE-fullcalendar.css" />
-    <Content Include="admin-lte\css\alt\AdminLTE-fullcalendar.min.css" />
-    <Content Include="admin-lte\css\alt\AdminLTE-select2.css" />
-    <Content Include="admin-lte\css\alt\AdminLTE-select2.min.css" />
-    <Content Include="admin-lte\css\alt\AdminLTE-without-plugins.css" />
-    <Content Include="admin-lte\css\alt\AdminLTE-without-plugins.min.css" />
-    <Content Include="admin-lte\css\skins\skin-black-light.css" />
-    <Content Include="admin-lte\css\skins\skin-black-light.min.css" />
-    <Content Include="admin-lte\css\skins\skin-black.css" />
-    <Content Include="admin-lte\css\skins\skin-black.min.css" />
-    <Content Include="admin-lte\css\skins\skin-blue-light.css" />
-    <Content Include="admin-lte\css\skins\skin-blue-light.min.css" />
-    <Content Include="admin-lte\css\skins\skin-blue.css" />
-    <Content Include="admin-lte\css\skins\skin-blue.min.css" />
-    <Content Include="admin-lte\css\skins\skin-green-light.css" />
-    <Content Include="admin-lte\css\skins\skin-green-light.min.css" />
-    <Content Include="admin-lte\css\skins\skin-green.css" />
-    <Content Include="admin-lte\css\skins\skin-green.min.css" />
-    <Content Include="admin-lte\css\skins\skin-purple-light.css" />
-    <Content Include="admin-lte\css\skins\skin-purple-light.min.css" />
-    <Content Include="admin-lte\css\skins\skin-purple.css" />
-    <Content Include="admin-lte\css\skins\skin-purple.min.css" />
-    <Content Include="admin-lte\css\skins\skin-red-light.css" />
-    <Content Include="admin-lte\css\skins\skin-red-light.min.css" />
-    <Content Include="admin-lte\css\skins\skin-red.css" />
-    <Content Include="admin-lte\css\skins\skin-red.min.css" />
-    <Content Include="admin-lte\css\skins\skin-yellow-light.css" />
-    <Content Include="admin-lte\css\skins\skin-yellow-light.min.css" />
-    <Content Include="admin-lte\css\skins\skin-yellow.css" />
-    <Content Include="admin-lte\css\skins\skin-yellow.min.css" />
-    <Content Include="admin-lte\css\skins\_all-skins.css" />
-    <Content Include="admin-lte\css\skins\_all-skins.min.css" />
-    <Content Include="admin-lte\img\avatar.png" />
-    <Content Include="admin-lte\img\avatar04.png" />
-    <Content Include="admin-lte\img\avatar2.png" />
-    <Content Include="admin-lte\img\avatar3.png" />
-    <Content Include="admin-lte\img\avatar5.png" />
-    <Content Include="admin-lte\img\boxed-bg.jpg" />
-    <Content Include="admin-lte\img\boxed-bg.png" />
-    <Content Include="admin-lte\img\credit\american-express.png" />
-    <Content Include="admin-lte\img\credit\cirrus.png" />
-    <Content Include="admin-lte\img\credit\mastercard.png" />
-    <Content Include="admin-lte\img\credit\mestro.png" />
-    <Content Include="admin-lte\img\credit\paypal.png" />
-    <Content Include="admin-lte\img\credit\paypal2.png" />
-    <Content Include="admin-lte\img\credit\visa.png" />
-    <Content Include="admin-lte\img\default-50x50.gif" />
-    <Content Include="admin-lte\img\icons.png" />
-    <Content Include="admin-lte\img\photo1.png" />
-    <Content Include="admin-lte\img\photo2.png" />
-    <Content Include="admin-lte\img\photo3.jpg" />
-    <Content Include="admin-lte\img\photo4.jpg" />
-    <Content Include="admin-lte\img\user1-128x128.jpg" />
-    <Content Include="admin-lte\img\user2-160x160.jpg" />
-    <Content Include="admin-lte\img\user3-128x128.jpg" />
-    <Content Include="admin-lte\img\user4-128x128.jpg" />
-    <Content Include="admin-lte\img\user5-128x128.jpg" />
-    <Content Include="admin-lte\img\user6-128x128.jpg" />
-    <Content Include="admin-lte\img\user7-128x128.jpg" />
-    <Content Include="admin-lte\img\user8-128x128.jpg" />
-    <Content Include="admin-lte\js\adminlte.js" />
-    <Content Include="admin-lte\js\adminlte.min.js" />
-    <Content Include="admin-lte\js\demo.js" />
-    <Content Include="admin-lte\js\pages\dashboard.js" />
-    <Content Include="admin-lte\js\pages\dashboard2.js" />
     <Content Include="App_Data\XmlDocument.xml" />
+    <Content Include="App_Readme\Ext.NET.Utilities\BREAKING_CHANGES.txt" />
+    <Content Include="App_Readme\Ext.NET.Utilities\LICENSE.txt" />
+    <Content Include="App_Readme\Ext.NET.Utilities\README.txt" />
+    <Content Include="App_Readme\Transformer.NET\LICENSE.txt" />
+    <Content Include="App_Readme\Transformer.NET\README.txt" />
     <Content Include="Areas\HelpPage\HelpPage.css" />
     <Content Include="assets\182495_4950800_844322_image.png" />
     <Content Include="assets\download.jpg" />
@@ -1648,11 +1598,6 @@
     <Content Include="Scripts\datetimepicker\fonts\glyphicons-halflings-regular.ttf" />
     <Content Include="Scripts\datetimepicker\fonts\glyphicons-halflings-regular.woff" />
     <Content Include="Scripts\datetimepicker\fonts\glyphicons-halflings-regular.woff2" />
-    <Content Include="Scripts\fonts\fontawesome-webfont.eot" />
-    <Content Include="Scripts\fonts\fontawesome-webfont.ttf" />
-    <Content Include="Scripts\fonts\fontawesome-webfont.woff" />
-    <Content Include="Scripts\fonts\fontawesome-webfont.woff2" />
-    <Content Include="Scripts\fonts\FontAwesome.otf" />
     <Content Include="Areas\Administrator\Views\Shared\_AdminNavBar.cshtml" />
     <Content Include="Images\elementIcon\Thumbs.db" />
     <Content Include="Images\icons\Thumbs.db" />
@@ -1795,8 +1740,9 @@
     <Content Include="Areas\HelpPage\Views\Help\DisplayTemplates\CollectionModelDescription.cshtml" />
     <Content Include="Areas\HelpPage\Views\Help\DisplayTemplates\ApiGroup.cshtml" />
     <Content Include="Areas\HelpPage\Views\Help\Api.cshtml" />
-    <Content Include="admin-lte\css\adminlte.min.css.map" />
-    <Content Include="admin-lte\css\adminlte.css.map" />
+    <Content Include="App_Readme\Ext.NET\README.md" />
+    <Content Include="App_Readme\Ext.NET\LICENSE" />
+    <Content Include="App_Readme\Ext.NET\CHANGELOG.md" />
     <None Include="packages.config" />
     <Content Include="Scripts\errors.json" />
     <Content Include="Scripts\angular.min.js.map" />
@@ -1812,7 +1758,6 @@
     <Content Include="Scripts\angular-aria.min.js.map" />
     <Content Include="Scripts\angular-animate.min.js.map" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
-    <Content Include="Scripts\fonts\fontawesome-webfont.svg" />
     <Content Include="Scripts\gmap.js" />
     <Content Include="Scripts\i18n\angular-locale_af-na.js" />
     <Content Include="Scripts\i18n\angular-locale_af-za.js" />
@@ -2677,7 +2622,6 @@
     <Content Include="Views\VehicleReport\_Synthesis.cshtml" />
     <Content Include="Views\Home\_ReportForm.cshtml" />
     <Content Include="Views\Home\_PositionForm.cshtml" />
-    <Content Include="tsconfig.json" />
     <Content Include="Scripts\version.json" />
     <Content Include="Scripts\jquery-3.1.1.slim.min.map" />
     <Content Include="Scripts\jquery-3.1.1.min.map" />
@@ -2689,6 +2633,9 @@
     <Content Include="Views\Home\_PositionByPeriodFrm.cshtml" />
     <Content Include="Views\Home\_CreateDriver.cshtml" />
     <Content Include="Views\Home\_PositionTimeLine.cshtml" />
+    <Content Include="Views\Home\_SouthLayout.cshtml" />
+    <Content Include="Views\ExtNet\Index.cshtml" />
+    <Content Include="Views\Position\_CurrentPosition.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Areas\Administrator\Views\Brand\" />
@@ -2698,7 +2645,6 @@
     <Folder Include="Areas\Api\Models\" />
     <Folder Include="Areas\Api\Views\Shared\" />
     <Folder Include="Views\Base\" />
-    <Folder Include="Views\Position\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Libraries\SmartFleet.Core\SmartFleet.Core.csproj">

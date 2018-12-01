@@ -1,22 +1,38 @@
 ﻿@using SmartFleet.Core.Domain.Vehicles
+
 <style>
     .jbox-t {
         margin-top: -23px !important;
         margin-left: -10px !important;
     }
+    #TabPanelPosition {
+        position: absolute;
+        z-index: 1000;
+        margin-top: -180px;
+    }
+
     /*.ui-layout-pane, .ui-layout-resizer {
         top: 60px !important
     }*/
 </style>
 <link href="~/dist/plugins/select2/select2.bootstrap.css" rel="stylesheet" />
 <link href="~/dist/plugins/select2/select2.min.css" rel="stylesheet" />
+<link href="~/Scripts/extnet/css/ext-all.css" rel="stylesheet" />
 
-
-<div id="Modal-2" ui-view class="ui-layout-center"  style="top: 60px !important; height: 100%;width: 100%">
-    <div id="map" style="height: 100%;width: 100%"></div>
-   
+<div id="Modal-2" ui-view class="ui-layout-center"  style="top: 0px !important; height: 100%;width: 100%">
+    
+    <div id="map" style="height: 100%; width: 100%">
+      
     </div>
-<div class="ui-layout-west" style="top: 60px !important;width: 350px" >
+    <div id="chrnogram">
+        @{
+            Html.RenderAction("GetCurrentposition", "Position");
+        }
+
+    </div>
+</div>
+
+<div class="ui-layout-west" style="top: 0 !important;width: 300px" >
     
     <div id="accordion" class="panel-group">
         <div class="panel panel-default">
@@ -85,15 +101,12 @@
             Html.RenderPartial("_CreateDriver");
         }
     </div> 
-    <div style="display: none; margin: -15px" id="chrnogram">
-        @{
-            Html.RenderPartial("_PositionTimeLine");
-        }
-    </div> 
+     
      
   
    
 </div>
+
 @section scripts
 {
     <script src="~/signalr/hubs"></script>
@@ -108,6 +121,20 @@
         var map;
         var markers = [];
         var layout;
+        var myProgressWindow = new Ext.Window({
+            closable: false,
+            collapsible: false,
+            draggable: false,
+            resizable: false,
+            title: "Chargement des données en cours",
+            id: 'progress-win-div',
+            layout: 'fit',
+            width: 250,
+            height: 60,
+            plain: true,
+            modal: false,
+            //items: $("#chrnogram")
+        });
         $(document).ready(function() {
             initJstree();
             initMap();
@@ -145,12 +172,7 @@
                 language: 'fr',
                 autoclose: true
             });
-            $(".nav a").on("click",
-                function() {
-                    $(".nav").find(".active").removeClass("active");
-                    $(this).parent().addClass("active");
-
-                });
+     
 
         });
 
@@ -163,45 +185,7 @@
             var thisIcon = new L.Icon();
             $.ajax({
                 url: '@Url.Action("AllVehiclesWithLastPosition")',
-                success: function(result) {
-                    for (var i = 0; i < result.length; i++) {
-                        var item = result[i];
-                        var icon = new L.Icon();
-                        var template = "<div><h4><b> <b>Véhicule</b>: " +
-                            item.VehicleName +
-                            "</b></h4> <b>Adresse</b>: " +
-                            item.Address +
-                            "" +
-                            "<p> <b>Vitesse</b>: " +
-                            item.Speed +
-                            "Km/H</p>" +
-                            "</h5>" +
-                            "<p> <b>Latitude</b>: " +
-                            item.Latitude +
-                            "</p>" +
-                            "</h5>" +
-                            "<p> <b>Longitude</b>:  " +
-                            item.Longitude +
-                            "</p>" +
-                            "</div>";
-
-                        icon.options.iconUrl = item.ImageUri;
-                        var label = "<h5><b>" + item.VehicleName + "</b></h5>"
-                        var marker = L.marker([item.Latitude, item.Longitude], { title: item.VehicleId, icon: icon })
-                            .bindPopup(template,
-                                {
-                                    permanent: true,
-                                    direction: 'topleft'
-                                }).bindTooltip(label,
-                                {
-                                    permanent: true,
-                                    direction: 'top'
-                                }
-                            ).addTo(map).on('click', clickZoom);
-                        markers.push(marker);
-                    }
-
-                }
+                success: onGetAllVehiclesSuccess
             });
             loadData(0.67);
             // load a tile layer
@@ -214,7 +198,7 @@
 
             var hub = $.connection.signalRHandler;
             hub.client.receiveGpsStatements = function(gpsStatement) {
-                console.log(gpsStatement);
+               // console.log(gpsStatement);
                 removeMarker(gpsStatement);
                 thisIcon.options.iconUrl = gpsStatement.ImageUri;
                 //for (var i = 0; i < markers.length; i++) {
@@ -258,7 +242,46 @@
             });
             //return loadPolygan;
         }
+        function onGetAllVehiclesSuccess(result) {
+            for (var i = 0; i < result.length; i++) {
+                var item = result[i];
+                var icon = new L.Icon();
+                var template = "<div><h4><b> <b>Véhicule</b>: " +
+                    item.VehicleName +
+                    "</b></h4> <b>Adresse</b>: " +
+                    item.Address +
+                    "" +
+                    "<p> <b>Vitesse</b>: " +
+                    item.Speed +
+                    "Km/H</p>" +
+                    "</h5>" +
+                    "<p> <b>Latitude</b>: " +
+                    item.Latitude +
+                    "</p>" +
+                    "</h5>" +
+                    "<p> <b>Longitude</b>:  " +
+                    item.Longitude +
+                    "</p>" +
+                    "</div>";
 
+                icon.options.iconUrl = item.ImageUri;
+                var label = "<h5><b>" + item.VehicleName + "</b></h5>"
+                var marker = L.marker([item.Latitude, item.Longitude], { title: item.VehicleId, icon: icon })
+                    .bindPopup(template,
+                        {
+                            permanent: true,
+                            direction: 'topleft'
+                        }).bindTooltip(label,
+                        {
+                            permanent: true,
+                            direction: 'top'
+                        }
+                ).addTo(map).on('click', clickZoom);
+                console.log(marker.optionss);
+                markers.push(marker);
+            }
+
+        }
         function clickZoom(e) {
             map.setView(e.target.getLatLng(), 15);
         }
@@ -290,37 +313,7 @@
 
         }
 
-        function iniJBOX() {
-            var width = $('#map').width();
-            var content = '<div class="row" id="tachy-dashboard" style="margin-left: 10px; margin-bottom: 25px">' +
-                '<h6 id="vehicle-name" class="col-md-4"></h6>' +
-                '<h6 id="date-pos" class="col-md-2"></h6>' +
-                '<h6 id="begin-ser" class="col-md-2"></h6>' +
-                '<h6 id="end-ser" class="col-md-2"></h6>' +
-                '<div class="col-md-12" id="gps-activity" style="width: 99%"><div id="wait"></div> </div></div>';
-            return new jBox('Modal',
-                {
-                    content: $("#chrnogram"),
-                    id: 'jBox1',
-                    width: width,
-                    height: 190,
-                    position: { x: 'right', y: 'bottom' },
-                    offset: { x: -15, y: -30 },
-                    overlay: false,
-                    onClose: function() {
-                        positionModalOpend = false;
-                        removeLineMarckers();
-                    },
-                    addClass: '.jbox-t',
-                    // closeOnClick: 'box',
-                    onCloseComplete: function() {
-                        //this.destroy();
-                    }
-                });
-
-
-        }
-
+     
         var reportModalOpend = false;
 
         function initReportBox() {
@@ -371,6 +364,7 @@
                 '.jstree-anchor',
                 function(e) {
                     var anchorId = $(this).parent().attr('id');
+                    console.log(anchorId);
                     currentVehicleId = anchorId;
                     //         var currantNav = $(".nav").find(".active");
                     //         // $("#period-form").toggle();
@@ -381,35 +375,33 @@
                         && anchorId != 'drivers-00000000-0000-0000-0000-000000000000') {
                         markerFunction(anchorId);
 
-                        if (!positionModalOpend) {
-                            iniJBOX().open();
-                            positionModalOpend = true;
-                        }
+                        App.TabPanelPosition.show();
+                        positionModalOpend = true;
                         initWait();
 
                         $.ajax({
                             url: '@Url.Action("GetTargetByPeriod")/?vehicleId=' + anchorId,
-                            success: function(result) {
-                                console.log(result);
-                                $("#gps-activity").html("");
-                                $("#vehicle").html("");
-                                $("#date").html("");
-                                if (result.length == 0) {
-                                    $('#jBox1').waitMe("hide");
-
-                                    return;
-
-                                }
-                                $("#vehicle-name").html("Véhicule: " + result.Periods[0].VehicleName);
-                                $("#date-pos").html("Date: " + result.Periods[0].CurrentDate);
-                                initGpsData(result.Periods, result.GpsCollection, "gps-activity");
-                                $('#jBox1').waitMe("hide");
-                            }
+                            success:onGetTargetsSuccess
                         });
                     } //
                 });
         }
+        function onGetTargetsSuccess(result) {
+            console.log(result);
+            $("#gps-activity").html("");
+            $("#vehicle").html("");
+            $("#date").html("");
+            if (result.length == 0) {
+                $('#jBox1').waitMe("hide");
 
+                return;
+
+            }
+            $("#vehicle-name").html("Véhicule: " + result.Periods[0].VehicleName);
+            $("#date-pos").html("Date: " + result.Periods[0].CurrentDate);
+            initGpsData(result.Periods, result.GpsCollection, "gps-activity");
+            $('#jBox1').waitMe("hide");
+        }
         function initWait() {
             $('#jBox1').waitMe({
                 effect: 'bounce',
@@ -449,6 +441,8 @@
 
         function markerFunction(id) {
             for (var i in markers) {
+                if (markers[i].options == undefined)
+                        continue;
                 var markerID = markers[i].options.title;
                 var position = markers[i].getLatLng();
                 if (markerID == id) {

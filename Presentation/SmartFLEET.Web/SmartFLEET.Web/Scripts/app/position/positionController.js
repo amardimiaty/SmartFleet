@@ -16,10 +16,8 @@ function positionController($scope, positionService,  reportService) {
                 $("#date").html("");
                 $("#begin-ser").html("");
                 $("#end-ser").html("");
-                if (!positionModalOpend) {
-                    iniJBOX().open();
-                    positionModalOpend = true;
-                }
+                App.TabPanelPosition.show();
+
                 initWait();
 
                 positionService.getPosition($scope.vehicleId, date).then(function(resp) {

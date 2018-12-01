@@ -94,18 +94,10 @@ namespace SmartFLEET.Web.Controllers
         public async Task<JsonResult> GetTargetByPeriod(string vehicleId)
         {
             var id = Guid.Parse(vehicleId);
-            var start = DateTime.Now.Date.ToString("yyyy-M-dHH:mm");
+            //var start = 
             var endPeriod = DateTime.Now;
-            var startPeriod = new DateTime();
-            try
-            {
-                DateTime.TryParseExact(start, "yyyy-M-dHH:mm", null, DateTimeStyles.AssumeLocal, out  startPeriod);
-            }
-            catch (Exception e)
-            {
-                Debug.WriteLine(e.Message);
-                //throw;
-            }
+            var startPeriod = DateTime.Now.Date;
+
 
             var vehicle = await _vehicleService.GetVehicleById(id);
             var positions = await _positionService.GetVehiclePositionsByPeriod(id, startPeriod, endPeriod);

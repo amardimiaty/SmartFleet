@@ -4,7 +4,6 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Web;
 using System.Web.Mvc;
 using AutoMapper;
 using SmartFleet.Data;
@@ -22,6 +21,11 @@ namespace SmartFLEET.Web.Controllers
         public ActionResult Index()
         {
             return View();
+        }
+
+        public PartialViewResult GetCurrentPosition()
+        {
+            return PartialView("_CurrentPosition");
         }
         public async Task<JsonResult> GetPositionByDate(string vehicleId, string start)
         {

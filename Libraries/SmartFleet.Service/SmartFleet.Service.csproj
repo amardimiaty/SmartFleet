@@ -68,6 +68,8 @@
   <ItemGroup>
     <Compile Include="Authentication\AuthenticationService.cs" />
     <Compile Include="Authentication\IAuthenticationService.cs" />
+    <Compile Include="Common\IPdfService.cs" />
+    <Compile Include="Common\ItextSharpHelper.cs" />
     <Compile Include="Common\PdfService.cs" />
     <Compile Include="Customers\CustomerService.cs" />
     <Compile Include="Customers\ICustomerService.cs" />
