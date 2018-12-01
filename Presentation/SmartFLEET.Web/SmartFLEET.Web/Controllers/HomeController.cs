@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Mvc;
@@ -90,15 +88,12 @@ namespace SmartFLEET.Web.Controllers
 
        
 
-
         public async Task<JsonResult> GetTargetByPeriod(string vehicleId)
         {
             var id = Guid.Parse(vehicleId);
             //var start = 
             var endPeriod = DateTime.Now;
             var startPeriod = DateTime.Now.Date;
-
-
             var vehicle = await _vehicleService.GetVehicleById(id);
             var positions = await _positionService.GetVehiclePositionsByPeriod(id, startPeriod, endPeriod);
             if (!positions.Any())

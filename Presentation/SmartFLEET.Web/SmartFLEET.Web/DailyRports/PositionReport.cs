@@ -118,15 +118,15 @@ namespace SmartFLEET.Web.DailyRports
                     targets.LastOrDefault().EndService = targets.LastOrDefault().StartPeriod;
                     targets.LastOrDefault().EndPeriod = startPeriod.Date != DateTime.Now.Date
                         ? startPeriod.Date.AddDays(1).AddTicks(-1).ToString("O")
-                        : DateTime.Now.Date.AddDays(1).AddTicks(-1).ToString("O");
+                        : DateTime.Now.ToString("O");
 
                     targets.LastOrDefault().EndPeriod1 = startPeriod.Date != DateTime.Now.Date
                         ? startPeriod.Date.AddDays(1).AddTicks(-1).ToString("g")
-                        : DateTime.Now.Date.AddDays(1).AddTicks(-1).ToString("g");
+                        : DateTime.Now.ToString("g");
 
                     targets.LastOrDefault().EndService = targets.LastOrDefault().StartPeriod1;
                     targets.LastOrDefault().Duration =
-                        (startPeriod.Date.AddDays(1).AddTicks(-1) - DateTime.Parse(targets.LastOrDefault().StartPeriod))
+                        (DateTime.Parse(targets.LastOrDefault().EndPeriod) - DateTime.Parse(targets.LastOrDefault().StartPeriod))
                         .TotalSeconds;
 
                 }
