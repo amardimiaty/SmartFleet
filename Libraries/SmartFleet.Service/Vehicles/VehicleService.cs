@@ -59,7 +59,7 @@ namespace SmartFleet.Service.Vehicles
             using (var contextFScope = _dbContextScopeFactory.Create())
             {
                 _db = contextFScope.DbContexts.Get<SmartFleetObjectContext>();
-                return await _db.Vehicles.Where(x => x.CustomerId == customerId).ToArrayAsync();
+                return await _db.Vehicles.Where(x => x.CustomerId == customerId).ToArrayAsync().ConfigureAwait(false);
             }
         }
         public async Task<Vehicle> GetVehicleById(Guid id)
@@ -67,7 +67,7 @@ namespace SmartFleet.Service.Vehicles
             using (var contextFScope = _dbContextScopeFactory.Create())
             {
                 _db = contextFScope.DbContexts.Get<SmartFleetObjectContext>();
-                return await _db.Vehicles.FindAsync(id);
+                return await _db.Vehicles.FindAsync(id).ConfigureAwait(false);
             }
         }
     }

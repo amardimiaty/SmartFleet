@@ -15,6 +15,9 @@ namespace SmartFLEET.Web.Controllers
     [Authorize(Roles = "user,customer")]
     public class HomeController : BaseController
     {
+        /// <summary>
+        /// 
+        /// </summary>
         public static string CurrentGroup { get; set; }
 
         private readonly IPositionService _positionService;
@@ -47,10 +50,7 @@ namespace SmartFLEET.Web.Controllers
             var positions =  report.PositionViewModels(await _positionService.GetLastVehiclPosition(User.Identity.Name));
             return Json(positions, JsonRequestBehavior.AllowGet);
         }
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <returns></returns>
+      
         public async Task<JsonResult> LoadNodes()
         {
             var cst = _customerService.GetOwnerCustomer(User.Identity.Name);

@@ -519,11 +519,10 @@
             </summary>
             <param name="documentPath">The physical path to XML document.</param>
         </member>
-        <member name="M:SmartFLEET.Web.Controllers.HomeController.LoadNodes">
+        <member name="P:SmartFLEET.Web.Controllers.HomeController.CurrentGroup">
             <summary>
             
             </summary>
-            <returns></returns>
         </member>
         <member name="T:SmartFLEET.Web.Controllers.VehicleReportController">
             <summary>
@@ -601,6 +600,36 @@
             </summary>
             <param name="context"></param>
             <returns></returns>
+        </member>
+        <member name="T:SmartFLEET.Web.Hubs.SignalRHubManager">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:SmartFLEET.Web.Hubs.SignalRHubManager.Clients">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:SmartFLEET.Web.Hubs.SignalRHubManager.Connections">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:SmartFLEET.Web.Hubs.SignalRHubManager.Context">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:SmartFLEET.Web.Hubs.SignalRHubManager.Group">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:SmartFLEET.Web.Hubs.SignalRHubManager.DbContextScopeFactory">
+            <summary>
+            
+            </summary>
         </member>
     </members>
 </doc>

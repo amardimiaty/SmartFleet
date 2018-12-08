@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Configuration;
 using System.Diagnostics;
 using System.Net;
@@ -16,6 +17,8 @@ using SmartFleet.Core.Protocols.NewBox;
 using SmartFleet.Core.Protocols.Tk1003;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using SmartFleet.Core.Contracts.Commands;
+using SmartFleet.Core.Protocols;
 
 namespace SmartFleet.TcpWorker
 {
@@ -39,10 +42,8 @@ namespace SmartFleet.TcpWorker
             {
                 if (_listener == null)
                     StartTcpListner();
-              
                 InitBus();
                 _bus.Start();
-
                 while (true) // Add your exit flag here
                 {
                     var client = _listener.AcceptTcpClient();
@@ -98,9 +99,9 @@ namespace SmartFleet.TcpWorker
         /// 
         /// </summary>
         /// <param name="state"></param>
-        private static void ThreadProc(object state)
+        private static async void ThreadProc(object state)
         {
-            var client = ((TcpClient)state);
+            var client = (TcpClient)state;
             byte[] buffer = new byte[client.ReceiveBufferSize];
             NetworkStream stream = ((TcpClient)state).GetStream();
             int bytesRead = stream.Read(buffer, 0, client.ReceiveBufferSize);
@@ -108,8 +109,16 @@ namespace SmartFleet.TcpWorker
 
             try
             {
-                 // il s'agit du format de nouveaux boitiers créent par khaled
-                if (dataReceived.Contains(",") && !dataReceived.Contains("("))
+                string imei = string.Empty;
+                var codecId = -1;
+                Int32.TryParse(dataReceived.Skip(8).Take(1).ToList()[0].ToString(), out codecId);
+                if (codecId == 8)
+                {
+                    await ParseTeltonikaData(imei, dataReceived, stream, buffer);
+                    client.Close();
+                }
+                // il s'agit du format de nouveaux boitiers créent par khaled
+               else if (dataReceived.Contains(",") && !dataReceived.Contains("("))
                 {
                     arduinoBox = true;
                     NewBoxParser parser = new NewBoxParser();
@@ -118,7 +127,7 @@ namespace SmartFleet.TcpWorker
                     {
                         var result = parser.Parse(dataReceived.Split('\r'));
                         foreach (var r in result)
-                            _bus.Publish(r);
+                           await _bus.Publish(r);
                        
                     }
                     catch (ValidationException e)
@@ -137,12 +146,12 @@ namespace SmartFleet.TcpWorker
                     var result = parser.Parse(dataReceived.Split('\r'));
                     // envoyer une message de reception et une déconnexion aux clients
                     if (client.Connected)
-                        Task.Run(async () => { await SendCommand(stream, result.FirstOrDefault().Value, client); });
+                        await SendCommand(stream, result.FirstOrDefault().Value, client);
 
                     foreach (var r in result)
                     {
                         foreach (var createTk103Gpse in r.Key)
-                            _bus.Publish(createTk103Gpse);
+                           await _bus.Publish(createTk103Gpse);
                     }
                   
                     // client.Close();
@@ -160,8 +169,50 @@ namespace SmartFleet.TcpWorker
 
             // Console.ReadLine();
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="imei"></param>
+        /// <param name="dataReceived"></param>
+        /// <param name="stream"></param>
+        /// <param name="buffer"></param>
+        /// <returns></returns>
+        private static async Task ParseTeltonikaData(string imei, string dataReceived, NetworkStream stream, byte[] buffer)
+        {
+            var gpsResult = new List<CreateTeltonikaGps>();
+            while (true)
+            {
+                if (imei == string.Empty)
+                {
+                    imei = dataReceived;
+                    Console.WriteLine("IMEI received : " + dataReceived);
 
+                    Byte[] b = {0x01};
+                    stream.Write(b, 0, 1);
+                    var command = new CreateBoxCommand();
+                    command.Imei = imei;
+                    await _bus.Send(command);
+                }
+                else
+                {
+                    int dataNumber = Convert.ToInt32(buffer.Skip(9).Take(1).ToList()[0]);
 
+                    while (dataNumber > 0)
+                    {
+                        var parser = new DevicesParser();
+                        gpsResult.AddRange(parser.Decode(new List<byte>(buffer), imei));
+                        dataNumber--;
+                    }
+
+                  await  stream.WriteAsync(new byte[] {0x00, 0x00, 0x00, 0x01}, 0, 4).ConfigureAwait(false);
+                   
+                }
+
+                if (gpsResult.Count > 0)
+                    foreach (var gpSdata in gpsResult)
+                        await _bus.Send(gpSdata);
+            }
+        }
 
 
         private static async Task SendCommand(NetworkStream stream, string msg, TcpClient client)

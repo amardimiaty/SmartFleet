@@ -25,27 +25,27 @@ namespace SmartFLEET.Web.Controllers
                 return RedirectToAction("Index", "Home", new { area = "" });
             return View(new LoginModel());
         }
+
         [HttpPost]
         public async Task<ActionResult> Login(LoginModel model)
         {
-            if (User.Identity.IsAuthenticated) return RedirectToAction("Index", "Home", new { area = "" });
+            if (User.Identity.IsAuthenticated)
+                return RedirectToAction("Index", "Home", new {area = ""});
             if (!ModelState.IsValid) return View(model);
-            var userExists =await _authenticationService.Authentication(model.UserName, model.Password, model.RememberMe);
-            if (userExists!=null)
+            var userExists =
+                await _authenticationService.Authentication(model.UserName, model.Password, model.RememberMe);
+            if (userExists == null) return View();
+            foreach (var identityUserRole in _authenticationService.GetRoleByUserId(userExists.Id))
             {
-                foreach (var identityUserRole in _authenticationService.GetRoleByUserId(userExists.Id))
-                {
+                if (identityUserRole.Equals("customer") || identityUserRole.Equals("user"))
+                    return RedirectToAction("Index", "Home");
 
-                    if (identityUserRole.Equals("customer") || identityUserRole.Equals("user"))
-                        return RedirectToAction("Index", "Home");
-
-                }
-                return RedirectToAction("Index", "Admin", new {area = "Administrator"});
             }
 
-            return View();
+            return RedirectToAction("Index", "Admin", new {area = "Administrator"});
 
         }
+
         [HttpGet]
         public ActionResult Logout()
         {
