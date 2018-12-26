@@ -170,6 +170,8 @@
     <Compile Include="Domain\Vehicles\VehicleStatus.cs" />
     <Compile Include="Domain\Vehicles\VehicleType.cs" />
     <Compile Include="Geofence\GeofenceHelper.cs" />
+    <Compile Include="Helpers\Commonhelper.cs" />
+    <Compile Include="ICommonServer.cs" />
     <Compile Include="IMicorService.cs" />
     <Compile Include="Infrastructure\Automapper\AutomapperConfig.cs" />
     <Compile Include="Infrastructure\MassTransit\AzureBusConfig.cs" />
@@ -186,6 +188,7 @@
     <Compile Include="Protocols\Teltonika\Gh3000Parser.cs" />
     <Compile Include="Protocols\DevicesParser.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Protocols\Teltonika\ITeltonikaReciever.cs" />
     <Compile Include="Protocols\Tk1003\Tk1003Parser.cs" />
     <Compile Include="ReverseGeoCoding\Dtos\Address.cs" />
     <Compile Include="ReverseGeoCoding\Dtos\LocationiqResponse.cs" />

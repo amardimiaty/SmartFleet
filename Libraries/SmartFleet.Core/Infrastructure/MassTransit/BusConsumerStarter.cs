@@ -11,7 +11,7 @@ namespace SmartFleet.Core.Infrastructure.MassTransit
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="queeName">Name of the quee.</param>
-        public void StartConsumerBus<T>(string queeName) where T :class ,IConsumer<T>, new()
+        public void StartConsumerBus<T>(string queeName) where T : class, IConsumer<T>, new()
         {
             try
             {

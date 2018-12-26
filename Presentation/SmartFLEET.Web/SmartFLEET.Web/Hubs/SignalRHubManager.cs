@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading;
 using Microsoft.AspNet.SignalR;
 using Microsoft.AspNet.SignalR.Hubs;
 using SmartFleet.Core.Data;
@@ -31,5 +32,7 @@ namespace SmartFLEET.Web.Hubs
         /// 
         /// </summary>
         public static IDbContextScopeFactory DbContextScopeFactory = new DbContextScopeFactory();
+        public static Semaphore Semaphore = new Semaphore(3, 3);
+
     }
 }

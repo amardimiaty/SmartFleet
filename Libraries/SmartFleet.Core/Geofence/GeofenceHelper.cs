@@ -33,7 +33,7 @@ namespace SmartFleet.Core.Geofence
         /// <param name="pos2">The pos2.</param>
         /// <param name="type">The type.</param>
         /// <returns></returns>
-        public double HaversineFormula(Position pos1, Position pos2, DistanceType type)
+        public static double HaversineFormula(Position pos1, Position pos2, DistanceType type)
         {
             double r = (type == DistanceType.Miles) ? 3960 : 6371;
             double dLat = ToRadian(pos2.Latitude - pos1.Latitude);

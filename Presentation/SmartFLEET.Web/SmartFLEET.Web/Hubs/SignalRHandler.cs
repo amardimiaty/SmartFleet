@@ -13,7 +13,8 @@ namespace SmartFLEET.Web.Hubs
 {
     public class SignalRHandler : Hub,
         IConsumer<CreateTk103Gps>,
-        IConsumer<CreateNewBoxGps>
+        IConsumer<CreateNewBoxGps>, 
+        IConsumer<CreateTeltonikaGps>
     {
         /// <summary>
         /// 
@@ -22,7 +23,8 @@ namespace SmartFLEET.Web.Hubs
         /// <returns></returns>
         public async Task Consume(ConsumeContext<CreateTk103Gps> context)
         {
-
+            if (SignalRHubManager.Clients == null)
+                return;
             var reverseGeoCodingService = new ReverseGeoCodingService();
             await reverseGeoCodingService.ReverseGeoCoding(context.Message);
             using (var dbContextScopeFactory = SignalRHubManager.DbContextScopeFactory.Create())
@@ -47,11 +49,12 @@ namespace SmartFLEET.Web.Hubs
             return box;
         }
 
-        private static async Task<Box> GetSenderBox(CreateNewBoxGps message, IDbContextScope dbContextScopeFactory)
+        
+        private static async Task<Box> GetSenderBox(string imei, IDbContextScope dbContextScopeFactory)
         {
             var dbContext = dbContextScopeFactory.DbContexts.Get<SmartFleetObjectContext>();
             var box = await dbContext.Boxes.Include(x => x.Vehicle).Include(x => x.Vehicle.Customer).FirstOrDefaultAsync(b =>
-                b.Imei == message.IMEI);
+                b.Imei == imei);
             return box;
         }
 
@@ -82,18 +85,39 @@ namespace SmartFLEET.Web.Hubs
         /// <returns></returns>
         public async Task Consume(ConsumeContext<CreateNewBoxGps> context)
         {
-            var reverseGeoCodingService = new ReverseGeoCodingService();
-           var r= await reverseGeoCodingService.ExecuteQuery(context.Message.Latitude, context.Message.Longitude);
-            context.Message.Address = r.display_name;
+            if (SignalRHubManager.Clients == null)
+                return;
+           // var reverseGeoCodingService = new ReverseGeoCodingService();
+           //var r= await reverseGeoCodingService.ExecuteQuery(context.Message.Latitude, context.Message.Longitude);
+          //  context.Message.Address = r.display_name;
             using (var dbContextScopeFactory = SignalRHubManager.DbContextScopeFactory.Create())
             {
                 // get current gps device 
-                var box = await GetSenderBox(context.Message, dbContextScopeFactory);
+                var box = await GetSenderBox(context.Message.IMEI, dbContextScopeFactory);
                 if (box != null)
                 {
                     // set position 
                     var position = new PositionViewModel(context.Message, box.Vehicle);
                     await SignalRHubManager.Clients.Group(position.CustomerName).receiveGpsStatements(position);
+                }
+            }
+        }
+      
+        public async Task Consume(ConsumeContext<CreateTeltonikaGps> context)
+        {
+            if (SignalRHubManager.Clients == null)
+                return;
+         
+            using (var dbContextScopeFactory = SignalRHubManager.DbContextScopeFactory.Create())
+            {
+                // get current gps device 
+                var box = await GetSenderBox(context.Message.Imei, dbContextScopeFactory);
+                if (box != null)
+                {
+                    // set position 
+                    var position = new PositionViewModel(context.Message, box.Vehicle);
+                    await SignalRHubManager.Clients.Group(position.CustomerName).receiveGpsStatements(position);
+
                 }
             }
         }

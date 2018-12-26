@@ -27,11 +27,21 @@ namespace SmartFLEET.Web.Controllers
         private readonly IVehicleService _vehicleService;
         private readonly IPdfService _pdfService;
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="objectContext"></param>
+        /// <param name="mapper"></param>
+        /// <param name="positionService"></param>
+        /// <param name="customerService"></param>
+        /// <param name="vehicleService"></param>
+        /// <param name="pdfService"></param>
         public VehicleReportController(SmartFleetObjectContext objectContext,
             IMapper mapper,
             IPositionService positionService,
             ICustomerService customerService,
-            IVehicleService vehicleService, IPdfService pdfService ) : base(objectContext, mapper)
+            IVehicleService vehicleService, 
+            IPdfService pdfService ) : base(objectContext, mapper)
         {
             _positionService = positionService;
             _customerService = customerService;

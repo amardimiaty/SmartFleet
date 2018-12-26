@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using Autofac;
+using DenormalizerService.Handler;
 using DenormalizerService.Infrastructure;
 using MassTransit;
 using SmartFleet.Core;
@@ -14,7 +15,7 @@ namespace DenormalizerService
 
         public void StartConsumers(BusConsumerStarter busConsumer)
         {
-            throw new System.NotImplementedException();
+            
         }
 
         public void StartService()
@@ -22,15 +23,28 @@ namespace DenormalizerService
             ContainerBuilder builder = new ContainerBuilder();
             var dependencyRegistrar = new DependencyRegistrar();
             dependencyRegistrar.Register(builder);
-            _bus = DependencyRegistrar.ResolveServiceBus();
+            //_bus = DependencyRegistrar.ResolveServiceBus();
+            //try
+            //{
+            //    _bus.StartAsync();
+            //}
+            //catch (Exception e)
+            //{
+            //    Debug.WriteLine(e.Message);
+            //    _bus.StopAsync();
+            //}
             try
             {
-                _bus.StartAsync();
+                MassTransitConfig.ConfigureReceiveBus((cfg, hst) =>
+                    cfg.ReceiveEndpoint(hst, "Teltonika.endpoint", e =>
+                        e.Consumer<DenormalizerHandler>())
+
+                ).Start();
             }
             catch (Exception e)
             {
-                Debug.WriteLine(e.Message);
-                _bus.StopAsync();
+                Console.WriteLine(e);
+              //  throw;
             }
         }
     }

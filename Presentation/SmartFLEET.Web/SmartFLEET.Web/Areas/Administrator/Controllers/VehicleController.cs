@@ -72,7 +72,7 @@ namespace SmartFLEET.Web.Areas.Administrator.Controllers
             var errors = (from modelStateValue in ModelState.Values
                 from error in modelStateValue.Errors
                 select error.ErrorMessage).ToList();
-            validationModel = new ValidationViewModel(errors, "Validation's errors");
+            validationModel = new ValidationViewModel(errors, "Validation errors");
 
             return Json(validationModel, JsonRequestBehavior.AllowGet);
         }

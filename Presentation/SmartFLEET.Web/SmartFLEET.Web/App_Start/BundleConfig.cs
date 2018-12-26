@@ -2,6 +2,9 @@
 
 namespace SmartFLEET.Web
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public class BundleConfig
     {
         // For more information on bundling, visit https://go.microsoft.com/fwlink/?LinkId=301862
@@ -28,38 +31,25 @@ namespace SmartFLEET.Web
             bundles.Add(new ScriptBundle("~/bundles/bootstrap").Include(
                 "~/Scripts/bootstrap.js",
                 "~/dist/plugins/jQueryUI/jquery-ui.min.js",
-                "~/Scripts/respond.js",
                 "~/Scripts/jq-layout.js",
                 "~/Scripts/leafjs/leaflet.js",
                 "~/Scripts/jstree/jstree.min.js",
                 "~/Scripts/jquery.signalR-2.3.0.min.js",
-                "~/signalr/hubs",
                 "~/Scripts/datatables/js/jquery.dataTables.js",
                 "~/Scripts/datatables/js/dataTables.bootstrap.js",
-                "~/Scripts/jquery.validationEngine-fr.js",
-                "~/Scripts/jquery.validationEngine.js",
-                "~/Scripts/jquery.panelslider.min.js",
                 "~/Scripts/bootstrap-growl.js",
-                "~/Scripts/jquery.confirm.min.js",
-                "~/boot-uplaod/dist/js/bootstrap-imageupload.min.js",
-                "~/dist/plugins/datepicker/bootstrap-datepicker.js",
+                   "~/dist/plugins/datepicker/bootstrap-datepicker.js",
                 "~/dist/plugins/datepicker/locales/bootstrap-datepicker.fr.js",
                 "~/dist/plugins/select2/select2.full.min.js",
                 "~/dist/plugins/loadie/js/jquery.loadie.min.js",
                 "~/Scripts/jstree/jstree.min.js",
-                "~/chosen/chosen.jquery.min.js",
-                "~/Scripts/jquery.tabletojson.min.js",
-                "~/checkbo/js/bootstrap-checkbox.min.js",
-                "~/Scripts/bootstrap-filestyle.min.js",
                 "~/dist/plugins/jbox/jBox.min.js",
-                "~/Scripts/editable-table.min.js",
-                "~/dist/plugins/chartjs/Chart.bundle.min.js",
-                "~/dist/plugins/slimScroll/jquery.slimscroll.min.js",
                 "~/dist/plugins/vis/vis.min.js",
                 "~/dist/plugins/leafletPlugin/PolylineDecorator.js",
                 "~/Scripts/angularjs-gauge.js",
                 "~/dist/plugins/wait/waitMe.min.js",
                 "~/Scripts/jquery.stacky.js",
+                "~/Content/jsWindow/src/popupwindow.min.js",
                 "~/Scripts/app/mainApp.js"));
             bundles.Add(new ScriptBundle("~/bundles/jsApp").Include(
                 "~/dist/js/app.min.js"
@@ -82,6 +72,7 @@ namespace SmartFLEET.Web
                 "~/Scripts/jstree/themes/default/style.min.css",
                 "~/dist/plugins/wait/waitMe.min.css",
                 "~/dist/plugins/line-awesome/css/line-awesome.min.css",
+                "~/Content/jsWindow/src/popupwindow.css",
                 "~/Content/site.css"));
             bundles.Add(new StyleBundle("~/Content/cssadmin").Include(
                 "~/Content/bootstrap.min.css",

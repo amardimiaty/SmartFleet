@@ -9,15 +9,14 @@ namespace SmartFleet.Core.Infrastructure.Automapper
 {
    public static class AutomapperConfig
     {
-        public static MapperConfiguration Config<TSource, TDest>()
+        public static IMapper Mapper<TSource, TDest>()
         {
-            var config = new MapperConfiguration(cfg =>
+
+            return new MapperConfiguration(cfg =>
             {
                 cfg.CreateMap<TSource, TDest>();
 
-            });
-
-            return config;
+            }).CreateMapper();
         }
     }
 }

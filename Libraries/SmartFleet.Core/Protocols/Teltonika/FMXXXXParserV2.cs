@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using SmartFleet.Core.Contracts.Commands;
 
 namespace SmartFleet.Core.Protocols.Teltonika
@@ -25,6 +26,7 @@ namespace SmartFleet.Core.Protocols.Teltonika
         private const int AUTHORIZED = 30;
         private const int GREEDRIVING = 31;
         private const int OVERSPEED = 33;
+        private const int CAN_2 = 147;
         public List<CreateTeltonikaGps> DecodeAvl(List<byte> byteBuffer, string imei)
         {
             _IMEI = imei;
@@ -58,10 +60,12 @@ namespace SmartFleet.Core.Protocols.Teltonika
                     Trace.WriteLine(_IMEI);
                     var timestamp = Int64.Parse(Parsebytes(byteBuffer, index, 8), System.Globalization.NumberStyles.HexNumber);
                     index += 8;
+                    DateTime origin = new DateTime(1970, 1, 1, 0, 0, 0, 0);
 
-                    position.Timestamp = DateTime.Now;
+                    position.Timestamp = origin.AddMilliseconds(timestamp);
 
                     var Preority = byte.Parse(Parsebytes(byteBuffer, index, 1), System.Globalization.NumberStyles.HexNumber);
+                    position.Priority = Preority;
                     index++;
 
                     position.Long = Int32.Parse(Parsebytes(byteBuffer, index, 4), System.Globalization.NumberStyles.HexNumber) / 10000000.0;
@@ -75,13 +79,13 @@ namespace SmartFleet.Core.Protocols.Teltonika
                     position.Altitude = Altitude;
                     var dir = Int16.Parse(Parsebytes(byteBuffer, index, 2), System.Globalization.NumberStyles.HexNumber);
 
-                    if (dir < 90) position.Direction = 1;
-                    else if (dir == 90) position.Direction = 2;
-                    else if (dir < 180) position.Direction = 3;
-                    else if (dir == 180) position.Direction = 4;
-                    else if (dir < 270) position.Direction = 5;
-                    else if (dir == 270) position.Direction = 6;
-                    else if (dir > 270) position.Direction = 7;
+                    if (dir < 90) position.Direction = 1 ;// east
+                    else if (dir == 90) position.Direction = 2;//east
+                    else if (dir < 180) position.Direction = 3;// east
+                    else if (dir == 180) position.Direction = 4;// ??
+                    else if (dir < 270) position.Direction = 5;//west 
+                    else if (dir == 270) position.Direction = 6;// west
+                    else if (dir > 270) position.Direction = 7;//west
                     index += 2;
 
                     var satellite = byte.Parse(Parsebytes(byteBuffer, index, 1), System.Globalization.NumberStyles.HexNumber);
@@ -91,8 +95,9 @@ namespace SmartFleet.Core.Protocols.Teltonika
                         position.Status = "A";
                     else
                         position.Status = "L";
-
-                    position.Speed = Int16.Parse(Parsebytes(byteBuffer, index, 2), System.Globalization.NumberStyles.HexNumber);
+                    var speed = Parsebytes(byteBuffer, index, 2).ToString(CultureInfo.InvariantCulture);
+                    byte x = Convert.ToByte(speed, 16);
+                    position.Speed = Convert.ToDouble(x);
                     index += 2;
 
                     int ioEvent = byte.Parse(Parsebytes(byteBuffer, index, 1), System.Globalization.NumberStyles.HexNumber);

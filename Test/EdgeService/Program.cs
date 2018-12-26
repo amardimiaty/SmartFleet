@@ -1,5 +1,6 @@
 ﻿using Autofac;
 using EdgeService.Handler;
+using MassTransit;
 using SmartFleet.Core;
 using SmartFleet.Core.Data;
 using SmartFleet.Core.Infrastructure.MassTransit;
@@ -22,9 +23,11 @@ namespace EdgeService
             Container = builder.Build();
          
             Container.Resolve<IAmbientDbContextLocator>();
-          
-          //  busConfig.StartConsumerBus<TeltonikaHandler>("Teltonika.endpoint");
-            //busConfig.StartConsumerBus<Tk103Handler>("Tk1003.endpoint");
+            MassTransitConfig.ConfigureReceiveBus((cfg, hst) =>
+                cfg.ReceiveEndpoint(hst, "Teltonika.endpoint", e =>
+                    e.Consumer<TeltonikaHandler>())
+
+            ).Start();   //busConfig.StartConsumerBus<Tk103Handler>("Tk1003.endpoint");
 
         }
 

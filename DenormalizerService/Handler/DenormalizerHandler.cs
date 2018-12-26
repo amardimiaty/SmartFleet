@@ -14,7 +14,9 @@ using SmartFleet.Data;
 namespace DenormalizerService.Handler
 {
     public class DenormalizerHandler : IConsumer<CreateTk103Gps>, 
-        IConsumer<CreateNewBoxGps>
+        IConsumer<CreateNewBoxGps>, 
+        IConsumer<CreateTeltonikaGps>,
+        IConsumer<CreateBoxCommand>
     {
         private readonly IDbContextScopeFactory _dbContextScopeFactory;
         private readonly ReverseGeoCodingService _geoCodingService;
@@ -148,6 +150,89 @@ namespace DenormalizerService.Handler
                 };
                 _db.Positions.Add(position);
                 await contextFScope.SaveChangesAsync().ConfigureAwait(false);
+            }
+        }
+        private async Task<Box> Item(CreateTeltonikaGps context)
+        {
+            using (var contextFScope = _dbContextScopeFactory.Create())
+            {
+                _db = contextFScope.DbContexts.Get<SmartFleetObjectContext>();
+                return await _db.Boxes.SingleOrDefaultAsync(b => b.Imei == context.Imei);
+
+            }
+
+        }
+        public async Task Consume(ConsumeContext<CreateTeltonikaGps> context)
+        {
+            try
+            {
+                var item = await Item(context.Message);
+                if (item != null)
+                {
+                    using (var contextFScope = _dbContextScopeFactory.Create())
+                    {
+                        _db = contextFScope.DbContexts.Get<SmartFleetObjectContext>();
+
+                        var position = new Position();
+                        position.Box_Id = item?.Id;
+                        position.Altitude = context.Message.Altitude;
+                        position.Direction = context.Message.Direction;
+                        position.Lat = context.Message.Lat;
+                        position.Long = context.Message.Long;
+                        position.Speed = context.Message.Speed;
+                        position.Address = context.Message.Address;
+                        position.Id = Guid.NewGuid();
+                        position.Priority = context.Message.Priority;
+                        position.Satellite = context.Message.Satellite;
+                        position.Timestamp = context.Message.Timestamp;
+                        position.MotionStatus =  context.Message.Speed > 0.0 ? MotionStatus.Moving : MotionStatus.Stopped;
+                        item.LastGpsInfoTime = context.Message.Timestamp;
+                        _db.Positions.Add(position);
+                       await contextFScope.SaveChangesAsync().ConfigureAwait(false);
+                    }
+
+
+                }
+            }
+            catch (Exception e)
+            {
+                Trace.WriteLine(e);
+                //throw;
+            }
+        }
+
+        public async Task Consume(ConsumeContext<CreateBoxCommand> context)
+        {
+            using (var contextFScope = _dbContextScopeFactory.Create())
+            {
+                _db = contextFScope.DbContexts.Get<SmartFleetObjectContext>();
+
+                var item = await _db.Boxes.FirstOrDefaultAsync(b => b.Imei == context.Message.Imei);
+              if(item!=null)
+                  return;
+                var box = new Box();
+                box.Id = Guid.NewGuid();
+                box.BoxStatus = BoxStatus.WaitPreparation;
+                box.CreationDate = DateTime.UtcNow;
+                box.Icci = String.Empty;
+                box.PhoneNumber = String.Empty;
+                box.Vehicle = null;
+                box.Imei = context.Message.Imei;
+                box.SerialNumber = String.Empty;
+
+                try
+                {
+                    _db.Boxes.Add(box);
+                    await contextFScope.SaveChangesAsync().ConfigureAwait(false);
+                }
+                catch (Exception e)
+
+                {
+                    Trace.WriteLine(e);
+                    throw;
+                }
+
+               
             }
         }
     }

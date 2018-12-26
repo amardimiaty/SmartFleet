@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Configuration;
-using System.Diagnostics;
 using System.Linq;
 using System.Web.Http;
 using System.Web.Mvc;
@@ -31,10 +30,11 @@ using SmartFleet.Service.Vehicles;
 using SmartFLEET.Web.Automapper;
 using SmartFLEET.Web.Hubs;
 using System.Web;
+using Microsoft.ApplicationInsights.Extensibility;
 
 namespace SmartFLEET.Web
 {
-    public class MvcApplication : System.Web.HttpApplication
+    public class MvcApplication : HttpApplication
     {
         /// <summary>
         /// 
@@ -365,9 +365,11 @@ namespace SmartFLEET.Web
         protected void Application_Start()
         {
             #region add mastransit consumer
-            //var busConfig = new BusConsumerStarter();
-            //busConfig.StartConsumerBus<SignalRHandler>("Smartfleet.Web.endpoint");
+            //MassTransitConfig.ConfigureReceiveBus((cfg, hst) =>
+            //    cfg.ReceiveEndpoint(hst, "Smartfleet.Web.endpoint", e =>
+            //        e.Consumer<SignalRHandler>())
 
+            //).Start();
             #endregion
 
             AreaRegistration.RegisterAllAreas();
@@ -377,10 +379,12 @@ namespace SmartFLEET.Web
             BundleConfig.RegisterBundles(BundleTable.Bundles);
             BundleTable.EnableOptimizations = false;
             // seed user administrator and roles
-            SeedInitialData();
-           
-            #region register different services and classes using autofac
+            //  SeedInitialData();
 
+            #region register different services and classes using autofac
+#if DEBUG
+            TelemetryConfiguration.Active.DisableTelemetry = true;
+#endif
             var builder = new ContainerBuilder();
             builder.RegisterControllers(typeof(MvcApplication).Assembly);
             builder.RegisterAssemblyTypes(typeof(MvcApplication).Assembly)
@@ -415,17 +419,17 @@ namespace SmartFLEET.Web
             builder.RegisterInstance(mapper).As<IMapper>();
             #endregion
             //builder.RegisterModule(new AzureServiceBusModule(Assembly.GetExecutingAssembly()));
-            var bus = BusControl();
-            try
-            {
+            //var bus = BusControl();
+            //try
+            //{
               
-                bus.StartAsync();
-            }
-            catch (Exception e)
-            {
-                Debug.WriteLine(e.Message);
-                bus.StopAsync();
-            }
+            //    bus.StartAsync();
+            //}
+            //catch (Exception e)
+            //{
+            //    Debug.WriteLine(e.Message);
+            //    bus.StopAsync();
+            //}
             var container = builder.Build();
             var path =  Server.MapPath("/") + @"bin\microservices";
             MicroServicesLoader.Loader(path);

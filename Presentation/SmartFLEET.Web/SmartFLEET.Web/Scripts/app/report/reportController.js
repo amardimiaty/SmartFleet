@@ -31,58 +31,51 @@ function reportController($scope, reportService) {
     }
     $scope.Download = function() {
 // ReSharper disable once RedundantUnits
-        $("#prg .progress-bar").css("width", "0%").addClass("progress-bar-striped active").html("0%");
-
-        if ($scope.startPeriod === "" || $scope.vehicleId == null) {
+     
+        if ($scope.startPeriod === "" || $scope.vehicleId === "") {
             alert("il faut choisir une date de début et un véhicule");
             return;
         }
-           $("#prg .progress-bar").css("width", "30%").addClass("progress-bar-striped active").html("30%");
-              
-        reportService.getReport($scope.vehicleId, $scope.startPeriod ).then(function (resp) {
-            $scope.optionsAvg = setOptions(resp.data.AvgSpeed != null ? resp.data.AvgSpeed:0);
-            $scope.options = setOptions(resp.data.MaxSpeed != null ? resp.data.MaxSpeed:0);
-            $scope.VehicleName = resp.data.VehicleName;
-            $scope.ReportDate = $scope.startPeriod;
-            $scope.Distance = resp.data.Distance;
-            $("#prg .progress-bar").css("width", "50%").addClass("progress-bar-striped active").html("50%");
+        $.when(
+            $("#prg .progress-bar").css("width", "20%").addClass("progress-bar-striped active").html("30%")).then(function() {
+                reportService.getReport($scope.vehicleId, $scope.startPeriod).then(function (resp) {
+                    $scope.optionsAvg = setOptions(resp.data.AvgSpeed != null ? resp.data.AvgSpeed : 0);
+                    $scope.options = setOptions(resp.data.MaxSpeed != null ? resp.data.MaxSpeed : 0);
+                    $scope.VehicleName = resp.data.VehicleName;
+                    $scope.ReportDate = $scope.startPeriod;
+                    $scope.Distance = resp.data.Distance;
+                    $("#prg .progress-bar").css("width", "80%").addClass("progress-bar-striped active").html("50%");
 
-            if (resp.data.Positions != null && resp.data.Positions.length > 0) {
-                $scope.BeginService = resp.data.Positions[0].BeginService !== "" ? resp.data.Positions[0].BeginService:"inconnu";
-                $scope.EndService = resp.data.Positions[resp.data.Positions.length - 1].EndService;
+                    if (resp.data.Positions != null && resp.data.Positions.length > 0) {
+                        $scope.BeginService = resp.data.Positions[0].BeginService !== "" ? resp.data.Positions[0].BeginService : "inconnu";
+                        $scope.EndService = resp.data.Positions[resp.data.Positions.length - 1].EndService;
 
-            } else {
-                $scope.BeginService = "inconnu";
-                $scope.EndService = "inconnu";
+                    } else {
+                        $scope.BeginService = "inconnu";
+                        $scope.EndService = "inconnu";
 
-            }
-            $("#gps-activity-2").html("");
-            $scope.targetList = [];
-// ReSharper disable once UseOfImplicitGlobalInFunctionScope
-            initGpsData(resp.data.Positions, [], "gps-activity-2");
- 
-            for (var i = 0; i < resp.data.Positions.length; i++) {
-                var item = resp.data.Positions[i];
-// ReSharper disable once UseOfImplicitGlobalInFunctionScope
-                item.Duration = secondsToHms(item.Duration);
-                if (item.MotionStatus === "Stopped")
-                    item.MotionStatus = "Arrêt";
-                else item.MotionStatus = "Conduite";
-                $scope.targetList.push(item);
-            }
-            //$("#report-tbl").dataTable();
-            // ReSharper disable once UseOfImplicitGlobalInFunctionScope
-            if (reportModalOpend === false) {
-                initReportBox().open();
-                // ReSharper disable once UseOfImplicitGlobalInFunctionScope
-// ReSharper disable once AssignToImplicitGlobalInFunctionScope
-                reportModalOpend = true;
-            }
+                    }
+                    $("#gps-activity-2").html("");
+                    $scope.targetList = [];
+                    initGpsData(resp.data.Positions, [], "gps-activity-2");
 
-            $("#daily-report").show();
-            $("#prg .progress-bar").css({ "width": "100%" }).removeClass("active").html("100%");
-        });
-        $scope.$watch('startPeriod', function () {
+                    for (var i = 0; i < resp.data.Positions.length; i++) {
+                        var item = resp.data.Positions[i];
+                         item.Duration = secondsToHms(item.Duration);
+                        if (item.MotionStatus === "Stopped")
+                            item.MotionStatus = "Arrêt";
+                        else item.MotionStatus = "Conduite";
+                        $scope.targetList.push(item);
+                    }
+                     initReportBox();
+
+                    $("#daily-report").show();
+                    $("#prg .progress-bar").css({ "width": "100%" }).removeClass("active").html("100%");
+                });
+
+        })
+               
+         $scope.$watch('startPeriod', function () {
 // ReSharper disable once RedundantUnits
             $("#prg .progress-bar").css("width", "0%").removeClass("progress-bar-striped").html("0%");
         });

@@ -10,6 +10,7 @@ using MassTransit;
 using SmartFleet.Core.Contracts.Commands;
 using SmartFleet.Core.Infrastructure.MassTransit;
 using SmartFleet.Core.Protocols;
+using SmartFleet.Core.ReverseGeoCoding;
 
 namespace TeltonikaListner
 {
@@ -18,11 +19,13 @@ namespace TeltonikaListner
         private static IBusControl _bus;
        
         private static Task<ISendEndpoint> _endpoint;
+        private static ReverseGeoCodingService _reverseGeoCodingService;
 
         static void Main(string[] args)
         {
             TcpListener listener = new TcpListener(IPAddress.Any, 34400);
             _bus = MassTransitConfig.ConfigureSenderBus();
+            _reverseGeoCodingService = new ReverseGeoCodingService();
             //using of masstransit Bus / rabbitMq: for queuing data received from GPS devices (current account supports only 20  concurrent connections)
             _endpoint = _bus.GetSendEndpoint(new Uri(
                 "rabbitmq://zcckffbw:QKVVIKHQgsx_QQ8qbxeb1Dl-E9jsKlSJ@eagle.rmq.cloudamqp.com/zcckffbw/Teltonika.endpoint"));
@@ -66,21 +69,45 @@ namespace TeltonikaListner
                     else
                     {
                         int dataNumber = Convert.ToInt32(buffer.Skip(9).Take(1).ToList()[0]);
-                        ;
-
-                        while (dataNumber > 0)
-                        {
-                            var parser = new DevicesParser();
-                            gpsResult.AddRange(parser.Decode(new List<byte>(buffer), imei));
-                            dataNumber--;
-
-                        }
-                        nwStream.Write(new byte[] {0x00, 0x00, 0x00, 0x01}, 0, 4);
+                        var parser = new DevicesParser();
+                        gpsResult.AddRange(parser.Decode(new List<byte>(buffer), imei));
+                        var bytes = Convert.ToByte(dataNumber);
+                        await nwStream.WriteAsync(new byte[] {0x00, 0x0, 0x0, bytes}, 0, 4);
+                        client.Close();
+                        //   nwStream.Write(new byte[] {0x00, 0x00, 0x00, 0x01}, 0, 4);
 
                     }
+
                     if (gpsResult.Count > 0)
+                    {
                         foreach (var gpSdata in gpsResult)
-                            await _endpoint.Result.Send(gpSdata);
+                        {
+                           var r = await _reverseGeoCodingService.ExecuteQuery(gpSdata.Lat, gpSdata.Long);
+                            Thread.Sleep(1000);
+                            if (r.display_name != null)
+                                gpSdata.Address = r.display_name;
+                            else
+                            {
+                                var ad = await _reverseGeoCodingService.ReverseGeoCoding(gpSdata.Lat, gpSdata.Long)
+                                    .ConfigureAwait(false);
+                                if (ad != null)
+                                    gpSdata.Address = ad;
+                                Thread.Sleep(1000);
+                            }
+
+                            Console.WriteLine("IMEI: " + imei + " Date: " + gpSdata.Timestamp + " latitude : " + gpSdata.Lat +
+                                              " Longitude:" + gpSdata.Long + " Speed: " + gpSdata.Speed + " Direction:" + "" +
+                                              " address " + gpSdata.Address + " milage :" + gpSdata.Mileage);
+                            await _bus.Publish(gpSdata);
+
+                        }
+                        break;
+
+                    }
+                   
+                   
+
+
                 }
 
 

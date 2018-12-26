@@ -15,6 +15,19 @@ namespace SmartFleet.Core.ReverseGeoCoding
     {
         private const string KEY = "pk.cc7d7c232c3b43aa3a87127b93b22339";
         private int count = 0;
+        private string[] user_agents = { "Mozilla/4.0 (Mozilla/4.0; MSIE 7.0; Windows NT 5.1; FDM; SV1)"
+            , "Mozilla/4.0 (Mozilla/4.0; MSIE 7.0; Windows NT 5.1; FDM; SV1; .NET CLR 3.0.04506.30)",
+            "Mozilla/4.0 (Windows; MSIE 7.0; Windows NT 5.1; SV1; .NET CLR 2.0.50727)",
+            "Mozilla/4.0 (Windows; U; Windows NT 5.0; en-US) AppleWebKit/532.0 (KHTML, like Gecko) Chrome/3.0.195.33 Safari/532.0",
+            "Mozilla/4.0 (Windows; U; Windows NT 5.1; en-US) AppleWebKit/525.19 (KHTML, like Gecko) Chrome/1.0.154.59 Safari/525.19",
+            "Mozilla/4.0 (compatible; MSIE 6.0; Linux i686 ; en) Opera 9.70",
+            "Mozilla/4.0 (compatible; MSIE 6.0; Mac_PowerPC; en) Opera 9.24",
+            "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; de) Opera 9.50",
+            "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; en) Opera 9.24",
+            "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; en) Opera 9.26",
+            "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; es-la) Opera 9.27",
+            "Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 6.0; YPC 3.2.0; SLCC1; .NET CLR 2.0.50727; .NET CLR 3.0.04506)"
+        };
         public async Task ReverseGeoCoding(CreateTk103Gps gpsStatement)
         {
             var lat = gpsStatement.Latitude.ToString().Replace(",", ".");
@@ -49,19 +62,20 @@ namespace SmartFleet.Core.ReverseGeoCoding
             }
 
         }
-        public async Task<dynamic> ReverseGeoCoding(double Lat, double Long)
+        public async Task<string> ReverseGeoCoding(double Lat, double Long)
         {
-            var key =
-                "_Txch3gEncyKpVVy7Nal709W29yUXqgDZR72wlclSY93W49CnVDekJZtlA2VKw2cFvspcSbq94sRDD3Kpv6nYs3mXYNhnymakBp2czyjm8OVZWKfF3O8lQfemtG6t6Lnco1whptJcVmiwF6KDCOLjw..";
-            var lat = Lat.ToString(CultureInfo.InvariantCulture).Replace(",", ".");
+             var lat = Lat.ToString(CultureInfo.InvariantCulture).Replace(",", ".");
             var lon = Long.ToString(CultureInfo.InvariantCulture).Replace(",", ".");
             var client = new HttpClient();
-            var url = $"http://nominatim.openstreetmap.org/reverse?format=json&lat={lat}&lon={lon}&zoom=18&addressdetails=1";
+            var url = $"https://us1.locationiq.com/v1/reverse.php?key={KEY}&lat={lat}&lon={lon}&format=json";
+            var rd = new Random();
+     
             HttpResponseMessage response = await client.GetAsync(url);
             if (response.IsSuccessStatusCode)
             {
                 var r = await response.Content.ReadAsStringAsync();
-                return JsonConvert.DeserializeObject<LocationiqResponse>(r);
+                var ressult= JsonConvert.DeserializeObject<LocationiqResponse>(r);
+                return ressult.display_name;
             }
 
             return null;
@@ -78,6 +92,8 @@ namespace SmartFleet.Core.ReverseGeoCoding
             var request = new RestRequest(Method.GET);
             //request.Resource = "wsRest/wsServerArticle/getArticle";
             client.BaseUrl = new System.Uri(url);
+            var rd = new Random();
+            client.UserAgent = user_agents[rd.Next(0, user_agents.Length)]; 
             try
             {
                 

@@ -1,7 +1,6 @@
 ﻿using Autofac;
 using SmartFleet.Core;
 using SmartFleet.Core.Infrastructure.MassTransit;
-using TeltonicaService.Handlers;
 using TeltonicaService.Infrastucture;
 
 namespace TeltonicaService
@@ -14,10 +13,8 @@ namespace TeltonicaService
             ContainerBuilder builder = new ContainerBuilder();
             var dependencyRegistrar = new DependencyRegistrar();
             dependencyRegistrar.Register(builder);
-           
-            // start the endpoint consumer
-            //  busConsumer.StartConsumerBus<TeltonikaHandler>("Teltonika.endpoint");
 
+           
         }
 
         public void StartService()

@@ -157,7 +157,7 @@ namespace SmartFleet.Core.Protocols.Teltonika
                 gpsData.Long = longtitude;
                 gpsData.Priority = (byte) priority;
                 gpsData.Satellite = (byte) satellites;
-                gpsData.Speed = (short) speed;
+                gpsData.Speed =speed;
                 gpsData.Timestamp = timestamp;
                 gpsData.Imei = imei.Substring(0, 15);
                 results.Add(gpsData);

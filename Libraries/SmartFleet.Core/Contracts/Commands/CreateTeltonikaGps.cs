@@ -24,7 +24,7 @@ namespace SmartFleet.Core.Contracts.Commands
         public double Long { get; set; }
         public byte Priority { get; set; }
         public byte Satellite { get; set; }
-        public short Speed { get; set; }
+        public double Speed { get; set; }
         public DateTime Timestamp { get; set; }
         public string Status { get; set; }
         public bool StopFlag { get; set; }
@@ -32,5 +32,6 @@ namespace SmartFleet.Core.Contracts.Commands
         public string Alarm { get; set; }
         public int Mileage { get; set; }
         public int Temprature { get; set; }
+        public string Address { get; set; }
     }
 }

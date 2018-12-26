@@ -17,7 +17,9 @@ using SmartFleet.Core.Protocols.NewBox;
 using SmartFleet.Core.Protocols.Tk1003;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Runtime.InteropServices;
 using SmartFleet.Core.Contracts.Commands;
+using SmartFleet.Core.Helpers;
 using SmartFleet.Core.Protocols;
 
 namespace SmartFleet.TcpWorker
@@ -42,8 +44,8 @@ namespace SmartFleet.TcpWorker
             {
                 if (_listener == null)
                     StartTcpListner();
-                InitBus();
-                _bus.Start();
+                //InitBus();
+                //_bus.Start();
                 while (true) // Add your exit flag here
                 {
                     var client = _listener.AcceptTcpClient();
@@ -71,8 +73,7 @@ namespace SmartFleet.TcpWorker
 
         private void StartTcpListner()
         {
-            _listener = new TcpListener(RoleEnvironment.CurrentRoleInstance
-                .InstanceEndpoints["Smartfleet.server"].IPEndpoint);
+            _listener = new TcpListener(IPAddress.Any,34400);
             _listener.Start();
         }
 
@@ -104,18 +105,15 @@ namespace SmartFleet.TcpWorker
             var client = (TcpClient)state;
             byte[] buffer = new byte[client.ReceiveBufferSize];
             NetworkStream stream = ((TcpClient)state).GetStream();
-            int bytesRead = stream.Read(buffer, 0, client.ReceiveBufferSize);
-            string dataReceived = Encoding.ASCII.GetString(buffer, 0, bytesRead) ;
-
+            int bytesRead = stream.Read(buffer, 0, client.ReceiveBufferSize) - 2;
+            string dataReceived = Encoding.ASCII.GetString(buffer, 2, bytesRead);
+       
             try
             {
-                string imei = string.Empty;
-                var codecId = -1;
-                Int32.TryParse(dataReceived.Skip(8).Take(1).ToList()[0].ToString(), out codecId);
-                if (codecId == 8)
+                if (Commonhelper.IsValidImei(dataReceived))
                 {
-                    await ParseTeltonikaData(imei, dataReceived, stream, buffer);
-                    client.Close();
+                    await ParseTeltonikaData(client, stream, buffer , dataReceived);
+                    //client.Close();
                 }
                 // il s'agit du format de nouveaux boitiers créent par khaled
                else if (dataReceived.Contains(",") && !dataReceived.Contains("("))
@@ -177,26 +175,28 @@ namespace SmartFleet.TcpWorker
         /// <param name="stream"></param>
         /// <param name="buffer"></param>
         /// <returns></returns>
-        private static async Task ParseTeltonikaData(string imei, string dataReceived, NetworkStream stream, byte[] buffer)
+        private static async Task ParseTeltonikaData(TcpClient client, NetworkStream stream, byte[] buffer, string imei)
         {
+
+            var currentImei = string.Empty;
+           
             var gpsResult = new List<CreateTeltonikaGps>();
             while (true)
             {
-                if (imei == string.Empty)
-                {
-                    imei = dataReceived;
-                    Console.WriteLine("IMEI received : " + dataReceived);
 
+                if (currentImei == string.Empty)
+                {
+                    currentImei = imei ;
+                    Console.WriteLine("IMEI received : " + currentImei);
                     Byte[] b = {0x01};
                     stream.Write(b, 0, 1);
                     var command = new CreateBoxCommand();
                     command.Imei = imei;
-                    await _bus.Send(command);
+                   if(_bus!=null) await _bus.Send(command);
                 }
                 else
                 {
                     int dataNumber = Convert.ToInt32(buffer.Skip(9).Take(1).ToList()[0]);
-
                     while (dataNumber > 0)
                     {
                         var parser = new DevicesParser();
@@ -208,9 +208,10 @@ namespace SmartFleet.TcpWorker
                    
                 }
 
-                if (gpsResult.Count > 0)
-                    foreach (var gpSdata in gpsResult)
-                        await _bus.Send(gpSdata);
+                if (!gpsResult.Any() &&imei.Any()) continue;
+                foreach (var gpSdata in gpsResult)
+                    if (_bus != null) await _bus.Send(gpSdata);
+                break;
             }
         }
 

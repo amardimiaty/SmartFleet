@@ -24,6 +24,8 @@ namespace SmartFLEET.Web.Controllers
         private readonly ICustomerService _customerService;
         private readonly IVehicleService _vehicleService;
 
+        /// <inheritdoc />
+        // ReSharper disable once TooManyDependencies
         public HomeController(IMapper mapper,
             IPositionService positionService, 
             ICustomerService customerService , 
@@ -44,6 +46,10 @@ namespace SmartFLEET.Web.Controllers
             return View();
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         public async Task<JsonResult> AllVehiclesWithLastPosition()
         {
             var report = new PositionReport();
@@ -51,6 +57,10 @@ namespace SmartFLEET.Web.Controllers
             return Json(positions, JsonRequestBehavior.AllowGet);
         }
       
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         public async Task<JsonResult> LoadNodes()
         {
             var cst = _customerService.GetOwnerCustomer(User.Identity.Name);

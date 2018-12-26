@@ -45,6 +45,23 @@ namespace SmartFLEET.Web.Models
             SetVehicleImage(vehicle);
         }
 
+        public PositionViewModel(CreateTeltonikaGps tk103Gps, Vehicle vehicle)
+        {
+            Latitude = tk103Gps.Lat;
+            Longitude = tk103Gps.Long;
+            Address = tk103Gps.Address;
+            IMEI = tk103Gps.Imei;
+           // SerialNumber = tk103Gps.s;
+            //Direction = tk103Gps.Address
+            Speed = tk103Gps.Speed;
+            VehicleName = vehicle.VehicleName;
+            VehicleId = vehicle.Id.ToString();
+            CustomerName = vehicle.Customer?.Name;
+            TimeStampUtc = tk103Gps.Timestamp;
+            SetVehicleImage(vehicle);
+        }
+
+
         public PositionViewModel(CreateNewBoxGps tk103Gps, Vehicle vehicle)
         {
             Latitude = tk103Gps.Latitude;

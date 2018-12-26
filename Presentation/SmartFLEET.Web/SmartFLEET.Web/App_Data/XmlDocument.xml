@@ -4,6 +4,11 @@
         <name>SmartFLEET.Web</name>
     </assembly>
     <members>
+        <member name="T:SmartFLEET.Web.BundleConfig">
+            <summary>
+            
+            </summary>
+        </member>
         <member name="M:SmartFLEET.Web.BundleConfig.RegisterBundles(System.Web.Optimization.BundleCollection)">
             <summary>
             
@@ -519,15 +524,51 @@
             </summary>
             <param name="documentPath">The physical path to XML document.</param>
         </member>
+        <member name="T:SmartFLEET.Web.Automapper.SmartFleetAdminMappings">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:SmartFLEET.Web.Automapper.SmartFleetAdminMappings.#ctor">
+            <summary>
+            
+            </summary>
+        </member>
         <member name="P:SmartFLEET.Web.Controllers.HomeController.CurrentGroup">
             <summary>
             
             </summary>
         </member>
+        <member name="M:SmartFLEET.Web.Controllers.HomeController.#ctor(AutoMapper.IMapper,SmartFleet.Service.Tracking.IPositionService,SmartFleet.Service.Customers.ICustomerService,SmartFleet.Service.Vehicles.IVehicleService)">
+            <inheritdoc />
+        </member>
+        <member name="M:SmartFLEET.Web.Controllers.HomeController.AllVehiclesWithLastPosition">
+            <summary>
+            
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:SmartFLEET.Web.Controllers.HomeController.LoadNodes">
+            <summary>
+            
+            </summary>
+            <returns></returns>
+        </member>
         <member name="T:SmartFLEET.Web.Controllers.VehicleReportController">
             <summary>
             
             </summary>
+        </member>
+        <member name="M:SmartFLEET.Web.Controllers.VehicleReportController.#ctor(SmartFleet.Data.SmartFleetObjectContext,AutoMapper.IMapper,SmartFleet.Service.Tracking.IPositionService,SmartFleet.Service.Customers.ICustomerService,SmartFleet.Service.Vehicles.IVehicleService,SmartFleet.Service.Common.IPdfService)">
+            <summary>
+            
+            </summary>
+            <param name="objectContext"></param>
+            <param name="mapper"></param>
+            <param name="positionService"></param>
+            <param name="customerService"></param>
+            <param name="vehicleService"></param>
+            <param name="pdfService"></param>
         </member>
         <member name="M:SmartFLEET.Web.Controllers.VehicleReportController.Index">
             <summary>
@@ -556,16 +597,6 @@
             <param name="vehicleId"></param>
             <param name="startPeriod"></param>
             <returns></returns>
-        </member>
-        <member name="T:SmartFLEET.Web.Automapper.SmartFleetAdminMappings">
-            <summary>
-            
-            </summary>
-        </member>
-        <member name="M:SmartFLEET.Web.Automapper.SmartFleetAdminMappings.#ctor">
-            <summary>
-            
-            </summary>
         </member>
         <member name="M:SmartFLEET.Web.MvcApplication.Application_AuthenticateRequest(System.Object,System.EventArgs)">
             <summary>

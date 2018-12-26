@@ -71,12 +71,6 @@
     <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <HintPath>..\..\..\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
     </Reference>
-    <Reference Include="Ext.Net, Version=4.7.1.0, Culture=neutral, PublicKeyToken=2e12ce3d0176cd87, processorArchitecture=MSIL">
-      <HintPath>..\..\..\packages\Ext.NET.MVC.4.7.1\lib\net46\Ext.Net.dll</HintPath>
-    </Reference>
-    <Reference Include="Ext.Net.Utilities, Version=2.5.0.0, Culture=neutral, PublicKeyToken=2c34ac34702a3c23, processorArchitecture=MSIL">
-      <HintPath>..\..\..\packages\Ext.NET.Utilities.2.5.0\lib\Ext.Net.Utilities.dll</HintPath>
-    </Reference>
     <Reference Include="FluentValidation, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7de548da2fbae0f0, processorArchitecture=MSIL">
       <HintPath>..\..\..\packages\FluentValidation.8.0.100\lib\net45\FluentValidation.dll</HintPath>
     </Reference>
@@ -97,6 +91,9 @@
     </Reference>
     <Reference Include="MassTransit.AzureServiceBusTransport, Version=5.0.0.1475, Culture=neutral, PublicKeyToken=b8e0e9f2f1e657fa, processorArchitecture=MSIL">
       <HintPath>..\..\..\packages\MassTransit.AzureServiceBus.5.0.0\lib\net452\MassTransit.AzureServiceBusTransport.dll</HintPath>
+    </Reference>
+    <Reference Include="MassTransit.RabbitMqTransport, Version=5.0.0.1475, Culture=neutral, PublicKeyToken=b8e0e9f2f1e657fa, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\MassTransit.RabbitMQ.5.0.0\lib\net452\MassTransit.RabbitMqTransport.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.AI.Agent.Intercept, Version=2.0.6.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\..\..\packages\Microsoft.ApplicationInsights.Agent.Intercept.2.0.6\lib\net45\Microsoft.AI.Agent.Intercept.dll</HintPath>
@@ -284,7 +281,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App_Start\BundleConfig.cs" />
-    <Compile Include="App_Start\ExtNetConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\StartupOwin.cs" />
@@ -323,7 +319,6 @@
     <Compile Include="Areas\HelpPage\SampleGeneration\SampleDirection.cs" />
     <Compile Include="Areas\HelpPage\SampleGeneration\TextSample.cs" />
     <Compile Include="Areas\HelpPage\XmlDocumentationProvider.cs" />
-    <Compile Include="Controllers\ExtNetController.cs" />
     <Compile Include="Helpers\AzureServiceBusModule.cs" />
     <Compile Include="Automapper\SmartFleetAdminMappings.cs" />
     <Compile Include="Areas\Administrator\Controllers\AdminController.cs" />
@@ -355,8 +350,8 @@
     <Compile Include="Hubs\SignalRHandler.cs" />
     <Compile Include="Hubs\SignalRHubManager.cs" />
     <Compile Include="Models\Account\LoginModel.cs" />
-    <Compile Include="Models\ExtNetModel.cs" />
     <Compile Include="Models\JsTreeModel.cs" />
+    <Compile Include="Models\Periods.cs" />
     <Compile Include="Models\PositionViewModel.cs" />
     <Compile Include="Models\TargetViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -365,9 +360,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="App_Data\XmlDocument.xml" />
-    <Content Include="App_Readme\Ext.NET.Utilities\BREAKING_CHANGES.txt" />
-    <Content Include="App_Readme\Ext.NET.Utilities\LICENSE.txt" />
-    <Content Include="App_Readme\Ext.NET.Utilities\README.txt" />
     <Content Include="App_Readme\Transformer.NET\LICENSE.txt" />
     <Content Include="App_Readme\Transformer.NET\README.txt" />
     <Content Include="Areas\HelpPage\HelpPage.css" />
@@ -394,6 +386,9 @@
     <Content Include="Content\icofont.min.css" />
     <Content Include="Content\jquery-ui.min.css" />
     <Content Include="Content\jquery.stacky.css" />
+    <Content Include="Content\jsWindow\src\popupwindow.css" />
+    <Content Include="Content\jsWindow\src\popupwindow.js" />
+    <Content Include="Content\jsWindow\src\popupwindow.min.js" />
     <Content Include="Content\MainStyle.css" />
     <Content Include="Content\skywalk-docs.min.css" />
     <Content Include="Content\tether\tether-theme-arrows-dark.css" />
@@ -1374,162 +1369,16 @@
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
     <Content Include="Content\Site.css" />
-    <Content Include="Images\404.png" />
-    <Content Include="Images\500.png" />
-    <Content Include="Images\call.png" />
-    <Content Include="Images\cuowu.png" />
-    <Content Include="Images\DDitlogo.png" />
-    <Content Include="Images\dele.png" />
-    <Content Include="Images\elementIcon\richText.png" />
-    <Content Include="Images\elementIcon\select.png" />
-    <Content Include="Images\elementIcon\selectmultiple.png" />
-    <Content Include="Images\elementIcon\text.png" />
-    <Content Include="Images\elementIcon\textarea.png" />
-    <Content Include="Images\elementIcon\time.png" />
-    <Content Include="Images\elementIcon\upload.png" />
-    <Content Include="Images\ewm.png" />
-    <Content Include="Images\false.png" />
-    <Content Include="Images\glyphicons-halflings-white.png" />
-    <Content Include="Images\glyphicons-halflings.png" />
-    <Content Include="Images\help.png" />
-    <Content Include="Images\icons\gl.png" />
-    <Content Include="Images\icons\iconfont-book.png" />
-    <Content Include="Images\icons\iconfont-caiwu.png" />
-    <Content Include="Images\icons\iconfont-chanpin.png" />
-    <Content Include="Images\icons\iconfont-gongsimingcheng.png" />
-    <Content Include="Images\icons\iconfont-home.png" />
-    <Content Include="Images\icons\iconfont-management.png" />
-    <Content Include="Images\icons\iconfont-note.png" />
-    <Content Include="Images\icons\iconfont-redact.png" />
-    <Content Include="Images\icons\iconfont-shenqingshenpi.png" />
-    <Content Include="Images\icons\iconfont-suoshuzhiwei.png" />
-    <Content Include="Images\icons\iconfont-wei.png" />
-    <Content Include="Images\icons\iconfont-weibiaoti1.png" />
-    <Content Include="Images\icons\iconfont-weibiaoti10%281%29.png" />
-    <Content Include="Images\icons\iconfont-weibiaoti10.png" />
-    <Content Include="Images\icons\iconfont-weibiaoti11%281%29.png" />
-    <Content Include="Images\icons\iconfont-weibiaoti11.png" />
-    <Content Include="Images\icons\iconfont-weibiaoti12%281%29.png" />
-    <Content Include="Images\icons\iconfont-weibiaoti12.png" />
-    <Content Include="Images\icons\iconfont-weibiaoti13%281%29.png" />
-    <Content Include="Images\icons\iconfont-weibiaoti13.png" />
-    <Content Include="Images\icons\iconfont-weibiaoti14%281%29.png" />
-    <Content Include="Images\icons\iconfont-weibiaoti14.png" />
-    <Content Include="Images\icons\iconfont-weibiaoti15.png" />
-    <Content Include="Images\icons\iconfont-weibiaoti16.png" />
-    <Content Include="Images\icons\iconfont-weibiaoti17.png" />
-    <Content Include="Images\icons\iconfont-weibiaoti19.png" />
-    <Content Include="Images\icons\iconfont-weibiaoti2.png" />
-    <Content Include="Images\icons\iconfont-weibiaoti21.png" />
-    <Content Include="Images\icons\iconfont-weibiaoti22.png" />
-    <Content Include="Images\icons\iconfont-weibiaoti23.png" />
-    <Content Include="Images\icons\iconfont-weibiaoti24.png" />
-    <Content Include="Images\icons\iconfont-weibiaoti25.png" />
-    <Content Include="Images\icons\iconfont-weibiaoti26.png" />
-    <Content Include="Images\icons\iconfont-weibiaoti3.png" />
-    <Content Include="Images\icons\iconfont-weibiaoti36.png" />
-    <Content Include="Images\icons\iconfont-weibiaoti4.png" />
-    <Content Include="Images\icons\iconfont-weibiaoti45.png" />
-    <Content Include="Images\icons\iconfont-weibiaoti46.png" />
-    <Content Include="Images\icons\iconfont-weibiaoti47.png" />
-    <Content Include="Images\icons\iconfont-weibiaoti5%281%29.png" />
-    <Content Include="Images\icons\iconfont-weibiaoti5.png" />
-    <Content Include="Images\icons\iconfont-weibiaoti6%281%29.png" />
-    <Content Include="Images\icons\iconfont-weibiaoti6.png" />
-    <Content Include="Images\icons\iconfont-weibiaoti7%281%29.png" />
-    <Content Include="Images\icons\iconfont-weibiaoti7.png" />
-    <Content Include="Images\icons\iconfont-weibiaoti8%281%29.png" />
-    <Content Include="Images\icons\iconfont-weibiaoti8.png" />
-    <Content Include="Images\icons\iconfont-weibiaoti9%281%29.png" />
-    <Content Include="Images\icons\iconfont-weibiaoti9.png" />
-    <Content Include="Images\icons\iconfont-xiangmuguanli.png" />
-    <Content Include="Images\icons\iconfont-xingmingyonghumingnicheng.png" />
-    <Content Include="Images\icons\iconfont-yeji.png" />
-    <Content Include="Images\icons\iconfont-yidongyun.png" />
-    <Content Include="Images\icons\iconfont-yonghuguanli.png" />
-    <Content Include="Images\icons\iconfont-zhaopinqiatan.png" />
-    <Content Include="Images\icons\iconfont-zhishi%281%29.png" />
-    <Content Include="Images\icons\iconfont-zhishi.png" />
-    <Content Include="Images\icons\peizhi.png" />
-    <Content Include="Images\icons\shezhi.png" />
-    <Content Include="Images\icon\arr.png" />
-    <Content Include="Images\icon\baob.png" />
-    <Content Include="Images\icon\close.png" />
-    <Content Include="Images\icon\cuowu.png" />
-    <Content Include="Images\icon\fu.png" />
-    <Content Include="Images\icon\gb.png" />
-    <Content Include="Images\icon\gbs.png" />
-    <Content Include="Images\icon\gby.png" />
-    <Content Include="Images\icon\home.png" />
-    <Content Include="Images\icon\icbtn.png" />
-    <Content Include="Images\icon\load.png" />
-    <Content Include="Images\icon\message.png" />
-    <Content Include="Images\icon\mima.png" />
-    <Content Include="Images\icon\person.png" />
-    <Content Include="Images\icon\right.png" />
-    <Content Include="Images\icon\task-1.png" />
-    <Content Include="Images\icon\task-2.png" />
-    <Content Include="Images\icon\task-3.png" />
-    <Content Include="Images\icon\task-4.png" />
-    <Content Include="Images\icon\task-5.png" />
-    <Content Include="Images\icon\user.png" />
-    <Content Include="Images\icon\xljt.png" />
-    <Content Include="Images\icon\xljtg.png" />
-    <Content Include="Images\icon\xljth.png" />
-    <Content Include="Images\icon\yuanx.png" />
-    <Content Include="Images\il1Bg.png" />
-    <Content Include="Images\il2Bg.png" />
-    <Content Include="Images\il3Bg.png" />
-    <Content Include="Images\il4Bg.png" />
-    <Content Include="Images\il5Bg.png" />
-    <Content Include="Images\loadimg.gif" />
-    <Content Include="Images\loginloading.gif" />
-    <Content Include="Images\message.jpg" />
-    <Content Include="Images\mima.png" />
-    <Content Include="Images\qq.png" />
-    <Content Include="Images\qqq.png" />
-    <Content Include="Images\true.png" />
-    <Content Include="Images\user.png" />
-    <Content Include="Images\userN1.png" />
-    <Content Include="Images\wdImg.png" />
-    <Content Include="Images\wx.png" />
-    <Content Include="Images\wxx.png" />
-    <Content Include="Images\龙图框架.png" />
-    <Content Include="Scripts\angular-animate.js" />
-    <Content Include="Scripts\angular-animate.min.js" />
-    <Content Include="Scripts\angular-aria.js" />
-    <Content Include="Scripts\angular-aria.min.js" />
-    <Content Include="Scripts\angular-cookies.js" />
-    <Content Include="Scripts\angular-cookies.min.js" />
-    <Content Include="Scripts\angular-csp.css" />
-    <Content Include="Scripts\angular-loader.js" />
-    <Content Include="Scripts\angular-loader.min.js" />
-    <Content Include="Scripts\angular-message-format.js" />
-    <Content Include="Scripts\angular-message-format.min.js" />
-    <Content Include="Scripts\angular-messages.js" />
-    <Content Include="Scripts\angular-messages.min.js" />
-    <Content Include="Scripts\angular-mocks.js" />
-    <Content Include="Scripts\angular-parse-ext.js" />
-    <Content Include="Scripts\angular-parse-ext.min.js" />
-    <Content Include="Scripts\angular-resource.js" />
-    <Content Include="Scripts\angular-resource.min.js" />
-    <Content Include="Scripts\angular-route.js" />
     <Content Include="Scripts\angular-route.min.js" />
     <Content Include="Scripts\angular-sanitize.js" />
-    <Content Include="Scripts\angular-sanitize.min.js" />
-    <Content Include="Scripts\angular-scenario.js" />
-    <Content Include="Scripts\angular-touch.js" />
-    <Content Include="Scripts\angular-touch.min.js" />
     <Content Include="Scripts\angular-ui-router.js" />
-    <Content Include="Scripts\angular.js" />
     <Content Include="Scripts\angular.min.js" />
     <Content Include="Scripts\angularjs-gauge.js" />
-    <Content Include="Scripts\AngularUI\ui-router.js" />
-    <Content Include="Scripts\AngularUI\ui-router.min.js" />
     <Content Include="Scripts\app\adminApp.js" />
     <Content Include="Scripts\app\customer\customerController.js" />
     <Content Include="Scripts\app\customer\customerService.js" />
     <Content Include="Scripts\app\googleMap.js" />
+    <Content Include="Scripts\app\home\homeScript.js" />
     <Content Include="Scripts\app\mainApp.js" />
     <Content Include="ApplicationInsights.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -1599,10 +1448,6 @@
     <Content Include="Scripts\datetimepicker\fonts\glyphicons-halflings-regular.woff" />
     <Content Include="Scripts\datetimepicker\fonts\glyphicons-halflings-regular.woff2" />
     <Content Include="Areas\Administrator\Views\Shared\_AdminNavBar.cshtml" />
-    <Content Include="Images\elementIcon\Thumbs.db" />
-    <Content Include="Images\icons\Thumbs.db" />
-    <Content Include="Images\icon\Thumbs.db" />
-    <Content Include="Images\Thumbs.db" />
     <Content Include="Areas\Administrator\Views\Shared\_adminSideBar.cshtml" />
     <Content Include="dist\js\app.min.js.map" />
     <Content Include="dist\plugins\bootstrap-wysihtml5\bootstrap3-wysihtml5.all.min.js.map" />
@@ -1740,25 +1585,11 @@
     <Content Include="Areas\HelpPage\Views\Help\DisplayTemplates\CollectionModelDescription.cshtml" />
     <Content Include="Areas\HelpPage\Views\Help\DisplayTemplates\ApiGroup.cshtml" />
     <Content Include="Areas\HelpPage\Views\Help\Api.cshtml" />
-    <Content Include="App_Readme\Ext.NET\README.md" />
-    <Content Include="App_Readme\Ext.NET\LICENSE" />
-    <Content Include="App_Readme\Ext.NET\CHANGELOG.md" />
     <None Include="packages.config" />
     <Content Include="Scripts\errors.json" />
     <Content Include="Scripts\angular.min.js.map" />
-    <Content Include="Scripts\angular-touch.min.js.map" />
-    <Content Include="Scripts\angular-sanitize.min.js.map" />
     <Content Include="Scripts\angular-route.min.js.map" />
-    <Content Include="Scripts\angular-resource.min.js.map" />
-    <Content Include="Scripts\angular-parse-ext.min.js.map" />
-    <Content Include="Scripts\angular-messages.min.js.map" />
-    <Content Include="Scripts\angular-message-format.min.js.map" />
-    <Content Include="Scripts\angular-loader.min.js.map" />
-    <Content Include="Scripts\angular-cookies.min.js.map" />
-    <Content Include="Scripts\angular-aria.min.js.map" />
-    <Content Include="Scripts\angular-animate.min.js.map" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
-    <Content Include="Scripts\gmap.js" />
     <Content Include="Scripts\i18n\angular-locale_af-na.js" />
     <Content Include="Scripts\i18n\angular-locale_af-za.js" />
     <Content Include="Scripts\i18n\angular-locale_af.js" />
@@ -2500,14 +2331,9 @@
     <Content Include="Scripts\jq-1.10.2.js" />
     <Content Include="Scripts\jq-layout.js" />
     <None Include="Scripts\jquery-3.1.1.intellisense.js" />
-    <Content Include="Scripts\jquery-3.1.1.js" />
-    <Content Include="Scripts\jquery-3.1.1.min.js" />
-    <Content Include="Scripts\jquery-3.1.1.slim.js" />
-    <Content Include="Scripts\jquery-3.1.1.slim.min.js" />
     <None Include="Scripts\jquery.validate-vsdoc.js" />
     <Content Include="Scripts\jquery.signalR-2.3.0.js" />
     <Content Include="Scripts\jquery.signalR-2.3.0.min.js" />
-    <Content Include="Scripts\jquery.stacky.js" />
     <Content Include="Scripts\jquery.validate.js" />
     <Content Include="Scripts\jquery.validate.min.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.js" />
@@ -2534,13 +2360,6 @@
     <Content Include="Scripts\leafjs\leaflet.css" />
     <Content Include="Scripts\leafjs\leaflet.js" />
     <Content Include="Scripts\modernizr-2.6.2.js" />
-    <Content Include="Scripts\myJavaScript.js" />
-    <Content Include="Scripts\popper-utils.js" />
-    <Content Include="Scripts\popper-utils.min.js" />
-    <Content Include="Scripts\popper.js" />
-    <Content Include="Scripts\popper.min.js" />
-    <Content Include="Scripts\respond.js" />
-    <Content Include="Scripts\respond.min.js" />
     <Content Include="Scripts\select2\css\select2.css" />
     <Content Include="Scripts\select2\css\select2.min.css" />
     <Content Include="Scripts\select2\js\i18n\ar.js" />
@@ -2592,10 +2411,7 @@
     <Content Include="Scripts\select2\js\select2.full.min.js" />
     <Content Include="Scripts\select2\js\select2.js" />
     <Content Include="Scripts\select2\js\select2.min.js" />
-    <Content Include="Scripts\sitemap.xml" />
     <Content Include="Scripts\streetMap\openLayers.js" />
-    <Content Include="Scripts\tether.js" />
-    <Content Include="Scripts\tether.min.js" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>
@@ -2623,18 +2439,10 @@
     <Content Include="Views\Home\_ReportForm.cshtml" />
     <Content Include="Views\Home\_PositionForm.cshtml" />
     <Content Include="Scripts\version.json" />
-    <Content Include="Scripts\jquery-3.1.1.slim.min.map" />
-    <Content Include="Scripts\jquery-3.1.1.min.map" />
-    <Content Include="Scripts\README.md" />
-    <Content Include="Scripts\popper.min.js.map" />
-    <Content Include="Scripts\popper.js.map" />
-    <Content Include="Scripts\popper-utils.min.js.map" />
-    <Content Include="Scripts\popper-utils.js.map" />
     <Content Include="Views\Home\_PositionByPeriodFrm.cshtml" />
     <Content Include="Views\Home\_CreateDriver.cshtml" />
     <Content Include="Views\Home\_PositionTimeLine.cshtml" />
     <Content Include="Views\Home\_SouthLayout.cshtml" />
-    <Content Include="Views\ExtNet\Index.cshtml" />
     <Content Include="Views\Position\_CurrentPosition.cshtml" />
   </ItemGroup>
   <ItemGroup>
@@ -2666,9 +2474,6 @@
   </ItemGroup>
   <ItemGroup>
     <Service Include="{4A0DDDB5-7A95-4FBF-97CC-616D07737A77}" />
-  </ItemGroup>
-  <ItemGroup>
-    <TypeScriptCompile Include="Scripts\index.d.ts" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

@@ -57,6 +57,7 @@ namespace DenormalizerService.Infrastructure
         {
             return Container.Resolve<IBusControl>();
         }
+       
         public static IDbContextScopeFactory ResolveDbContextScopeFactory()
         {
             return Container.Resolve<IDbContextScopeFactory>();
