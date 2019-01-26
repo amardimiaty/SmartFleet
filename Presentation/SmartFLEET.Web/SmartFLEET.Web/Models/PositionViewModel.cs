@@ -1,15 +1,16 @@
 ﻿using System;
+using System.Linq;
 using SmartFleet.Core.Contracts.Commands;
 using SmartFleet.Core.Domain.Movement;
 using SmartFleet.Core.Domain.Vehicles;
+using SmartFleet.Core.Geofence;
+using SmartFleet.Data;
 
 namespace SmartFLEET.Web.Models
 {
     public class PositionViewModel
     {
         
-        
-
         public PositionViewModel(Position position, Vehicle vehicle)
         {
             //Task.Run(async () => { await GeoReverse(position); });
@@ -45,8 +46,9 @@ namespace SmartFLEET.Web.Models
             SetVehicleImage(vehicle);
         }
 
-        public PositionViewModel(CreateTeltonikaGps tk103Gps, Vehicle vehicle)
+        public PositionViewModel(CreateTeltonikaGps tk103Gps, Vehicle vehicle, SmartFleetObjectContext db)
         {
+            var dir = GetDirection(tk103Gps, db);
             Latitude = tk103Gps.Lat;
             Longitude = tk103Gps.Long;
             Address = tk103Gps.Address;
@@ -58,7 +60,18 @@ namespace SmartFLEET.Web.Models
             VehicleId = vehicle.Id.ToString();
             CustomerName = vehicle.Customer?.Name;
             TimeStampUtc = tk103Gps.Timestamp;
-            SetVehicleImage(vehicle);
+            SetVehicleImage(vehicle ,dir);
+        }
+
+        private static double GetDirection(CreateTeltonikaGps tk103Gps, SmartFleetObjectContext db)
+        {
+            var lastPos = db.Positions.OrderByDescending(x => x.Timestamp)
+                .Where(x => x.Timestamp <= tk103Gps.Timestamp && x.Box.Imei == tk103Gps.Imei).Select(p => new {p.Lat, p.Long})
+                .FirstOrDefault();
+            var dir = lastPos != null
+                ? GeofenceHelper.DegreeBearing(lastPos.Lat, tk103Gps.Lat, lastPos.Long, tk103Gps.Long)
+                : 0;
+            return dir;
         }
 
 
@@ -91,6 +104,36 @@ namespace SmartFLEET.Web.Models
                 case VehicleType.Car:
                 {
                     ImageUri = Speed > 1.0 ? "../assets/vehicles/LightVehicleMovingLeft.png" : "../assets/vehicles/LightVehicleStopped.png";
+                }
+                    break;
+            }
+        }
+        private void SetVehicleImage(Vehicle vehicle,double dir)
+        {
+            switch (vehicle.VehicleType)
+            {
+                case VehicleType.Track:
+                {
+                    if (Speed > 0 && dir < 180)
+                        ImageUri = "../assets/vehicles/TractorTruckMoving.png";
+                    else if (Speed > 0 && dir > 180)
+                        ImageUri = "../assets/vehicles/TractorTruckMovingLeft.png";
+                    else ImageUri = "../assets/vehicles/TractorTruckStopped.png";
+
+                }
+                    break;
+                case VehicleType.Car:
+                {
+                    if (Speed > 0 && dir < 180)
+                    {
+                        ImageUri = "../assets/vehicles/LightVehicleMoving.png";
+                    }
+                    else if (Speed > 0 && dir > 180)
+                    {
+                        ImageUri = "../assets/vehicles/LightVehicleMovingLeft.png";
+                    }
+                    else ImageUri = "../assets/vehicles/LightVehicleStopped.png";
+
                 }
                     break;
             }

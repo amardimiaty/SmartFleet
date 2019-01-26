@@ -1,39 +1,36 @@
-﻿@using SmartFleet.Core.Domain.Vehicles
-<!DOCTYPE html>
-<html >
+﻿<!DOCTYPE html>
+<html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@ViewBag.Title - Mon application ASP.NET</title>
-    
+    <title>@ViewBag.Title - SMART FLEET</title>
+
     @Styles.Render("~/Content/css")
     @Scripts.Render("~/bundles/modernizr")
 </head>
 
-<body ng-app="smart-fleet" class="hold-transition skin-blue-light ">
+<body ng-app="smart-fleet">
     @*@RenderPage("_menu.cshtml")*@
 
-        @RenderBody()
+    @RenderBody()
 
-<link href="~/Scripts/leafjs/leaflet.css" rel="stylesheet" />
+    <link href="~/Scripts/leafjs/leaflet.css" rel="stylesheet" />
     <link href="~/Content/bootstrap-notifications.min.css" rel="stylesheet" />
-<link href="~/Content/skywalk-docs.min.css" rel="stylesheet" />
-    <link href="~/Content/icofont.min.css" rel="stylesheet" />
+    <link href="~/Content/skywalk-docs.min.css" rel="stylesheet" />
+<link href="~/Content/icofont.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
     @Scripts.Render("~/bundles/jquery")
     @Scripts.Render("~/bundles/bootstrap")
-    <script src="~/Scripts/jq-layout.js"></script>
+<script src="~/Scripts/jq-layout.js"></script>
+    <script src="~/Scripts/leafjs/leaflet-providers.js"></script>
     @RenderSection("scripts", required: false)
-<script src="~/Scripts/app/googleMap.js"></script>
+
     <script>
         $(document).ready(function () {
             $('body').layout({
                 applyDemoStyles: true,
-                onresize: function() {
-                    //if ($("#jBox2").is(":visible")) {
-                    //    $("#jBox2").width($('#map').width() -10);
-                       
-                    //}; 
+                onresize: function () {
                 }
             });
 

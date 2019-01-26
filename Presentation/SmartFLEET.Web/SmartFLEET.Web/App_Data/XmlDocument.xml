@@ -534,6 +534,47 @@
             
             </summary>
         </member>
+        <member name="T:SmartFLEET.Web.Controllers.AccountController">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:SmartFLEET.Web.Controllers.AccountController.#ctor(SmartFleet.Service.Authentication.IAuthenticationService)">
+            <summary>
+            
+            </summary>
+            <param name="authenticationService"></param>
+        </member>
+        <member name="M:SmartFLEET.Web.Controllers.AccountController.Index">
+            <summary>
+            
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:SmartFLEET.Web.Controllers.AccountController.Login">
+            <summary>
+            
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:SmartFLEET.Web.Controllers.AccountController.Login(SmartFLEET.Web.Models.Account.LoginModel)">
+            <summary>
+            
+            </summary>
+            <param name="model"></param>
+            <returns></returns>
+        </member>
+        <member name="M:SmartFLEET.Web.Controllers.AccountController.Logout">
+            <summary>
+            
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:SmartFLEET.Web.Controllers.HomeController">
+            <summary>
+            
+            </summary>
+        </member>
         <member name="P:SmartFLEET.Web.Controllers.HomeController.CurrentGroup">
             <summary>
             
@@ -541,6 +582,12 @@
         </member>
         <member name="M:SmartFLEET.Web.Controllers.HomeController.#ctor(AutoMapper.IMapper,SmartFleet.Service.Tracking.IPositionService,SmartFleet.Service.Customers.ICustomerService,SmartFleet.Service.Vehicles.IVehicleService)">
             <inheritdoc />
+        </member>
+        <member name="M:SmartFLEET.Web.Controllers.HomeController.Index">
+            <summary>
+            
+            </summary>
+            <returns></returns>
         </member>
         <member name="M:SmartFLEET.Web.Controllers.HomeController.AllVehiclesWithLastPosition">
             <summary>
@@ -552,6 +599,13 @@
             <summary>
             
             </summary>
+            <returns></returns>
+        </member>
+        <member name="M:SmartFLEET.Web.Controllers.HomeController.GetTargetByPeriod(System.String)">
+            <summary>
+            
+            </summary>
+            <param name="vehicleId"></param>
             <returns></returns>
         </member>
         <member name="T:SmartFLEET.Web.Controllers.VehicleReportController">
@@ -596,6 +650,27 @@
             </summary>
             <param name="vehicleId"></param>
             <param name="startPeriod"></param>
+            <returns></returns>
+        </member>
+        <member name="T:SmartFLEET.Web.DailyRports.PositionReport">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:SmartFLEET.Web.DailyRports.PositionReport.PositionViewModels(System.Collections.Generic.List{SmartFleet.Core.Domain.Movement.Position})">
+            <summary>
+            
+            </summary>
+            <param name="positionsOfVehicle"></param>
+            <returns></returns>
+        </member>
+        <member name="M:SmartFLEET.Web.DailyRports.PositionReport.BuidDailyReport(System.Collections.Generic.List{SmartFleet.Core.Domain.Movement.Position},System.DateTime,System.String)">
+            <summary>
+            
+            </summary>
+            <param name="positions"></param>
+            <param name="startPeriod"></param>
+            <param name="vehicleName"></param>
             <returns></returns>
         </member>
         <member name="M:SmartFLEET.Web.MvcApplication.Application_AuthenticateRequest(System.Object,System.EventArgs)">

@@ -43,7 +43,6 @@ namespace SmartFLEET.Web
                 "~/dist/plugins/select2/select2.full.min.js",
                 "~/dist/plugins/loadie/js/jquery.loadie.min.js",
                 "~/Scripts/jstree/jstree.min.js",
-                "~/dist/plugins/jbox/jBox.min.js",
                 "~/dist/plugins/vis/vis.min.js",
                 "~/dist/plugins/leafletPlugin/PolylineDecorator.js",
                 "~/Scripts/angularjs-gauge.js",
@@ -56,24 +55,19 @@ namespace SmartFLEET.Web
                 ));
 
             bundles.Add(new StyleBundle("~/Content/css").Include(
-                "~/dist/css/skins/_all-skins.min.css",
+              //  "~/Content/bootstrap.css",
                 "~/Content/validationEngine.jquery.css",
                 "~/Content/font-awesome.css",
-                "~/Content/mySite.css",
                 "~/Scripts/datatables/css/dataTables.bootstrap.css",
-                "~/dist/css/skins/_all-skins.min.css",
-                "~/dist/css/AdminLTE.min.css",
                 "~/dist/plugins/loadie/css/loadie.css",
                 "~/Content/jquery-ui.min.css",
-                "~/dist/plugins/jbox/jBox.css",
                 "~/font-awesome/css/font-awesome.min.css",
                 "~/Scripts/jstree/themes/default/style.min.css",
                 "~/dist/plugins/vis/vis.min.css",
                 "~/Scripts/jstree/themes/default/style.min.css",
                 "~/dist/plugins/wait/waitMe.min.css",
                 "~/dist/plugins/line-awesome/css/line-awesome.min.css",
-                "~/Content/jsWindow/src/popupwindow.css",
-                "~/Content/site.css"));
+                "~/Content/jsWindow/src/popupwindow.css"));
             bundles.Add(new StyleBundle("~/Content/cssadmin").Include(
                 "~/Content/bootstrap.min.css",
                 "~/Content/validationEngine.jquery.css",

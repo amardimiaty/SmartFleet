@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
@@ -31,16 +30,9 @@ namespace SmartFLEET.Web.Controllers
         {
             var id = Guid.Parse(vehicleId);
            // var endPeriod = DateTime.Now;
-            var startPeriod = new DateTime();
-            try
-            {
-                DateTime.TryParseExact(start, "yyyy-MM-dHH:mm", null, DateTimeStyles.AssumeLocal, out startPeriod);
-            }
-            catch (Exception e)
-            {
-                Debug.WriteLine(e.Message);
-                //throw;
-            }
+            var startPeriod = default(DateTime);
+            DateTime.TryParseExact(start, "yyyy-MM-dHH:mm", null, DateTimeStyles.AssumeLocal, out startPeriod);
+
             var endPeriod =startPeriod.Date.AddDays(1).AddTicks(-1);
             var vehicle = await ObjectContext.Vehicles.FindAsync(id);
             var positions = await _positionService.GetVehiclePositionsByPeriod(id, startPeriod, endPeriod);
@@ -48,7 +40,9 @@ namespace SmartFLEET.Web.Controllers
             var gpsCollection = positions.Select(x =>
                 new { Latitude = x.Lat, Longitude = x.Long, GpsStatement = x.Timestamp.ToString("O") });
             var positionReport = new PositionReport();
-            return Json(new {Vehiclename = vehicle?.VehicleName, Periods =  positionReport.GetTargetViewModels(positions, startPeriod, vehicle.VehicleName), GpsCollection = gpsCollection }, JsonRequestBehavior.AllowGet);
+            var result = positionReport.BuidDailyReport(positions, startPeriod, vehicle.VehicleName) ;
+            var distance = result.Where(x => x.MotionStatus == "Moving").Sum(x => x.Distance);
+            return Json(new {Vehiclename = vehicle?.VehicleName, Distance = distance, Periods = result,GpsCollection = gpsCollection}, JsonRequestBehavior.AllowGet);
 
         }
 

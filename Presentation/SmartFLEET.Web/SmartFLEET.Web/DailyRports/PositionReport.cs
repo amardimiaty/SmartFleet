@@ -8,8 +8,16 @@ using SmartFLEET.Web.Models;
 
 namespace SmartFLEET.Web.DailyRports
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public class PositionReport
     {
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="positionsOfVehicle"></param>
+        /// <returns></returns>
         public  List<PositionViewModel> PositionViewModels(List<Position> positionsOfVehicle )
         {
             var positions = new List<PositionViewModel>();
@@ -21,81 +29,132 @@ namespace SmartFLEET.Web.DailyRports
             return positions;
         }
         
-        public List<TargetViewModel> GetTargetViewModels(List<Position> positions, DateTime startPeriod, string vehicleName)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="positions"></param>
+        /// <param name="startPeriod"></param>
+        /// <param name="vehicleName"></param>
+        /// <returns></returns>
+        public List<TargetViewModel> BuidDailyReport(List<Position> positions, DateTime startPeriod, string vehicleName)
         {
-            string timeZone = "W. Central Africa Standard Time";
-            TimeZoneInfo cstZone = TimeZoneInfo.FindSystemTimeZoneById(timeZone);
+           // string timeZone = "W. Central Africa Standard Time";
+          //  TimeZoneInfo cstZone = TimeZoneInfo.FindSystemTimeZoneById(timeZone);
             //foreach (var position in positions.OrderBy(w=>w.Timestamp))
             //    position.Timestamp = TimeZoneInfo.ConvertTimeFromUtc(position.Timestamp, cstZone);
-            var targets = new List<TargetViewModel>();
-            var currentStatus = positions.OrderBy(p => p.Timestamp).ThenBy(p => p.MotionStatus).FirstOrDefault()?.MotionStatus;
+            // ReSharper disable once TooManyChainedReferences
+            var firstPos = positions.OrderBy(p => p.Timestamp).ThenBy(p => p.MotionStatus).FirstOrDefault();
+            var currentStatus =firstPos ?.MotionStatus;
             var start = positions.FirstOrDefault()?.Timestamp;
             var periods = new List<Periods>();
-            var orderdPositions = positions.OrderBy(p => p.Timestamp).ThenBy(p=>p.MotionStatus);
-            var motionStatusCount = orderdPositions.GroupBy(x => x.MotionStatus).Count();
+            var orderedEnumerable = positions.OrderBy(p => p.Timestamp).ThenBy(p=>p.MotionStatus);
+            // ReSharper disable once PossibleMultipleEnumeration
+            var motionStatusCount = orderedEnumerable.GroupBy(x => x.MotionStatus).Count();
             var motionStatusChanged = false;
-            foreach (var position in orderdPositions)
+            // rearrange periods by date / status of driving on 24 hour scale
+            // ReSharper disable once PossibleMultipleEnumeration
+            foreach (var position in orderedEnumerable)
             {
                 motionStatusChanged = MotionStatusChanged(position, periods, ref currentStatus, ref start);
             }
            
-
+            // check if there is only one period or the last period is missing  to add both to the periods list 
+            // ReSharper disable once ComplexConditionExpression
             if (motionStatusCount == 1 || !motionStatusChanged)
             {
                 if (motionStatusCount == 1)
                 {
-                    var poriod = new Periods(orderdPositions.LastOrDefault().Timestamp, start, currentStatus);
+                    // if theres is only one period we add it to the list
+                    // ReSharper disable once PossibleMultipleEnumeration
+                    // ReSharper disable once PossibleNullReferenceException
+                    var poriod = new Periods(orderedEnumerable.LastOrDefault().Timestamp, start, currentStatus);
                     periods.Add(poriod);
                 }
                 else if (!motionStatusChanged)
                 {
-                    var end = periods.LastOrDefault()?.End;
-                    var query = orderdPositions.Where(x => x.Timestamp >= end);
-                    var enumerable
-                        = query as Position[] ?? query.ToArray();
-                    var poriod = new Periods(enumerable.LastOrDefault()?.Timestamp,end, enumerable.LastOrDefault()?.MotionStatus);
+                    // ReSharper disable once PossibleMultipleEnumeration
+                    var poriod = GetLastPeriods(periods, orderedEnumerable);
                     periods.Add(poriod);
-
                 }
             }
             var tmp = new List<Periods>();
-            foreach (var period in periods)
-                if ((period.End - period.Start).TotalSeconds < 60)
-                    tmp.Add(period);
+            // get rid of the periods with duration less than 60 sec
+            GetRidOfShortPeriods(periods, tmp);
+            // create the final report
+            
+            return BuildReport(positions, startPeriod, vehicleName, periods);
+        }
 
-            DeleteTempPeriods(tmp, periods);
-           tmp= new List<Periods>();
+        private static void ReMergePeriods(List<Periods> periods, List<Periods> tmp)
+        {
             foreach (var period in periods)
             {
-                var index = periods.FindIndex(p=>p == period);
-                if (index + 1 >= periods.Count ||period.MotionStatus != periods[index + 1].MotionStatus ) continue;
-                while ((index + 1) < periods.Count &&period.MotionStatus == periods[index + 1].MotionStatus)
+                var index = periods.FindIndex(p => p == period);
+                // ReSharper disable once ComplexConditionExpression
+                if (index + 1 >= periods.Count || period.MotionStatus != periods[index + 1].MotionStatus) continue;
+                // ReSharper disable once ComplexConditionExpression
+                while (index + 1 < periods.Count && period.MotionStatus == periods[index + 1].MotionStatus)
                 {
                     period.End = periods[index + 1].End;
                     tmp.Add(periods[index + 1]);
                     index++;
                 }
-               
             }
+            // get rid of the periods have been merged
+
             DeleteTempPeriods(tmp, periods);
 
+
+        }
+
+        private static void GetRidOfShortPeriods(List<Periods> periods, List<Periods> tmp)
+        {
+            foreach (var period in periods)
+                if ((period.End - period.Start).TotalSeconds < 60)
+                    tmp.Add(period);
+            DeleteTempPeriods(tmp, periods);
+            tmp = new List<Periods>();
+            // re merge periods after removing short periods
+            ReMergePeriods(periods, tmp);
+        }
+
+        private static Periods GetLastPeriods(List<Periods> periods, IOrderedEnumerable<Position> orderedEnumerable)
+        {
+            var end = periods.LastOrDefault()?.End;
+            var query = orderedEnumerable.Where(x => x.Timestamp >= end);
+            var enumerable
+                = query as Position[] ?? query.ToArray();
+            var poriod = new Periods(enumerable.LastOrDefault()?.Timestamp, end, enumerable.LastOrDefault()?.MotionStatus);
+            return poriod;
+        }
+
+        // ReSharper disable once MethodTooLong
+        // ReSharper disable once TooManyArguments
+        private static List<TargetViewModel> BuildReport(List<Position> positions, DateTime startPeriod, string vehicleName, List<Periods> periods)
+        {
+            List<TargetViewModel> targets = new List<TargetViewModel>();
             foreach (var position in periods.Distinct())
             {
                 var trgt = new TargetViewModel();
+                // get the first period 
                 var firstPosition = GetFirstPosition(positions, position);
+                //get  last period
                 var lastPosition = GetLastPosition(positions, position);
+                // set the begnings of the period
                 SetBegningsTrip(firstPosition, trgt);
+                // set the ends of the period
                 SetEndsTrip(lastPosition, trgt);
+                // calculate distance , speeds , and duration
                 GetDistanceAndDuration(positions, lastPosition, firstPosition, trgt);
                 var index = GetPreviousPositionIndexx(positions, lastPosition);
                 if (index == -1)
                     index = 0;
-                trgt.Speed = positions.ElementAt(index) .Speed ;
+                trgt.Speed = positions.ElementAt(index).Speed;
                 trgt.VehicleName = vehicleName;
                 trgt.CurrentDate = startPeriod.Date.ToShortDateString();
                 targets.Add(trgt);
-                
             }
+
             return targets;
         }
 
@@ -105,24 +164,19 @@ namespace SmartFLEET.Web.DailyRports
                 periods.Remove(period);
         }
 
+        // ReSharper disable once TooManyArguments
         private static bool MotionStatusChanged(Position position, List<Periods> periods, ref MotionStatus? currentStatus,
             ref DateTime? start)
         {
-            bool motionStatusChanged;
             Trace.WriteLine("Timestamp: " + position.Timestamp + " MotionStatus: " + position.MotionStatus);
             if (currentStatus == position.MotionStatus)
-            {
-                motionStatusChanged = false;
-                return motionStatusChanged;
-            }
-
+                return false;
             var poriod = new Periods(position.Timestamp, start, currentStatus);
             currentStatus = position.MotionStatus;
             start = position.Timestamp;
             periods.Add(poriod);
-            motionStatusChanged = true;
             Trace.WriteLine("period added at : " + position.Timestamp + " MotionStatus: " + position.MotionStatus);
-            return motionStatusChanged;
+            return true;
         }
 
         private static int GetPreviousPositionIndexx(List<Position> positions, Position lastPosition)
@@ -137,9 +191,12 @@ namespace SmartFLEET.Web.DailyRports
             return lastPosition;
         }
 
+        // ReSharper disable once MethodTooLong
+        // ReSharper disable once TooManyArguments
         private static void GetDistanceAndDuration(List<Position> positions, Position lastPosition, Position firstPosition,
             TargetViewModel trgt)
         {
+            // ReSharper disable once ComplexConditionExpression
             if (lastPosition != null && firstPosition != null)
             {
                 var index = GetPreviousPositionIndexx(positions, lastPosition);
@@ -167,6 +224,7 @@ namespace SmartFLEET.Web.DailyRports
         private static Position GetFirstPosition(List<Position> positions, Periods position)
         {
             var firstPosition =
+                // ReSharper disable once ComplexConditionExpression
                 positions.FirstOrDefault(x => x.Timestamp == position.Start && x.MotionStatus == position.MotionStatus);
             return firstPosition;
         }

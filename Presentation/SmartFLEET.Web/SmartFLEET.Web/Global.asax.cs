@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Diagnostics;
 using System.Linq;
 using System.Web.Http;
 using System.Web.Mvc;
@@ -365,11 +366,20 @@ namespace SmartFLEET.Web
         protected void Application_Start()
         {
             #region add mastransit consumer
-            //MassTransitConfig.ConfigureReceiveBus((cfg, hst) =>
-            //    cfg.ReceiveEndpoint(hst, "Smartfleet.Web.endpoint", e =>
-            //        e.Consumer<SignalRHandler>())
 
-            //).Start();
+            try
+            {
+                MassTransitConfig.ConfigureReceiveBus((cfg, hst) =>
+                    cfg.ReceiveEndpoint(hst, "Smartfleet.Web.endpoint", e =>
+                        e.Consumer<SignalRHandler>())
+
+                ).Start();
+            }
+            catch (Exception e)
+            {
+                Trace.WriteLine(e);
+                //throw;
+            }
             #endregion
 
             AreaRegistration.RegisterAllAreas();
@@ -418,8 +428,7 @@ namespace SmartFLEET.Web
             var mapper = mapperConfiguration.CreateMapper();
             builder.RegisterInstance(mapper).As<IMapper>();
             #endregion
-            //builder.RegisterModule(new AzureServiceBusModule(Assembly.GetExecutingAssembly()));
-            //var bus = BusControl();
+             //var bus = BusControl();
             //try
             //{
               

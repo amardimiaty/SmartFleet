@@ -1,23 +1,39 @@
-﻿using System.Threading.Tasks;
+﻿using System.Linq;
+using System.Threading.Tasks;
 using System.Web.Mvc;
 using SmartFleet.Service.Authentication;
 using SmartFLEET.Web.Models.Account;
 
 namespace SmartFLEET.Web.Controllers
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public class AccountController : Controller
     {
         private readonly IAuthenticationService _authenticationService;
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="authenticationService"></param>
         public AccountController(IAuthenticationService authenticationService)
         {
             _authenticationService = authenticationService;
         }
         // GET: Account
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         public ActionResult Index()
         {
             return View();
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         [HttpGet]
         public ActionResult Login()
         {
@@ -26,6 +42,11 @@ namespace SmartFLEET.Web.Controllers
             return View(new LoginModel());
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
         [HttpPost]
         public async Task<ActionResult> Login(LoginModel model)
         {
@@ -35,17 +56,13 @@ namespace SmartFLEET.Web.Controllers
             var userExists =
                 await _authenticationService.Authentication(model.UserName, model.Password, model.RememberMe);
             if (userExists == null) return View();
-            foreach (var identityUserRole in _authenticationService.GetRoleByUserId(userExists.Id))
-            {
-                if (identityUserRole.Equals("customer") || identityUserRole.Equals("user"))
-                    return RedirectToAction("Index", "Home");
-
-            }
-
-            return RedirectToAction("Index", "Admin", new {area = "Administrator"});
-
+            return _authenticationService.GetRoleByUserId(userExists.Id).Any(identityUserRole => identityUserRole.Equals("customer") || identityUserRole.Equals("user")) ? RedirectToAction("Index", "Home") : RedirectToAction("Index", "Admin", new {area = "Administrator"});
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         [HttpGet]
         public ActionResult Logout()
         {

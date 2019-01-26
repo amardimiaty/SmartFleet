@@ -16,21 +16,25 @@ function positionController($scope, positionService,  reportService) {
                 $("#date").html("");
                 $("#begin-ser").html("");
                 $("#end-ser").html("");
-                App.TabPanelPosition.show();
+                $("#distance").html("");
+                $("#speed").html("");
+                initPositionWind();
+                removeLineMarckers();
 
                 initWait();
 
                 positionService.getPosition($scope.vehicleId, date).then(function(resp) {
 
                     console.log(resp.data);
-
                     if (resp.data === null || resp.data === undefined) {
-                        $('#jBox1').waitMe("hide");
+                        $('#map').waitMe("hide");
 
                         return;
 
                     }
                     $("#vehicle-name").html("<b>Véhicule: </b>" + resp.data.Vehiclename);
+                    $("#distance").html("<b>Distance: </b>" + resp.data.Distance);
+
                     if (resp.data.Periods != null && resp.data.Periods.length > 0) {
                         $("#date-pos").html("<b>Date:</b> " + resp.data.Periods[0].CurrentDate);
                         if (resp.data.Periods[0].BeginService != null)
@@ -43,7 +47,7 @@ function positionController($scope, positionService,  reportService) {
                        var lng = resp.data.Periods[length].Logitude;
                        map.setView([lat, lng], 15);
                    }
-                    $('#jBox1').waitMe("hide");
+                    $('#map').waitMe("hide");
                 });
             }
         });

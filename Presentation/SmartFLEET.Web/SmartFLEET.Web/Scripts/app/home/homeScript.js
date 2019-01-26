@@ -14,10 +14,14 @@ var lastarrowHead;
 var reportModalOpend = false;
 var timeLineData;
 var hub;
-
+var anchorId = null;
 $(document).ready(function () {
     initJstree();
+    loadData(0.33);
     initMap();
+    loadData(0.67);
+    initSignalR();
+
     //    $("#accordion").accordion();
     $("#vehicles").select2({
         // width: 175
@@ -32,53 +36,57 @@ $(document).ready(function () {
         format: 'yyyy-mm-dd',
         orientation: 'top',
         language: 'fr',
-        autoclose: true
+        autoclose: true,
+        todayHighlight: true,
     });
     $("#startPeriod-pos").datepicker({
         format: 'yyyy-mm-dd',
         orientation: 'top',
         language: 'fr',
-        autoclose: true
+        autoclose: true,
+        todayHighlight: true,
     });
     $("#endPeriod").datepicker({
         format: 'yyyy-mm-dd',
         orientation: 'bottom',
         language: 'fr',
-        autoclose: true
+        autoclose: true,
+        todayHighlight: true,
     });
     $("#dt-driver").datepicker({
         format: 'yyyy-mm-dd',
         orientation: 'top',
         language: 'fr',
-        autoclose: true
+        autoclose: true,
+        todayHighlight: true,
     });
-
+    loadData(1);
 
 });
 
 
 function initMap() {
-    map = L.map('map').setView([36.7525000, 3.0419700], 8);
+    map = L.map('map', {
+        center: [36.7525000, 3.0419700],
+        zoom: 8,
+        zoomControl: true
+    });
     markerGroup = L.layerGroup().addTo(map);
-
     layout = L;
+    // load a tile layer
+    var defaultLayer = L.tileLayer.provider('OpenStreetMap.Mapnik').addTo(map);
+    map.addLayer(defaultLayer);
     $.ajax({
         url: '/Home/AllVehiclesWithLastPosition',
         success: onGetAllVehiclesSuccess
     });
-    loadData(0.67);
-    // load a tile layer
-    var openStreetMapMapnik = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-        {
-            maxZoom: 19,
-            attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-        });
-    map.addLayer(openStreetMapMapnik);
-
+    window.dispatchEvent(new Event('resize'));
+    
+}
+function initSignalR() {
     hub = $.connection.signalRHandler;
     hub.client.receiveGpsStatements = onRecieveData;
     $.connection.hub.start().done(joinSignalRGroup);
-    //return loadPolygan;
 }
 function onRecieveData(gpsStatement) {
     var thisIcon = new L.Icon();
@@ -120,11 +128,16 @@ function onRecieveData(gpsStatement) {
             }
         ).addTo(map);
     markers.push(marker);
+    console.log(anchorId);
+    if (anchorId != null && gpsStatement.VehicleId === anchorId) {
+        map.setView([gpsStatement.Latitude, gpsStatement.Longitude], 15, { animation: false });
+        marker.openPopup();
+    }
 }
 function joinSignalRGroup() {
     var groupeName = $("#client-group").val();
     hub.server.join(groupeName);
-    loadData(1);
+   // loadData(1);
 
 }
 function onGetAllVehiclesSuccess(result) {
@@ -164,6 +177,7 @@ function onGetAllVehiclesSuccess(result) {
             ).addTo(map).on('click', clickZoom);
         console.log(marker.optionss);
         markers.push(marker);
+       
     }
 
 }
@@ -171,19 +185,7 @@ function clickZoom(e) {
     map.setView(e.target.getLatLng(), 15);
 }
 
-function iniJBOXPositionSearch() {
 
-    return new jBox('Modal',
-        {
-            content: $("#posi-search"),
-            width: 300,
-            height: 150,
-            overlay: false,
-            position: { x: 'left', y: 'top' },
-            offset: { x: 330, y: 65 },
-        });
-
-}
 function iniJBOXDriver() {
     $("#driver-frm").PopupWindow({
         title: "Nouveau conducteur",
@@ -216,13 +218,13 @@ function initReportBox() {
 
 }
 function initPositionWind() {
-    var width = $('#map').width() + 15;
-    var top =  $('#map').height() -130;
+    var width = $('#map').width() -5;
+    var top =  $('#map').height() -200;
     $("#tachy-dashboard").PopupWindow({
         title: "Position",
         modal: false,
         autoOpen: false,
-        height: 200,
+        height: 230,
         width: width,
         top: top,
         left: 320
@@ -232,7 +234,7 @@ function initPositionWind() {
 }
 
 function initJstree() {
-    loadData(0.33);
+   
     $('#container').jstree({
         "core": {
             "data": { "url": "/Home/LoadNodes" }
@@ -250,7 +252,7 @@ function initJstree() {
     $(document).on('click',
         '.jstree-anchor',
         function (e) {
-            var anchorId = $(this).parent().attr('id');
+            anchorId = $(this).parent().attr('id');
             console.log(anchorId);
             currentVehicleId = anchorId;
             if (anchorId != 'vehicles-00000000-0000-0000-0000-000000000000'
@@ -447,7 +449,7 @@ function initGpsData(periods, gpsCollection, divName) {
             data.push({
                 id: i,
                 group: null,
-                content: v.MovementState,
+               // content: v.MovementState,
                 style: style,
                 start: v.StartPeriod,
                 end: v.EndPeriod,
@@ -522,8 +524,7 @@ function InitTimelineChart(container, data, start, end, height) {
     // Create a Timeline
     var timeline = new vis.Timeline(container, null, options);
     timeline.setItems(data);
-    timeline.on("click",
-        function (properties) {
+    timeline.on("click", function (properties) {
             onPeriodClick("click", properties);
         });
 

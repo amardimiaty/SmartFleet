@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.Globalization;
 using System.Net.Http;
+using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using RestSharp;
@@ -110,6 +111,19 @@ namespace SmartFleet.Core.ReverseGeoCoding
                 Console.WriteLine(e);
                 throw;
             }
+
+        }
+        public  async Task<string> ReverseGoecode(double lat, double log)
+        {
+            var r = await ExecuteQuery(lat, log);
+            Thread.Sleep(1000);
+            if (r.display_name != null)
+                return r.display_name;
+            var ad = await ReverseGeoCoding(lat, log)
+                .ConfigureAwait(false);
+            if (ad == null) return string.Empty;
+            Thread.Sleep(1000);
+            return ad;
 
         }
 

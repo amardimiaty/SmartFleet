@@ -67,14 +67,15 @@ namespace SmartFLEET.Web.Hubs
             Groups.Add(Context.ConnectionId, groupName);
             SignalRHubManager.Clients = Clients;
         }
+
         /// <summary>
         /// 
         /// </summary>
         /// <param name="stopCalled"></param>
         /// <returns></returns>
-        public override  Task OnDisconnected(bool stopCalled)
+        public override Task OnDisconnected(bool stopCalled)
         {
-             SignalRHubManager.Clients = Clients;
+            SignalRHubManager.Clients = Clients;
             return base.OnDisconnected(stopCalled);
         }
 
@@ -115,7 +116,8 @@ namespace SmartFLEET.Web.Hubs
                 if (box != null)
                 {
                     // set position 
-                    var position = new PositionViewModel(context.Message, box.Vehicle);
+                    var db = dbContextScopeFactory.DbContexts.Get<SmartFleetObjectContext>();
+                    var position = new PositionViewModel(context.Message, box.Vehicle , db);
                     await SignalRHubManager.Clients.Group(position.CustomerName).receiveGpsStatements(position);
 
                 }

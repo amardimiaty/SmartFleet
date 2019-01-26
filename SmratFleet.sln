@@ -45,6 +45,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "TcpServer", "TcpServer", "{
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CommonServer", "TcpServer\CommonServer\CommonServer.csproj", "{463A26BB-4C4A-4555-A1E6-DC1EAD2DDFC6}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartFleet.Vue", "SmartFleet.Vue\SmartFleet.Vue.csproj", "{6D1A2B74-B3F0-4467-8383-5DD071D38491}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -107,6 +109,10 @@ Global
 		{463A26BB-4C4A-4555-A1E6-DC1EAD2DDFC6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{463A26BB-4C4A-4555-A1E6-DC1EAD2DDFC6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{463A26BB-4C4A-4555-A1E6-DC1EAD2DDFC6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6D1A2B74-B3F0-4467-8383-5DD071D38491}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6D1A2B74-B3F0-4467-8383-5DD071D38491}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6D1A2B74-B3F0-4467-8383-5DD071D38491}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6D1A2B74-B3F0-4467-8383-5DD071D38491}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -131,6 +137,7 @@ Global
 		{DB226B09-319B-478B-8DB2-A6D65337E22E} = {22BE7359-7B40-4053-B436-C9D3C2B829CB}
 		{828EC4A7-10FC-4564-926A-09A9B8011D9C} = {12DC8351-EC06-4808-871E-0484FC0BA9AA}
 		{463A26BB-4C4A-4555-A1E6-DC1EAD2DDFC6} = {828EC4A7-10FC-4564-926A-09A9B8011D9C}
+		{6D1A2B74-B3F0-4467-8383-5DD071D38491} = {765A8BBF-3A7F-412F-845D-5E36EFC72367}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {C29B2EFA-5BEE-4FFA-9E93-C59135F5B568}
