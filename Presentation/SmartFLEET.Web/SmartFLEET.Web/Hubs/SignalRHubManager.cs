@@ -3,6 +3,7 @@ using System.Threading;
 using Microsoft.AspNet.SignalR;
 using Microsoft.AspNet.SignalR.Hubs;
 using SmartFleet.Core.Data;
+using SmartFleet.Core.Geofence;
 using SmartFleet.Data.Dbcontextccope.Implementations;
 
 namespace SmartFLEET.Web.Hubs
@@ -33,6 +34,7 @@ namespace SmartFLEET.Web.Hubs
         /// </summary>
         public static IDbContextScopeFactory DbContextScopeFactory = new DbContextScopeFactory();
         public static Semaphore Semaphore = new Semaphore(3, 3);
+        public static Dictionary<string, GeofenceHelper.Position> LastPosition = new Dictionary<string, GeofenceHelper.Position>();
 
     }
 }

@@ -5,6 +5,7 @@ using Microsoft.AspNet.SignalR;
 using SmartFleet.Core.Contracts.Commands;
 using SmartFleet.Core.Data;
 using SmartFleet.Core.Domain.Gpsdevices;
+using SmartFleet.Core.Geofence;
 using SmartFleet.Core.ReverseGeoCoding;
 using SmartFleet.Data;
 using SmartFLEET.Web.Models;
@@ -116,9 +117,21 @@ namespace SmartFLEET.Web.Hubs
                 if (box != null)
                 {
                     // set position 
-                    var db = dbContextScopeFactory.DbContexts.Get<SmartFleetObjectContext>();
-                    var position = new PositionViewModel(context.Message, box.Vehicle , db);
+                    if (!SignalRHubManager.LastPosition.ContainsKey(box.Imei))
+                        SignalRHubManager.LastPosition.Add(box.Imei,
+                            new GeofenceHelper.Position()
+                            {
+                                Latitude = context.Message.Lat,
+                                Longitude = context.Message.Long
+                            });
+                    var position = new PositionViewModel(context.Message, box.Vehicle,
+                        SignalRHubManager.LastPosition[box.Imei]);
                     await SignalRHubManager.Clients.Group(position.CustomerName).receiveGpsStatements(position);
+                    SignalRHubManager.LastPosition[box.Imei] = new GeofenceHelper.Position()
+                    {
+                        Latitude = context.Message.Lat,
+                        Longitude = context.Message.Long
+                    };
 
                 }
             }

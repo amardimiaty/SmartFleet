@@ -46,9 +46,9 @@ namespace SmartFLEET.Web.Models
             SetVehicleImage(vehicle);
         }
 
-        public PositionViewModel(CreateTeltonikaGps tk103Gps, Vehicle vehicle, SmartFleetObjectContext db)
+        public PositionViewModel(CreateTeltonikaGps tk103Gps, Vehicle vehicle, SmartFleetObjectContext db, Guid boxId)
         {
-            var dir = GetDirection(tk103Gps, db);
+          //  var dir = GetDirection(tk103Gps, db, boxId);
             Latitude = tk103Gps.Lat;
             Longitude = tk103Gps.Long;
             Address = tk103Gps.Address;
@@ -60,16 +60,15 @@ namespace SmartFLEET.Web.Models
             VehicleId = vehicle.Id.ToString();
             CustomerName = vehicle.Customer?.Name;
             TimeStampUtc = tk103Gps.Timestamp;
-            SetVehicleImage(vehicle ,dir);
+            //SetVehicleImage(vehicle ,dir);
         }
+        
 
-        private static double GetDirection(CreateTeltonikaGps tk103Gps, SmartFleetObjectContext db)
+        private static double GetDirection(CreateTeltonikaGps tk103Gps, GeofenceHelper.Position lastPos)
         {
-            var lastPos = db.Positions.OrderByDescending(x => x.Timestamp)
-                .Where(x => x.Timestamp <= tk103Gps.Timestamp && x.Box.Imei == tk103Gps.Imei).Select(p => new {p.Lat, p.Long})
-                .FirstOrDefault();
-            var dir = lastPos != null
-                ? GeofenceHelper.DegreeBearing(lastPos.Lat, tk103Gps.Lat, lastPos.Long, tk103Gps.Long)
+                
+            var dir = !lastPos .Equals(default(GeofenceHelper.Position))
+                ? GeofenceHelper.DegreeBearing(lastPos.Latitude,  lastPos.Longitude, tk103Gps.Lat, tk103Gps.Long)
                 : 0;
             return dir;
         }
@@ -91,6 +90,28 @@ namespace SmartFLEET.Web.Models
             SetVehicleImage(vehicle);
         }
 
+        public PositionViewModel(CreateTeltonikaGps tk103Gps, Vehicle vehicle, GeofenceHelper.Position lasPosition)
+        {
+            double dir = 0;
+            if (Math.Abs(lasPosition.Latitude - tk103Gps.Lat) > 0.0 )
+                if( Math.Abs(lasPosition.Longitude - tk103Gps.Long) > 0.0)
+                    dir = GetDirection(tk103Gps, lasPosition);
+            
+            Latitude = tk103Gps.Lat;
+            Longitude = tk103Gps.Long;
+            Address = tk103Gps.Address;
+            IMEI = tk103Gps.Imei;
+            // SerialNumber = tk103Gps.s;
+            //Direction = tk103Gps.Address
+            Speed = tk103Gps.Speed;
+            VehicleName = vehicle.VehicleName;
+            VehicleId = vehicle.Id.ToString();
+            CustomerName = vehicle.Customer?.Name;
+            TimeStampUtc = tk103Gps.Timestamp;
+            SetVehicleImage(vehicle, dir);
+
+        }
+
 
         private void SetVehicleImage(Vehicle vehicle)
          {
@@ -108,7 +129,7 @@ namespace SmartFLEET.Web.Models
                     break;
             }
         }
-        private void SetVehicleImage(Vehicle vehicle,double dir)
+        private void SetVehicleImage(Vehicle vehicle, double dir)
         {
             switch (vehicle.VehicleType)
             {

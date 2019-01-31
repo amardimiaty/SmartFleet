@@ -97,22 +97,22 @@ function onRecieveData(gpsStatement) {
     //for (var i = 0; i < markers.length; i++) {
     //    map.removeLayer(markers[i]);
     //}
-    var template = "<div><h4><b>" +
+    var template = "<div><h4><b> <b>Véhicule</b>: " +
         gpsStatement.VehicleName +
-        "</b></h4><h5>" +
+        "</b></h4> <b>Adresse</b>: " +
         gpsStatement.Address +
-        "</h5>" +
-        "<p>" +
+        "" +
+        "<p> <b>Vitesse</b>: " +
         gpsStatement.Speed +
         "Km/H</p>" +
         "</h5>" +
-        "<p>" +
+        "<p> <b>Latitude</b>: " +
         gpsStatement.Latitude +
-        "Km/H</p>" +
+        "</p>" +
         "</h5>" +
-        "<p>" +
+        "<p> <b>Longitude</b>:  " +
         gpsStatement.Longitude +
-        "Km/H</p>" +
+        "</p>" +
         "</div>";
     var label = "<h5><b>" + gpsStatement.VehicleName + "</b></h5>";
     var marker = L.marker([gpsStatement.Latitude, gpsStatement.Longitude],
@@ -132,6 +132,7 @@ function onRecieveData(gpsStatement) {
     if (anchorId != null && gpsStatement.VehicleId === anchorId) {
         map.setView([gpsStatement.Latitude, gpsStatement.Longitude], 15, { animation: false });
         marker.openPopup();
+       // getChronogram();
     }
 }
 function joinSignalRGroup() {
@@ -263,14 +264,17 @@ function initJstree() {
                 positionModalOpend = true;
                 initWait();
 
-                $.ajax({
-                    url: '/Home/GetTargetByPeriod/?vehicleId=' + anchorId,
-                    dataType: 'json',
-                    success: onGetTargetsSuccess,
-                    error: onGetTargetsSuccess
-                });
+                getChronogram();
             } //
         });
+}
+function getChronogram() {
+    $.ajax({
+        url: '/Home/GetTargetByPeriod/?vehicleId=' + anchorId,
+        dataType: 'json',
+        success: onGetTargetsSuccess,
+        error: onGetTargetsSuccess
+    });
 }
 function onGetTargetsSuccess(result) {
     if (result.responseText != undefined) {
