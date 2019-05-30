@@ -49,7 +49,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartFleet.Vue", "SmartFlee
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TeltonikaListner", "TeltonikaListner\TeltonikaListner.csproj", "{49C97C0B-3A5B-49FF-82E9-BA83032B9419}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TeltonikaEmulator", "..\..\..\Downloads\TeltonikaEmulator\TeltonikaEmulator.csproj", "{B1F61283-811C-4091-A415-DF2CD868BB52}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TeltonikaEmulator", "Test\TeltonikaEmulator\TeltonikaEmulator.csproj", "{B1F61283-811C-4091-A415-DF2CD868BB52}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
