@@ -6,5 +6,6 @@ namespace SmartFleet.Core.Contracts.Commands
     {
         public string Imei { get; set; }
         public DateTime? LastValidGpsDataUtc { get; set; }
+        public string Address { get; set; }
     }
 }

@@ -145,6 +145,7 @@
     <Compile Include="Contracts\Commands\CreateTeltonikaGps.cs" />
     <Compile Include="Contracts\Commands\CreateNewBoxGps.cs" />
     <Compile Include="Contracts\Commands\CreateTk103Gps.cs" />
+    <Compile Include="Contracts\Commands\TNIoProperty.cs" />
     <Compile Include="Data\Enums\DbContextScopeOption.cs" />
     <Compile Include="Data\IAmbientDbContextLocator.cs" />
     <Compile Include="Data\IDbContextCollection.cs" />

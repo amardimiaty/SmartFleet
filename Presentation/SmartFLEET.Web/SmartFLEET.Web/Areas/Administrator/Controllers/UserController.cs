@@ -27,5 +27,6 @@ namespace SmartFLEET.Web.Areas.Administrator.Controllers
 
             return View(ObjectContext.UserAccounts.Include("Customer").ToList().Select(x=>new UserViewModel(x)));
         }
+        
     }
 }

@@ -31,7 +31,7 @@ namespace SmartFleet.Core.Protocols
             switch (codecId)
             {
                 case 8:
-                    parser = new FMXXXXParserV2();
+                    parser = new FmxxxxParser();
                     break;
                 case 7:
                     parser = new Gh3000Parser();

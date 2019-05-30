@@ -1,26 +1,9 @@
-using System;
-using System.Collections.Generic;
-using System.Configuration;
 using System.Diagnostics;
 using System.Net;
-using System.Net.Sockets;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
-using MassTransit;
-using MassTransit.AzureServiceBusTransport;
-using Microsoft.ServiceBus;
 using Microsoft.WindowsAzure.ServiceRuntime;
 using Serilog;
 using Serilog.Core;
-using SmartFleet.Core.Protocols.NewBox;
-using SmartFleet.Core.Protocols.Tk1003;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Runtime.InteropServices;
-using SmartFleet.Core.Contracts.Commands;
-using SmartFleet.Core.Helpers;
-using SmartFleet.Core.Protocols;
 
 namespace SmartFleet.TcpWorker
 {
@@ -28,41 +11,19 @@ namespace SmartFleet.TcpWorker
     {
         private readonly CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
         private readonly ManualResetEvent _runCompleteEvent = new ManualResetEvent(false);
-        private static IBusControl _bus;
-        private TcpListener _listener;
         private static Logger _log;
-        private static bool arduinoBox = false;
-        /// <summary>
+         /// <summary>
         /// 
         /// </summary>
         // ReSharper disable once MethodNameNotMeaningful
         public override void Run()
         {
             InitLog();
-
-            try
-            {
-                if (_listener == null)
-                    StartTcpListner();
-                //InitBus();
-                //_bus.Start();
-                while (true) // Add your exit flag here
-                {
-                    var client = _listener.AcceptTcpClient();
-                    ThreadPool.QueueUserWorkItem(ThreadProc, client);
-                }
-            }
-            catch (Exception exception)
-            {
-                _bus.Stop();
-                Trace.TraceError(exception.Message);
-            }
-            finally
-            {
-                _runCompleteEvent.Set();
-            }
+            // init teltonika server 
+            var listner = DependaciyRegistrar.ResolveTeltonicaListner();
+            listner.Start();
         }
-
+       
         private static void InitLog()
         {
             _log = new LoggerConfiguration()
@@ -70,158 +31,7 @@ namespace SmartFleet.TcpWorker
                 .WriteTo.File("tcp-worker-role.txt")
                 .CreateLogger();
         }
-
-        private void StartTcpListner()
-        {
-            _listener = new TcpListener(IPAddress.Any,34400);
-            _listener.Start();
-        }
-
-        private static void InitBus()
-        {
-            _bus = Bus.Factory.CreateUsingAzureServiceBus(sbc =>
-            {
-                var serviceUri = ServiceBusEnvironment.CreateServiceUri("sb",
-                    ConfigurationManager.AppSettings["AzureSbNamespace"],
-                    ConfigurationManager.AppSettings["AzureSbPath"]);
-
-                sbc.Host(serviceUri,
-                    h =>
-                    {
-                        h.TokenProvider = TokenProvider.CreateSharedAccessSignatureTokenProvider(
-                            ConfigurationManager.AppSettings["AzureSbKeyName"],
-                            ConfigurationManager.AppSettings["AzureSbSharedAccessKey"],
-                            //TimeSpan.FromDays(1),
-                            TokenScope.Namespace);
-                    });
-            });
-        }
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="state"></param>
-        private static async void ThreadProc(object state)
-        {
-            var client = (TcpClient)state;
-            byte[] buffer = new byte[client.ReceiveBufferSize];
-            NetworkStream stream = ((TcpClient)state).GetStream();
-            int bytesRead = stream.Read(buffer, 0, client.ReceiveBufferSize) - 2;
-            string dataReceived = Encoding.ASCII.GetString(buffer, 2, bytesRead);
-       
-            try
-            {
-                if (Commonhelper.IsValidImei(dataReceived))
-                {
-                    await ParseTeltonikaData(client, stream, buffer , dataReceived);
-                    //client.Close();
-                }
-                // il s'agit du format de nouveaux boitiers créent par khaled
-               else if (dataReceived.Contains(",") && !dataReceived.Contains("("))
-                {
-                    arduinoBox = true;
-                    NewBoxParser parser = new NewBoxParser();
-                    dataReceived = dataReceived.Replace("\r\n", "").Replace("\r", "").Replace("\n", "");
-                    try
-                    {
-                        var result = parser.Parse(dataReceived.Split('\r'));
-                        foreach (var r in result)
-                           await _bus.Publish(r);
-                       
-                    }
-                    catch (ValidationException e)
-                    {
-                        _log.Error("error message :" + e.Message + " details:" + e.InnerException + " at:" + DateTime.Now);
-                        //throw;
-                    }
-
-
-                }
-                else
-                {
-                    // boitier GT02A
-                    Tk1003Parser parser = new Tk1003Parser();
-                    arduinoBox = false;
-                    var result = parser.Parse(dataReceived.Split('\r'));
-                    // envoyer une message de reception et une déconnexion aux clients
-                    if (client.Connected)
-                        await SendCommand(stream, result.FirstOrDefault().Value, client);
-
-                    foreach (var r in result)
-                    {
-                        foreach (var createTk103Gpse in r.Key)
-                           await _bus.Publish(createTk103Gpse);
-                    }
-                  
-                    // client.Close();
-                }
-            }
-            catch (Exception e)
-            {
-                _log.Error("error message :" + e.Message + " details:" + e.InnerException + " at:" + DateTime.Now);
-                Console.WriteLine(e);
-                if(!arduinoBox)
-                    client.Close();
-            }
-            
-
-
-            // Console.ReadLine();
-        }
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="imei"></param>
-        /// <param name="dataReceived"></param>
-        /// <param name="stream"></param>
-        /// <param name="buffer"></param>
-        /// <returns></returns>
-        private static async Task ParseTeltonikaData(TcpClient client, NetworkStream stream, byte[] buffer, string imei)
-        {
-
-            var currentImei = string.Empty;
-           
-            var gpsResult = new List<CreateTeltonikaGps>();
-            while (true)
-            {
-
-                if (currentImei == string.Empty)
-                {
-                    currentImei = imei ;
-                    Console.WriteLine("IMEI received : " + currentImei);
-                    Byte[] b = {0x01};
-                    stream.Write(b, 0, 1);
-                    var command = new CreateBoxCommand();
-                    command.Imei = imei;
-                   if(_bus!=null) await _bus.Send(command);
-                }
-                else
-                {
-                    int dataNumber = Convert.ToInt32(buffer.Skip(9).Take(1).ToList()[0]);
-                    while (dataNumber > 0)
-                    {
-                        var parser = new DevicesParser();
-                        gpsResult.AddRange(parser.Decode(new List<byte>(buffer), imei));
-                        dataNumber--;
-                    }
-
-                  await  stream.WriteAsync(new byte[] {0x00, 0x00, 0x00, 0x01}, 0, 4).ConfigureAwait(false);
-                   
-                }
-
-                if (!gpsResult.Any() &&imei.Any()) continue;
-                foreach (var gpSdata in gpsResult)
-                    if (_bus != null) await _bus.Send(gpSdata);
-                break;
-            }
-        }
-
-
-        private static async Task SendCommand(NetworkStream stream, string msg, TcpClient client)
-        {
-            await stream.WriteAsync(Encoding.ASCII.GetBytes(msg), 0, msg.Length);
-            client.Close();
-        }
-        public override bool OnStart()
+         public override bool OnStart()
         {
             // Définir le nombre maximum de connexions simultanées
             ServicePointManager.DefaultConnectionLimit = 12;
@@ -242,8 +52,8 @@ namespace SmartFleet.TcpWorker
 
             _cancellationTokenSource.Cancel();
             _runCompleteEvent.WaitOne();
-            _listener.Stop();
-            _bus.StopAsync();
+           // _listener.Stop();
+            //_bus.StopAsync();
             base.OnStop();
 
             Trace.TraceInformation("SmartFleet.TcpWorker has stopped");

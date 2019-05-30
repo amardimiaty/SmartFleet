@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
 namespace SmartFleet.Core.Contracts.Commands
 {
@@ -13,10 +15,14 @@ namespace SmartFleet.Core.Contracts.Commands
             IoElements_8B = new Dictionary<byte, long>();
         }
         public string Imei { get; set; }
+       // [JsonConverter(typeof(JsonDictionaryAttribute))]
         public Dictionary<byte, long> IoElements_8B;
         public byte EventIoElementId;
+       // [JsonConverter(typeof(JsonDictionaryAttribute))]
         public Dictionary<byte, long> IoElements_1B;
+      //  [JsonConverter(typeof(JsonDictionaryAttribute))]
         public Dictionary<byte, long> IoElements_2B;
+       // [JsonConverter(typeof(JsonDictionaryAttribute))]
         public Dictionary<byte, long> IoElements_4B;
         public short Altitude { get; set; }
         public short Direction { get; set; }
