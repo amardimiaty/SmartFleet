@@ -2,23 +2,14 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Text;
 using SmartFleet.Core.Contracts.Commands;
-using SmartFleet.Core.Helpers;
 using SmartFleet.Core.Protocols.Teltonika;
 
 namespace SmartFleet.Core.Protocols
 {
     public class DevicesParser
     {
-        public string GetIMEI(byte[] buffer, int recievedBytes)
-        {
-            var imei = string.Empty;
-            var dataReceived = Encoding.ASCII.GetString(buffer, 2, recievedBytes);
-            if (imei != string.Empty || !Commonhelper.IsValidImei(dataReceived)) return imei;
-            imei = dataReceived;
-            return imei;
-        }
+       
 
         public List<CreateTeltonikaGps> Decode(List<byte> receiveBytes, string imei)
         {
