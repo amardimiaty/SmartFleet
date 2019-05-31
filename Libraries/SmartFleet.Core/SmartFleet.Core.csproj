@@ -172,6 +172,7 @@
     <Compile Include="Domain\Vehicles\VehicleType.cs" />
     <Compile Include="Geofence\GeofenceHelper.cs" />
     <Compile Include="Helpers\Commonhelper.cs" />
+    <Compile Include="Helpers\StringExtension.cs" />
     <Compile Include="ICommonServer.cs" />
     <Compile Include="IMicorService.cs" />
     <Compile Include="Infrastructure\Automapper\AutomapperConfig.cs" />

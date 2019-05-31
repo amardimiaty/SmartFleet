@@ -14,6 +14,9 @@
     <Endpoints>
       <InputEndpoint name="Endpoint1" protocol="http" port="80" />
     </Endpoints>
+    <Imports>
+      <Import moduleName="RemoteAccess" />
+    </Imports>
   </WebRole>
   <WorkerRole name="SmartFleet.TcpWorker" vmsize="Small">
     <ConfigurationSettings>
@@ -22,5 +25,9 @@
     <Endpoints>
       <InputEndpoint name="Smartfleet.server" protocol="tcp" port="34400" />
     </Endpoints>
+    <Imports>
+      <Import moduleName="RemoteAccess" />
+      <Import moduleName="RemoteForwarder" />
+    </Imports>
   </WorkerRole>
 </ServiceDefinition>

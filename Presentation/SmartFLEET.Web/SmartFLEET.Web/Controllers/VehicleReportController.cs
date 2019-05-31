@@ -94,7 +94,7 @@ namespace SmartFLEET.Web.Controllers
             var vehicle = await _vehicleService.GetVehicleById(id);
             var positions = await _positionService.GetVehiclePositionsByPeriod(id, start, endPeriod);
             if (positions.Any())
-                return Json(new CompleteDailyReport(positions, vehicle), JsonRequestBehavior.AllowGet);
+                return Json(new CompleteDailyReport(positions.OrderBy(p => p.Timestamp).ToList(), vehicle), JsonRequestBehavior.AllowGet);
             return Json(
                 new CompleteDailyReport
                 {
@@ -132,8 +132,8 @@ namespace SmartFLEET.Web.Controllers
             MemoryStream stream = new MemoryStream();
             if (positions.Any())
             {
-                var report = new CompleteDailyReport(positions, vehicle);
-                _pdfService.CreatePdfReport(positions, vehicle, report,stream);
+                var report = new CompleteDailyReport(positions.OrderBy(p=>p.Timestamp).ToList(), vehicle);
+                _pdfService.CreatePdfReport(positions.OrderBy(p => p.Timestamp).ToList(), vehicle, report,stream);
             }
             stream.Flush(); //Always catches me out
             stream.Position = 0; //Not sure if this is required

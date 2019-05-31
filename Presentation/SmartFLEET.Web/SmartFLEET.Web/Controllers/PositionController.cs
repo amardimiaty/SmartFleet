@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using AutoMapper;
+using SmartFleet.Core.Helpers;
 using SmartFleet.Data;
 using SmartFleet.Service.Tracking;
 using SmartFLEET.Web.DailyRports;
@@ -31,18 +32,18 @@ namespace SmartFLEET.Web.Controllers
             var id = Guid.Parse(vehicleId);
            // var endPeriod = DateTime.Now;
             var startPeriod = default(DateTime);
-            DateTime.TryParseExact(start, "yyyy-MM-dHH:mm", null, DateTimeStyles.AssumeLocal, out startPeriod);
+            startPeriod= start.ParseToDate();
 
             var endPeriod =startPeriod.Date.AddDays(1).AddTicks(-1);
             var vehicle = await ObjectContext.Vehicles.FindAsync(id);
-            var positions = await _positionService.GetVehiclePositionsByPeriod(id, startPeriod, endPeriod);
+            var positions = await _positionService.GetVehiclePositionsByPeriod(id, startPeriod.ToUniversalTime(), endPeriod.ToUniversalTime());
             if (!positions.Any()) return Json(new List<TargetViewModel>(), JsonRequestBehavior.AllowGet);
-            var gpsCollection = positions.Select(x =>
-                new { Latitude = x.Lat, Longitude = x.Long, GpsStatement = x.Timestamp.ToString("O") });
+            var gpsCollection = positions.OrderBy(x=>x.Timestamp)
+                .Select(x =>new { Latitude = x.Lat, Longitude = x.Long, GpsStatement = x.Timestamp.ToString("O") });
             var positionReport = new PositionReport();
-            var result = positionReport.BuidDailyReport(positions, startPeriod, vehicle.VehicleName) ;
+            var result = positionReport.BuidDailyReport(positions.OrderBy(x=>x.Timestamp).ToList(), startPeriod, vehicle.VehicleName) ;
             var distance = result.Where(x => x.MotionStatus == "Moving").Sum(x => x.Distance);
-            return Json(new {Vehiclename = vehicle?.VehicleName, Distance = distance, Periods = result,GpsCollection = gpsCollection}, JsonRequestBehavior.AllowGet);
+            return Json(new {Vehiclename = vehicle?.VehicleName, Distance = distance, Periods = result,GpsCollection = gpsCollection.Distinct()}, JsonRequestBehavior.AllowGet);
 
         }
 

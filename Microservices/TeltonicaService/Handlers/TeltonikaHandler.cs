@@ -98,7 +98,7 @@ namespace TeltonicaService.Handlers
                         position.Priority = context.Message.Priority;
                         position.Satellite = context.Message.Satellite;
                         position.Timestamp = context.Message.Timestamp;
-                        position.MotionStatus = !context.Message.IsStop ||context.Message.Speed>0.0 ? MotionStatus.Moving : MotionStatus.Stopped;
+                        position.MotionStatus = context.Message.Speed>0.0 ? MotionStatus.Moving : MotionStatus.Stopped;
 
                         _posiRepository.Add(position);
                         contextFScope.SaveChangesAsync().ConfigureAwait(false);

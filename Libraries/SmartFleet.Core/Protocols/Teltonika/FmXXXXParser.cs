@@ -28,9 +28,7 @@ namespace SmartFleet.Core.Protocols.Teltonika
                 long timeSt = Convert.ToInt64(hexTimeStamp, 16);
 
                 DateTime origin = new DateTime(1970, 1, 1, 0, 0, 0, 0);
-                DateTime timestamp = origin.AddMilliseconds(Convert.ToDouble(timeSt));
-
-
+                DateTime dateTime = origin.AddMilliseconds(Convert.ToDouble(timeSt));
                 int priority = Convert.ToInt32(receiveBytes.Skip(tokenAddress + 8).Take(1).ToList()[0]);
 
                 string longt = string.Empty;
@@ -158,7 +156,7 @@ namespace SmartFleet.Core.Protocols.Teltonika
                 gpsData.Priority = (byte) priority;
                 gpsData.Satellite = (byte) satellites;
                 gpsData.Speed =speed;
-                gpsData.Timestamp = timestamp;
+                gpsData.Timestamp = dateTime;
                 gpsData.Imei = imei.Substring(0, 15);
                 results.Add(gpsData);
                 //  dt.SaveGPSPositionFMXXXX(gpsData);

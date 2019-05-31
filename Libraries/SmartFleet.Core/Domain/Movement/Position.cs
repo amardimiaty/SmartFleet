@@ -70,13 +70,14 @@ namespace SmartFleet.Core.Domain.Movement
         /// The timestamp.
         /// </value>
         public DateTime Timestamp { get; set; }
-        
+
         /// <summary>
         /// Gets or sets the box identifier.
         /// </summary>
         /// <value>
         /// The box identifier.
         /// </value>
+        [Index("IX_Box_Id")] 
         public Nullable<System.Guid> Box_Id { get; set; }
 
         /// <summary>
