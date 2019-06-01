@@ -12,6 +12,9 @@ using SmartFLEET.Web.Models;
 
 namespace SmartFLEET.Web.Hubs
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public class SignalRHandler : Hub,
         IConsumer<CreateTk103Gps>,
         IConsumer<CreateNewBoxGps>, 
@@ -89,9 +92,6 @@ namespace SmartFLEET.Web.Hubs
         {
             if (SignalRHubManager.Clients == null)
                 return;
-           // var reverseGeoCodingService = new ReverseGeoCodingService();
-           //var r= await reverseGeoCodingService.ExecuteQuery(context.Message.Latitude, context.Message.Longitude);
-          //  context.Message.Address = r.display_name;
             using (var dbContextScopeFactory = SignalRHubManager.DbContextScopeFactory.Create())
             {
                 // get current gps device 
@@ -104,7 +104,7 @@ namespace SmartFLEET.Web.Hubs
                 }
             }
         }
-      
+
         public async Task Consume(ConsumeContext<CreateTeltonikaGps> context)
         {
             if (SignalRHubManager.Clients == null)
@@ -118,16 +118,14 @@ namespace SmartFLEET.Web.Hubs
                 {
                     // set position 
                     if (!SignalRHubManager.LastPosition.ContainsKey(box.Imei))
-                        SignalRHubManager.LastPosition.Add(box.Imei,
-                            new GeofenceHelper.Position()
+                        SignalRHubManager.LastPosition.Add(box.Imei, new GeofenceHelper.Position
                             {
                                 Latitude = context.Message.Lat,
                                 Longitude = context.Message.Long
                             });
-                    var position = new PositionViewModel(context.Message, box.Vehicle,
-                        SignalRHubManager.LastPosition[box.Imei]);
+                    var position = new PositionViewModel(context.Message, box.Vehicle, SignalRHubManager.LastPosition[box.Imei]);
                     await SignalRHubManager.Clients.Group(position.CustomerName).receiveGpsStatements(position);
-                    SignalRHubManager.LastPosition[box.Imei] = new GeofenceHelper.Position()
+                    SignalRHubManager.LastPosition[box.Imei] = new GeofenceHelper.Position
                     {
                         Latitude = context.Message.Lat,
                         Longitude = context.Message.Long

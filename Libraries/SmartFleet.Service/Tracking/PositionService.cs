@@ -30,33 +30,44 @@ namespace SmartFleet.Service.Tracking
             _geoCodingService = geoCodingService;
             _dbContextScopeFactory = dbContextScopeFactory;
         }
+
         public async Task<List<Position>> GetLastVehiclPosition(string userName)
         {
             using (var contextFScope = _dbContextScopeFactory.Create())
             {
                 _objectContext = contextFScope.DbContexts.Get<SmartFleetObjectContext>();
                 var positions = new List<Position>();
-                var cst = await _objectContext.UserAccounts.Include(x => x.Customer).Include(x => x.Customer.Vehicles)
-                    .FirstOrDefaultAsync(x => x.UserName == userName);
-                if (cst?.Customer.Vehicles != null)
+                var vehicles = await _objectContext.UserAccounts
+                    .Include(x => x.Customer)
+                    .Include(x => x.Customer.Vehicles)
+                    .Where(x => x.UserName == userName)
+                    .Select(x=>x.Customer.Vehicles)
+                    .FirstOrDefaultAsync();
+                if (vehicles != null)
                 {
-                    var vehicles = cst.Customer.Vehicles;
-                    var vehicleids = vehicles.Select(v => v.Id);
-                    var gpsDevices = _objectContext.Boxes.Where(x => vehicleids.Any(v => v == x.VehicleId));
-                    foreach (var geDevice in gpsDevices)
+                    foreach (var vehicle in vehicles)
                     {
-                        var position = await _objectContext.Positions.OrderByDescending(x => x.Timestamp)
-                            .FirstOrDefaultAsync(p => p.Box_Id == geDevice.Id);
-                        if (position == null) continue;
-                        position.Vehicle = vehicles.FirstOrDefault(v => v.Id == geDevice.VehicleId);
-                        await _geoCodingService.ReverseGeoCoding(position);
-                        positions.Add(position);
+                        var boxes = _objectContext.Boxes.Where(b => b.VehicleId == vehicle.Id);
+
+                        if (boxes.Any())
+                        {
+                            foreach (var geDevice in boxes)
+                            {
+                                var position = await _objectContext.Positions.OrderByDescending(x => x.Timestamp)
+                                    .FirstOrDefaultAsync(p => p.Box_Id == geDevice.Id);
+                                if (position == null) continue;
+                                position.Vehicle = vehicle;
+                                await _geoCodingService.ReverseGeoCoding(position);
+                                positions.Add(position);
+                            }
+                        }
                     }
+
                 }
 
                 return positions;
             }
-            
+
 
         }
 

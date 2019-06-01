@@ -33,7 +33,13 @@ namespace SmartFLEET.Web.Hubs
         /// 
         /// </summary>
         public static IDbContextScopeFactory DbContextScopeFactory = new DbContextScopeFactory();
+        /// <summary>
+        /// 
+        /// </summary>
         public static Semaphore Semaphore = new Semaphore(3, 3);
+        /// <summary>
+        /// 
+        /// </summary>
         public static Dictionary<string, GeofenceHelper.Position> LastPosition = new Dictionary<string, GeofenceHelper.Position>();
 
     }

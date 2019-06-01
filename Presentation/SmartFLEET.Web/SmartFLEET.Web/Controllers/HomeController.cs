@@ -80,27 +80,7 @@ namespace SmartFLEET.Web.Controllers
 
             return Json(nodes, JsonRequestBehavior.AllowGet);
         }
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="vehicleId"></param>
-        /// <returns></returns>
-        public async Task<JsonResult> GetTargetByPeriod(string vehicleId)
-        {
-            var id = Guid.Parse(vehicleId);
-            //var start = 
-            var endPeriod = DateTime.Now;
-            var startPeriod = DateTime.Now.Date;
-            var vehicle = await _vehicleService.GetVehicleById(id);
-            var positions = await _positionService.GetVehiclePositionsByPeriod(id, startPeriod, endPeriod);
-            if (!positions.Any())
-                return Json(new List<TargetViewModel>(), JsonRequestBehavior.AllowGet);
-            var gpsCollection = positions.Select(x =>
-                new { Latitude = x.Lat, Longitude = x.Long, GpsStatement = x.Timestamp.ToString("O") });
-            var positionReport = new PositionReport();
-            return Json(new { Periods =  positionReport.BuidDailyReport(positions, startPeriod, vehicle.VehicleName), GpsCollection = gpsCollection }, JsonRequestBehavior.AllowGet);
-
-        }
+       
         [NonAction]
         private static JsTreeModel JsTreeModel(Vehicle vehicle)
         {

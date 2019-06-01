@@ -601,7 +601,7 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:SmartFLEET.Web.Controllers.HomeController.GetTargetByPeriod(System.String)">
+        <member name="M:SmartFLEET.Web.Controllers.PositionController.GetCurrentDayPosition(System.String)">
             <summary>
             
             </summary>
@@ -664,7 +664,7 @@
             <param name="positionsOfVehicle"></param>
             <returns></returns>
         </member>
-        <member name="M:SmartFLEET.Web.DailyRports.PositionReport.BuidDailyReport(System.Collections.Generic.List{SmartFleet.Core.Domain.Movement.Position},System.DateTime,System.String)">
+        <member name="M:SmartFLEET.Web.DailyRports.PositionReport.BuildDailyReport(System.Collections.Generic.List{SmartFleet.Core.Domain.Movement.Position},System.DateTime,System.String)">
             <summary>
             
             </summary>
@@ -679,6 +679,11 @@
             </summary>
             <param name="sender"></param>
             <param name="e"></param>
+        </member>
+        <member name="T:SmartFLEET.Web.Hubs.SignalRHandler">
+            <summary>
+            
+            </summary>
         </member>
         <member name="M:SmartFLEET.Web.Hubs.SignalRHandler.Consume(MassTransit.ConsumeContext{SmartFleet.Core.Contracts.Commands.CreateTk103Gps})">
             <summary>
@@ -733,6 +738,16 @@
             </summary>
         </member>
         <member name="F:SmartFLEET.Web.Hubs.SignalRHubManager.DbContextScopeFactory">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:SmartFLEET.Web.Hubs.SignalRHubManager.Semaphore">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:SmartFLEET.Web.Hubs.SignalRHubManager.LastPosition">
             <summary>
             
             </summary>

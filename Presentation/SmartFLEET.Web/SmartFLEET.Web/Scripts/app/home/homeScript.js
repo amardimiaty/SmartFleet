@@ -15,13 +15,15 @@ var reportModalOpend = false;
 var timeLineData;
 var hub;
 var anchorId = null;
+var downloadFullReport = false;
+var getPossition = false;
 $(document).ready(function () {
     initJstree();
     loadData(0.33);
     initMap();
     loadData(0.67);
     initSignalR();
-
+    
     //    $("#accordion").accordion();
     $("#vehicles").select2({
         // width: 175
@@ -61,10 +63,57 @@ $(document).ready(function () {
         todayHighlight: true,
     });
     loadData(1);
+    $('#cc').calendar({
+        onSelect: function (date) {
+            console.log(downloadFullReport);
+            if (downloadFullReport) {
+                var reportScope = getScope('reportController');
+                reportScope.startPeriod = formatDate(date);
+                reportScope.vehicleId = anchorId;
+                reportScope.Download();
+                reportScope.$apply();
+            } else {
+                var $positionScope = getScope('positionController');
+                $positionScope.vehicleId = anchorId;
+                $positionScope.Download(formatDate(date));
+                $positionScope.$apply();
+            }
+            
+
+        }
+    });
+    var height = $(window).height()/2 + 130;
+    $('#chronogram').window({
+        left: 315,
+        top: height,
+        collapsible: false,
+        minimizable: false,
+        maximizable: false,
+        closable: false,
+        draggable:false
+    });
+    $("#chronogram").window('close');
+    $("#btn-report").on('click', function() {
+        downloadFullReport = true;
+    });;
 
 });
+function formatDate(date) {
+    var d = new Date(date),
+        month = '' + (d.getMonth() + 1),
+        day = '' + d.getDate(),
+        year = d.getFullYear();
 
+    if (month.length < 2) month = '0' + month;
+    if (day.length < 2) day = '0' + day;
 
+    return [year, month, day].join('-');
+}
+
+function getScope(ctrlName) {
+    var sel = 'div[ng-controller="' + ctrlName + '"]';
+    return angular.element(sel).scope();
+}
 function initMap() {
     map = L.map('map', {
         center: [36.7525000, 3.0419700],
@@ -176,7 +225,7 @@ function onGetAllVehiclesSuccess(result) {
                 direction: 'top'
             }
             ).addTo(map).on('click', clickZoom);
-        console.log(marker.optionss);
+        console.log(marker.options);
         markers.push(marker);
        
     }
@@ -260,7 +309,7 @@ function initJstree() {
                 && anchorId != 'drivers-00000000-0000-0000-0000-000000000000') {
                 markerFunction(anchorId);
 
-                initPositionWind();
+               // initPositionWind();
                 positionModalOpend = true;
                 initWait();
 
@@ -270,7 +319,7 @@ function initJstree() {
 }
 function getChronogram() {
     $.ajax({
-        url: '/Home/GetTargetByPeriod/?vehicleId=' + anchorId,
+        url: '/Position/GetCurrentDayPosition/?vehicleId=' + anchorId,
         dataType: 'json',
         success: onGetTargetsSuccess,
         error: onGetTargetsSuccess

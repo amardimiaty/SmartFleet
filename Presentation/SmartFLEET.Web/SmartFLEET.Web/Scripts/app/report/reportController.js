@@ -84,6 +84,9 @@ function reportController($scope, reportService) {
             $("#prg .progress-bar").css("width", "0%").removeClass("progress-bar-striped").html("0%");
         });
     }
+    $scope.downloadFullReport = function() {
+        console.log("here !!");
+    }
 }
 function setOptions(value) {
     return {

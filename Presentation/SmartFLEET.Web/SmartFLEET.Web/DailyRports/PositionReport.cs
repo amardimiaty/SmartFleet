@@ -36,7 +36,7 @@ namespace SmartFLEET.Web.DailyRports
         /// <param name="startPeriod"></param>
         /// <param name="vehicleName"></param>
         /// <returns></returns>
-        public List<TargetViewModel> BuidDailyReport(List<Position> positions, DateTime startPeriod, string vehicleName)
+        public List<TargetViewModel> BuildDailyReport(List<Position> positions, DateTime startPeriod, string vehicleName)
         {
            // string timeZone = "W. Central Africa Standard Time";
           //  TimeZoneInfo cstZone = TimeZoneInfo.FindSystemTimeZoneById(timeZone);

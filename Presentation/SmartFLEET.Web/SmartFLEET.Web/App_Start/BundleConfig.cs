@@ -49,13 +49,14 @@ namespace SmartFLEET.Web
                 "~/dist/plugins/wait/waitMe.min.js",
                 "~/Scripts/jquery.stacky.js",
                 "~/Content/jsWindow/src/popupwindow.min.js",
+                "~/Scripts/easyui/jquery.easyui.min.js",
                 "~/Scripts/app/mainApp.js"));
             bundles.Add(new ScriptBundle("~/bundles/jsApp").Include(
                 "~/dist/js/app.min.js"
                 ));
 
             bundles.Add(new StyleBundle("~/Content/css").Include(
-              //  "~/Content/bootstrap.css",
+                "~/Content/bootstrap.css",
                 "~/Content/validationEngine.jquery.css",
                 "~/Content/font-awesome.css",
                 "~/Scripts/datatables/css/dataTables.bootstrap.css",
@@ -67,6 +68,7 @@ namespace SmartFLEET.Web
                 "~/Scripts/jstree/themes/default/style.min.css",
                 "~/dist/plugins/wait/waitMe.min.css",
                 "~/dist/plugins/line-awesome/css/line-awesome.min.css",
+                "~/Scripts/easyui/themes/gray/easyui.css",
                 "~/Content/jsWindow/src/popupwindow.css"));
             bundles.Add(new StyleBundle("~/Content/cssadmin").Include(
                 "~/Content/bootstrap.min.css",
