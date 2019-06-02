@@ -82,7 +82,8 @@ namespace SmartFLEET.Web
                 "~/Scripts/jstree/themes/default/style.min.css",
                 "~/dist/plugins/select2/select2.min.css",
                 "~/dist/plugins/select2/select2.bootstrap.css",
-                "~/Scripts/jstree/themes/default/style.min.css"
+                "~/Scripts/jstree/themes/default/style.min.css",
+                "~/Content/ui.jqgrid.css"
             ));
         }
     }

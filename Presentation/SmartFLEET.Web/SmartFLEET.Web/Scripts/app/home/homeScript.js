@@ -31,41 +31,10 @@ $(document).ready(function () {
     });
     $("#vehicles-pos").select2();
     $("#daily-report").tabs();
-    //$("#position-sec").tabs();
-
-    //   initSignalR();
-    $("#startPeriod").datepicker({
-        format: 'yyyy-mm-dd',
-        orientation: 'top',
-        language: 'fr',
-        autoclose: true,
-        todayHighlight: true,
-    });
-    $("#startPeriod-pos").datepicker({
-        format: 'yyyy-mm-dd',
-        orientation: 'top',
-        language: 'fr',
-        autoclose: true,
-        todayHighlight: true,
-    });
-    $("#endPeriod").datepicker({
-        format: 'yyyy-mm-dd',
-        orientation: 'bottom',
-        language: 'fr',
-        autoclose: true,
-        todayHighlight: true,
-    });
-    $("#dt-driver").datepicker({
-        format: 'yyyy-mm-dd',
-        orientation: 'top',
-        language: 'fr',
-        autoclose: true,
-        todayHighlight: true,
-    });
+   
     loadData(1);
     $('#cc').calendar({
         onSelect: function (date) {
-            console.log(downloadFullReport);
             if (downloadFullReport) {
                 var reportScope = getScope('reportController');
                 reportScope.startPeriod = formatDate(date);
@@ -139,13 +108,9 @@ function initSignalR() {
 }
 function onRecieveData(gpsStatement) {
     var thisIcon = new L.Icon();
-
-    console.log(gpsStatement);
     removeMarker(gpsStatement);
     thisIcon.options.iconUrl = gpsStatement.ImageUri;
-    //for (var i = 0; i < markers.length; i++) {
-    //    map.removeLayer(markers[i]);
-    //}
+   
     var template = "<div><h4><b> <b>Véhicule</b>: " +
         gpsStatement.VehicleName +
         "</b></h4> <b>Adresse</b>: " +
@@ -177,7 +142,6 @@ function onRecieveData(gpsStatement) {
             }
         ).addTo(map);
     markers.push(marker);
-    console.log(anchorId);
     if (anchorId != null && gpsStatement.VehicleId === anchorId) {
         map.setView([gpsStatement.Latitude, gpsStatement.Longitude], 15, { animation: false });
         marker.openPopup();
@@ -233,54 +197,6 @@ function onGetAllVehiclesSuccess(result) {
 }
 function clickZoom(e) {
     map.setView(e.target.getLatLng(), 15);
-}
-
-
-function iniJBOXDriver() {
-    $("#driver-frm").PopupWindow({
-        title: "Nouveau conducteur",
-        modal: false,
-        autoOpen: false,
-        height: $('#map').height(),
-        width: 400,
-        top: 60,
-        left: 320
-    });
-    $("#driver-frm").PopupWindow("open");
-}
-
-
-function initReportBox() {
-    var width = $('#map').width();
-    var height = $('#map').height();
-    $("#daily-report").show();
-    $("#daily-report").PopupWindow({
-        title: "Rapport",
-        modal: false,
-        autoOpen: false,
-        height: height,
-        resizable :false,
-        width: width,
-        top: 60,
-        left: 320
-    });
-    $("#daily-report").PopupWindow("open");
-
-}
-function initPositionWind() {
-    var width = $('#map').width() -5;
-    var top =  $('#map').height() -200;
-    $("#tachy-dashboard").PopupWindow({
-        title: "Position",
-        modal: false,
-        autoOpen: false,
-        height: 230,
-        width: width,
-        top: top,
-        left: 320
-    });
-    $("#tachy-dashboard").PopupWindow("open");
-
 }
 
 function initJstree() {
@@ -366,17 +282,13 @@ function customMenu(context) {
         aclRole: {
             label: "Ajouter un conducteur",
             action: function (obj) {
-                console.log(obj);
-                iniJBOXDriver();
-                //window.location.href = '<?= Url::to(['role/acl']) ?>' + '?name=' + node.li_attr.name
-            },
+                 },
             icon: "fa fa-user"
         },
         deleteRole: {
             label: "Position par période",
             action: function (obj) {
-                console.log(obj);
-                iniJBOXPositionSearch().open();
+               
             },
             icon: "fa fa-map-marker"
         }

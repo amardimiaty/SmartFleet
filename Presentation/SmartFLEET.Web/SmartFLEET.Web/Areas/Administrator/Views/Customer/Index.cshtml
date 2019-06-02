@@ -1,4 +1,5 @@
-﻿@model IEnumerable<SmartFleet.Core.Domain.Customers.Customer>
+﻿@using MvcJqGrid
+@model IEnumerable<SmartFleet.Core.Domain.Customers.Customer>
 
 <div class="box" style=" padding:10px" >
     <h3>Liste des clients</h3>
@@ -19,87 +20,22 @@
         </div>
         
     </p>
-    <table id="customer-list" class="table table-bordered table-striped table-responsive">
-        <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Name)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Email)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Tel)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.CreationDate)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Country)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.State)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Street)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.ZipCode)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.CustomerStatus)
-            </th>
-            <th></th>
-        </tr>
-
-        </thead>
-        @foreach (var item in Model)
-        {
-            <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Name)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Email)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Tel)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.CreationDate)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Country)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.State)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Street)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.ZipCode)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.CustomerStatus)
-                </td>
-                <td>
-                    @Html.ActionLink("Edit", "Edit", new { id = item.Id }) |
-                    @Html.ActionLink("Details", "Details", new { id = item.Id }) |
-                    @Html.ActionLink("Delete", "Delete", new { id = item.Id })
-                </td>
-            </tr>
-        }
-
-    </table>
+    @(Html.Grid("basic")
+          .SetCaption("Liste des clients")
+          .AddColumn(new Column("Id")
+              .SetLabel("Id"))
+          .AddColumn(new Column("Name"))
+          .AddColumn(new Column("Email"))
+          .AddColumn(new Column("Tel").SetLabel("Téléphone"))
+          .AddColumn(new Column("CreationDate").SetLabel("Date de création"))
+          .AddColumn(new Column("Country").SetLabel("Pays"))
+          .SetUrl("/Customer/GetCustomers/")
+          .SetAutoWidth(true)
+          .SetRowNum(10)
+          .SetRowList(new int[]{10,15,20,50})
+          .SetViewRecords(true)
+          .SetPager("pager"))
     @{
         Html.RenderPartial("_CreateModel");
     }
 </div>
-<script>
-    $(document).ready(function() {
-        $('#customer-list').DataTable();
-       
-    })
-    
-</script>

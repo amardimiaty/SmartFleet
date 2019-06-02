@@ -1,4 +1,6 @@
-﻿using System.Linq;
+﻿using System.Data.Entity;
+using System.Linq;
+using System.Threading.Tasks;
 using System.Web.Mvc;
 using AutoMapper;
 using SmartFleet.Core.Domain.Customers;
@@ -21,7 +23,12 @@ namespace SmartFLEET.Web.Areas.Administrator.Controllers
         // GET
         public ActionResult Index()
         {
-            return View( ObjectContext.Customers.ToList());
+            return View();
+        }
+
+        public async Task<ActionResult> GetCustomers()
+        {
+            return Json(await ObjectContext.Customers.ToListAsync());
         }
 
         public ActionResult CreatePopup()
