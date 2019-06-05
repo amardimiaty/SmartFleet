@@ -23,84 +23,15 @@
 <link href="~/dist/plugins/select2/select2.bootstrap.css" rel="stylesheet" />
 <link href="~/dist/plugins/select2/select2.min.css" rel="stylesheet" />
 <link href="~/Scripts/easyui/themes/default/calendar.css" rel="stylesheet" />
-<nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <a class="navbar-brand" href="#" style="width: 45px;margin-top: -5px; height: 45px;background: url(../../assets/carte_45x45.png) no-repeat top left;"></a>
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-    </button>
+@{
+    Html.RenderPartial("_menu");
+    Html.RenderPartial("_map");
+    Html.RenderPartial("_leftPanel");
+}
 
-    <div class="collapse navbar-collapse" id="navbarSupportedContent">
-        <ul class="navbar-nav mr-auto">
-            <li class="nav-item active">
-                <a title="Position" class="btn btn-default" href="#" style="width: 45px; height: 45px;margin-top: -5px;   background: url(../../assets/position_45x45.png) no-repeat top left;"> <span class="sr-only">(current)</span></a>
-            </li>
-            <li class="nav-item" >
-                <a title="Raappot" id="btn-report" class="btn btn-default" href="#" style="width: 45px; height: 45px;margin-top: -5px;   background: url(../../assets/rapport_45x45.png) no-repeat top left;"> <span class="sr-only">(current)</span></a>
 
-            </li>
 
-          
-        </ul>
-       <ul class="navbar-nav" style="margin-left: auto !important">
-            <li class="nav-item">
-                <a class="btn btn-default" style="width: 45px; height: 45px;margin-top: -5px;   background: url(../../assets/exit_45x45.png) no-repeat top left;" href="#"></a>
-            </li>
-        </ul>
-    </div>
-</nav>
-
-<div id="Modal-2" ui-view class="ui-layout-center "  style=" height: 100%;width: 100%">
-    
-    <div id="map" class="map" style="height: 94%; width: 100%; position: relative; overflow: hidden;">
-        <input type="hidden" value="@ViewBag.GroupName" id="client-group"/>
-        
-    </div>
-    <div id="chronogram" class="easyui-window" data-options="left:320,top:20" title="Activités" style=" bottom: 0; padding: 10px; width: 76%; height: 260px;z-index: 1001">
-
-        @{
-            Html.RenderAction("GetCurrentposition", "Position");
-        }
-    </div>
-    
-</div>
-
-<div class="ui-layout-west" style="; width: 300px;margin:10px">
-    
-    
-    <div class="input-group" style="margin:-5px">
-        <input type="text" class="form-control" placeholder="Recherche .." id="search">
-        <span class="input-group-btn">
-            <button class="btn btn-default" type="button" id="btn-search">Ok</button>
-        </span>
-    </div>
-    <nav id="left-panel" style="margin-top: 10px;overflow: auto; height: 60%" role="navigation">
-
-        <div id="container">
-
-        </div>
-    </nav>
-    <div id="cc" class="easyui-calendar calendar easyui-fluid" style="overflow: auto;bottom: 60px; height: 200px; left: 50px;position: absolute"></div>
-    <div>
-        <div style="display: none"  id="report-scope" ng-controller="reportController">
-            @{
-                Html.RenderAction("Index", "VehicleReport");
-            }
-        </div>
-    </div>
-    <div id="position-scope" ng-controller="positionController"></div>   
-
-    </div>
-    <div style="display: none" id="posi-search">
-        @{
-            Html.RenderPartial("_PositionByPeriodFrm");
-        }
-    </div> 
-    <div style="display: none" id="driver-frm">
-        @{
-            Html.RenderPartial("_CreateDriver");
-        }
-    </div> 
- 
+   
 
   
    

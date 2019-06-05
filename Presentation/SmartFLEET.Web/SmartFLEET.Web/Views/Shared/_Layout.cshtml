@@ -10,7 +10,7 @@
     @Scripts.Render("~/bundles/modernizr")
 </head>
 
-<body ng-app="smart-fleet">
+<body ng-app="smart-fleet"  class="hold-transition skin-black-light  sidebar-mini">
     @*@RenderPage("_menu.cshtml")*@
 
     @RenderBody()
@@ -24,23 +24,25 @@
     @Scripts.Render("~/bundles/bootstrap")
 <script src="~/Scripts/jq-layout.js"></script>
     <script src="~/Scripts/leafjs/leaflet-providers.js"></script>
-
-   
+    <link href="~/Scripts/easyui/themes/gray/easyui.css" rel="stylesheet" />
+    <link href="~/dist/css/skins/_all-skins.min.css" rel="stylesheet" />
+    <link href="~/dist/css/AdminLTE.min.css" rel="stylesheet" />
     @RenderSection("scripts", required: false)
 
-    <script>
-        $(document).ready(function () {
-            $('body').layout({
-                applyDemoStyles: true,
-                onresize: function () {
-                }
-            });
+<script>
+   
+    $(document).ready(function () {
 
-
-            // initialize the map
-
-
+        layout  = $('body').layout({
+            applyDemoStyles: true,
+            onresize: function () {
+            }
         });
-    </script>
+        layout.toggle("west");
+        // initialize the map
+
+
+    });
+</script>
 </body>
 </html>

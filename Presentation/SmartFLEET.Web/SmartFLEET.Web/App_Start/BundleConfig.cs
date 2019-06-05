@@ -30,7 +30,6 @@ namespace SmartFLEET.Web
 
             bundles.Add(new ScriptBundle("~/bundles/bootstrap").Include(
                 "~/Scripts/bootstrap.js",
-                "~/dist/plugins/jQueryUI/jquery-ui.min.js",
                 "~/Scripts/jq-layout.js",
                 "~/Scripts/leafjs/leaflet.js",
                 "~/Scripts/jstree/jstree.min.js",
@@ -48,15 +47,25 @@ namespace SmartFLEET.Web
                 "~/Scripts/angularjs-gauge.js",
                 "~/dist/plugins/wait/waitMe.min.js",
                 "~/Scripts/jquery.stacky.js",
-                "~/Content/jsWindow/src/popupwindow.min.js",
                 "~/Scripts/easyui/jquery.easyui.min.js",
-                "~/Scripts/app/mainApp.js"));
+                "~/Scripts/app/mainApp.js"
+                ));
+            bundles.Add(new ScriptBundle("~/bundles/jsAdmin").Include(
+               "~/Scripts/bootstrap3.min.js",
+                "~/Scripts/datatables/js/jquery.dataTables.js",
+                "~/Scripts/datatables/js/dataTables.bootstrap.js",
+                "~/Scripts/bootstrap-growl.js",
+                "~/dist/plugins/datepicker/bootstrap-datepicker.js",
+                "~/dist/plugins/datepicker/locales/bootstrap-datepicker.fr.js",
+                "~/dist/plugins/select2/select2.full.min.js"
+               
+            ));
             bundles.Add(new ScriptBundle("~/bundles/jsApp").Include(
                 "~/dist/js/app.min.js"
                 ));
 
             bundles.Add(new StyleBundle("~/Content/css").Include(
-                "~/Content/bootstrap.css",
+                "~/Content/bootstrap.min.css",
                 "~/Content/validationEngine.jquery.css",
                 "~/Content/font-awesome.css",
                 "~/Scripts/datatables/css/dataTables.bootstrap.css",
@@ -67,11 +76,11 @@ namespace SmartFLEET.Web
                 "~/dist/plugins/vis/vis.min.css",
                 "~/Scripts/jstree/themes/default/style.min.css",
                 "~/dist/plugins/wait/waitMe.min.css",
-                "~/dist/plugins/line-awesome/css/line-awesome.min.css",
-                "~/Scripts/easyui/themes/gray/easyui.css",
-                "~/Content/jsWindow/src/popupwindow.css"));
+                "~/dist/plugins/line-awesome/css/line-awesome.min.css"
+               
+                ));
             bundles.Add(new StyleBundle("~/Content/cssadmin").Include(
-                "~/Content/bootstrap.min.css",
+                "~/Content/bootstrap3.css",
                 "~/Content/validationEngine.jquery.css",
                 "~/Scripts/datatables/css/dataTables.bootstrap.css",
                 "~/Content/font-awesome.css",
@@ -82,8 +91,7 @@ namespace SmartFLEET.Web
                 "~/Scripts/jstree/themes/default/style.min.css",
                 "~/dist/plugins/select2/select2.min.css",
                 "~/dist/plugins/select2/select2.bootstrap.css",
-                "~/Scripts/jstree/themes/default/style.min.css",
-                "~/Content/ui.jqgrid.css"
+                "~/Scripts/jstree/themes/default/style.min.css"
             ));
         }
     }

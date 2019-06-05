@@ -1,16 +1,33 @@
-﻿angular.module('app.services').service('vehicleService', ['$http', function ($http) {
+﻿
+angular.module('app.services').service('vehicleService', ['$http', '$rootScope', function ($http, $rootScope) {
 
-    this.getVehicle = function getVehicle(vehicleId) {
+    
+    this.getVehicleOfCustomer = function getVehicleOfCustomer(vehicleId) {
         return $http({
             method: 'GET',
             url: '../Administrator/Vehicle/GetVehicleDetail/?vehicleId=' + vehicleId
         });
     };
-    this.getAllVehicles = function getAllVehicles() {
+    this.getVehicle = function getVehicle() {
         return $http({
             method: 'GET',
-            url: '../Administrator/Vehicle/GetAllVehicles/' 
+            url: '../Administrator/Vehicle/GetVehicleDetail/'
         });
+    };
+    this.GetAllVehiclesForCustomer = function getAllVehiclesForCustomer(customerid) {
+        console.log(customerid);
+        return $http({
+            method: 'GET',
+            url: '../Administrator/Vehicle/GetAllVehiclesForCustomer/?customerId=' + customerid
+        });
+        
+    };
+    this.GetAllVehicles= function getAllVehicles() {
+         return $http({
+            method: 'GET',
+            url: '../Administrator/Vehicle/GetAllVehicles/'
+        });
+
     };
     this.getNewVehicle = function getNewVehicle() {
         return $http({

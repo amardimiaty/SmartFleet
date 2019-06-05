@@ -17,7 +17,10 @@ var hub;
 var anchorId = null;
 var downloadFullReport = false;
 var getPossition = false;
+var layout;
 $(document).ready(function () {
+  
+    //layout.close("west");
     initJstree();
     loadData(0.33);
     initMap();
@@ -30,17 +33,21 @@ $(document).ready(function () {
 
     });
     $("#vehicles-pos").select2();
-    $("#daily-report").tabs();
+    //$("#daily-report").tabs();
    
     loadData(1);
     $('#cc').calendar({
         onSelect: function (date) {
             if (downloadFullReport) {
-                var reportScope = getScope('reportController');
-                reportScope.startPeriod = formatDate(date);
-                reportScope.vehicleId = anchorId;
-                reportScope.Download();
-                reportScope.$apply();
+                $("#chronogram").window('close');
+                $("#prg-wwin").window('open');
+                $('#prgBar').progressbar('setValue', 0);
+                var $reportScope = getScope('reportController');
+                $reportScope.startPeriod = formatDate(date);
+                $reportScope.vehicleId = anchorId;
+                $reportScope.Download();
+                $reportScope.$apply();
+               
             } else {
                 var $positionScope = getScope('positionController');
                 $positionScope.vehicleId = anchorId;
@@ -61,12 +68,41 @@ $(document).ready(function () {
         closable: false,
         draggable:false
     });
+    $('#report-win').window({
+        left: 315,
+        top: 55,
+        collapsible: false,
+        minimizable: false,
+        maximizable: false,
+       // closable: false,
+        draggable: false
+    });
+    $('#prg-wwin').window({
+        //left: 315,
+        //top: 55,
+        collapsible: false,
+        minimizable: false,
+        maximizable: false,
+        // closable: false,
+        draggable: false
+    });
     $("#chronogram").window('close');
+    $("#report-win").window('close');
+    $('#prg-wwin').window('close');
     $("#btn-report").on('click', function() {
         downloadFullReport = true;
-    });;
-
+        getPossition = false;
+        $("#report-win").window('open');
+        layout.open('west');
+    });
+    $("#btn-position").on('click', function () {
+        downloadFullReport = false;
+        getPossition = true;
+        $("#report-win").window('close');
+        layout.open('west');
+    });
 });
+
 function formatDate(date) {
     var d = new Date(date),
         month = '' + (d.getMonth() + 1),
@@ -89,6 +125,12 @@ function initMap() {
         zoom: 8,
         zoomControl: true
     });
+    var circle = L.circle([36.7525000, 3.0419700], {
+        color: 'red',
+        fillColor: '#f03',
+        fillOpacity: 0.5,
+        radius: 40000
+    }).addTo(map);
     markerGroup = L.layerGroup().addTo(map);
     layout = L;
     // load a tile layer
@@ -104,8 +146,13 @@ function initMap() {
 function initSignalR() {
     hub = $.connection.signalRHandler;
     hub.client.receiveGpsStatements = onRecieveData;
+    hub.client.sendprogressVal = onRecieveProgressVal;
     $.connection.hub.start().done(joinSignalRGroup);
 }
+function onRecieveProgressVal(val) {
+    console.log(val);
+    $('#prgBar').progressbar('setValue', val);
+} 
 function onRecieveData(gpsStatement) {
     var thisIcon = new L.Icon();
     removeMarker(gpsStatement);
@@ -223,13 +270,17 @@ function initJstree() {
             currentVehicleId = anchorId;
             if (anchorId != 'vehicles-00000000-0000-0000-0000-000000000000'
                 && anchorId != 'drivers-00000000-0000-0000-0000-000000000000') {
-                markerFunction(anchorId);
-
+               
                // initPositionWind();
                 positionModalOpend = true;
-                initWait();
+                if (!getPossition) {
+                    markerFunction(anchorId);
 
-                getChronogram();
+                    //initWait();
+                    //getChronogram();
+                }
+
+                
             } //
         });
 }
@@ -356,7 +407,7 @@ function initGpsData(periods, gpsCollection, divName) {
         function (i, v) {
             var activity = "";
             var style = "";
-            // console.log(v.Activity);
+            console.log(v.MotionStatus);
             switch (v.MotionStatus) {
                 case "Stopped":
                     {
@@ -373,13 +424,13 @@ function initGpsData(periods, gpsCollection, divName) {
                             "background-color:#048b9a;height:30px;border-color:transparent!important; border-radius:0;margin-top: 20px;border-width:0!important;";
                     }
                     break;
-                default:
-                    {
-                        activity = "Ralenti";
-                        style =
-                            "background-color:#dab30a;height:30px;border-color:transparent!important; border-radius:0;margin-top: 20px;border-width:0!important;";
-                    }
-                    break;
+                //default:
+                //    {
+                //        activity = "Ralenti";
+                //        style =
+                //            "background-color:#dab30a;height:30px;border-color:transparent!important; border-radius:0;margin-top: 20px;border-width:0!important;";
+                //    }
+                //    break;
             }
             var startTime = v.StartPeriod.split('T')[1].split(':')[0] +
                 ':' +

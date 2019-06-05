@@ -344,8 +344,6 @@
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\PositionController.cs" />
     <Compile Include="Controllers\VehicleReportController.cs" />
-    <Compile Include="DailyRports\CompleteDailyReport.cs" />
-    <Compile Include="DailyRports\PositionReport.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -353,10 +351,8 @@
     <Compile Include="Hubs\SignalRHandler.cs" />
     <Compile Include="Hubs\SignalRHubManager.cs" />
     <Compile Include="Models\Account\LoginModel.cs" />
+    <Compile Include="Areas\Administrator\Models\CustomerVm.cs" />
     <Compile Include="Models\JsTreeModel.cs" />
-    <Compile Include="Models\Periods.cs" />
-    <Compile Include="Models\PositionViewModel.cs" />
-    <Compile Include="Models\TargetViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
     <Compile Include="TokensHndler\TokenValidationHandler.cs" />
@@ -390,6 +386,7 @@
     <Content Include="Content\bootstrap-reboot.min.css" />
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
+    <Content Include="Content\bootstrap3.css" />
     <Content Include="Content\colora.css" />
     <Content Include="Content\font-awesome.css" />
     <Content Include="Content\font-awesome.min.css" />
@@ -407,6 +404,47 @@
     <Content Include="Content\tether\tether-theme-basic.min.css" />
     <Content Include="Content\tether\tether.css" />
     <Content Include="Content\tether\tether.min.css" />
+    <Content Include="Content\themes\base\accordion.css" />
+    <Content Include="Content\themes\base\all.css" />
+    <Content Include="Content\themes\base\autocomplete.css" />
+    <Content Include="Content\themes\base\base.css" />
+    <Content Include="Content\themes\base\button.css" />
+    <Content Include="Content\themes\base\core.css" />
+    <Content Include="Content\themes\base\datepicker.css" />
+    <Content Include="Content\themes\base\dialog.css" />
+    <Content Include="Content\themes\base\draggable.css" />
+    <Content Include="Content\themes\base\images\ui-bg_flat_0_aaaaaa_40x100.png" />
+    <Content Include="Content\themes\base\images\ui-bg_flat_75_ffffff_40x100.png" />
+    <Content Include="Content\themes\base\images\ui-bg_glass_55_fbf9ee_1x400.png" />
+    <Content Include="Content\themes\base\images\ui-bg_glass_65_ffffff_1x400.png" />
+    <Content Include="Content\themes\base\images\ui-bg_glass_75_dadada_1x400.png" />
+    <Content Include="Content\themes\base\images\ui-bg_glass_75_e6e6e6_1x400.png" />
+    <Content Include="Content\themes\base\images\ui-bg_glass_95_fef1ec_1x400.png" />
+    <Content Include="Content\themes\base\images\ui-bg_highlight-soft_75_cccccc_1x100.png" />
+    <Content Include="Content\themes\base\images\ui-icons_222222_256x240.png" />
+    <Content Include="Content\themes\base\images\ui-icons_2e83ff_256x240.png" />
+    <Content Include="Content\themes\base\images\ui-icons_444444_256x240.png" />
+    <Content Include="Content\themes\base\images\ui-icons_454545_256x240.png" />
+    <Content Include="Content\themes\base\images\ui-icons_555555_256x240.png" />
+    <Content Include="Content\themes\base\images\ui-icons_777620_256x240.png" />
+    <Content Include="Content\themes\base\images\ui-icons_777777_256x240.png" />
+    <Content Include="Content\themes\base\images\ui-icons_888888_256x240.png" />
+    <Content Include="Content\themes\base\images\ui-icons_cc0000_256x240.png" />
+    <Content Include="Content\themes\base\images\ui-icons_cd0a0a_256x240.png" />
+    <Content Include="Content\themes\base\images\ui-icons_ffffff_256x240.png" />
+    <Content Include="Content\themes\base\jquery-ui.css" />
+    <Content Include="Content\themes\base\jquery-ui.min.css" />
+    <Content Include="Content\themes\base\menu.css" />
+    <Content Include="Content\themes\base\progressbar.css" />
+    <Content Include="Content\themes\base\resizable.css" />
+    <Content Include="Content\themes\base\selectable.css" />
+    <Content Include="Content\themes\base\selectmenu.css" />
+    <Content Include="Content\themes\base\slider.css" />
+    <Content Include="Content\themes\base\sortable.css" />
+    <Content Include="Content\themes\base\spinner.css" />
+    <Content Include="Content\themes\base\tabs.css" />
+    <Content Include="Content\themes\base\theme.css" />
+    <Content Include="Content\themes\base\tooltip.css" />
     <Content Include="Content\ui.jqgrid.css" />
     <Content Include="dist\css\AdminLTE.css" />
     <Content Include="dist\css\AdminLTE.min.css" />
@@ -1384,7 +1422,9 @@
     <Content Include="Scripts\angular.min.js" />
     <Content Include="Scripts\angularjs-gauge.js" />
     <Content Include="Scripts\app\adminApp.js" />
+    <Content Include="Scripts\app\customer\addCustomerController.js" />
     <Content Include="Scripts\app\customer\customerController.js" />
+    <Content Include="Scripts\app\customer\customerDetailController.js" />
     <Content Include="Scripts\app\customer\customerService.js" />
     <Content Include="Scripts\app\googleMap.js" />
     <Content Include="Scripts\app\home\homeScript.js" />
@@ -1402,6 +1442,7 @@
     <Content Include="Scripts\app\report\reportService.js" />
     <Content Include="Scripts\app\user\userController.js" />
     <Content Include="Scripts\app\user\userService.js" />
+    <Content Include="Scripts\app\vehicle\addVehicleController.js" />
     <Content Include="Scripts\app\vehicle\vehicleController.js" />
     <Content Include="Scripts\app\vehicle\vehicleDetailController.js" />
     <Content Include="Scripts\app\vehicle\vehicleService.js" />
@@ -1410,6 +1451,7 @@
     <Content Include="Scripts\bootstrap.bundle.min.js" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
+    <Content Include="Scripts\bootstrap3.min.js" />
     <Content Include="Scripts\charts\js\echarts.common.min.js" />
     <Content Include="Scripts\charts\js\echarts.js" />
     <Content Include="Scripts\charts\theme\dark.js" />
@@ -1603,6 +1645,10 @@
     <Content Include="dist\plugins\slimScroll\jquery.slimscroll.min.js.map" />
     <Content Include="dist\plugins\sparkline\jquery.sparkline.min.js.map" />
     <Content Include="dist\plugins\timepicker\bootstrap-timepicker.min.js.map" />
+    <Content Include="Areas\Administrator\Views\Customer\Detail.cshtml" />
+    <Content Include="Areas\Administrator\Views\Vehicle\_List.cshtml" />
+    <Content Include="Areas\Administrator\Views\User\_Users.cshtml" />
+    <Content Include="Areas\Administrator\Views\User\_NewUser.cshtml" />
     <None Include="packages.config" />
     <Content Include="Scripts\easyui\easyloader.js" />
     <Content Include="Scripts\easyui\jquery.easyui.min.js" />
@@ -2883,6 +2929,8 @@
     <Content Include="Scripts\jqGrid\jquery.jqDatePicker.min.js" />
     <Content Include="Scripts\jqGrid\jquery.jqGrid.js" />
     <Content Include="Scripts\jqGrid\jquery.jqGrid.min.js" />
+    <Content Include="Scripts\jquery-ui-1.12.1.js" />
+    <Content Include="Scripts\jquery-ui-1.12.1.min.js" />
     <Content Include="Scripts\jquery.signalR-2.3.0.js" />
     <Content Include="Scripts\jquery.signalR-2.3.0.min.js" />
     <Content Include="Scripts\jquery.validate.js" />
@@ -2991,11 +3039,13 @@
     <Content Include="Views\Home\_ReportForm.cshtml" />
     <Content Include="Views\Home\_PositionForm.cshtml" />
     <Content Include="Scripts\version.json" />
-    <Content Include="Views\Home\_PositionByPeriodFrm.cshtml" />
     <Content Include="Views\Home\_CreateDriver.cshtml" />
     <Content Include="Views\Home\_PositionTimeLine.cshtml" />
     <Content Include="Views\Home\_SouthLayout.cshtml" />
     <Content Include="Views\Position\_CurrentPosition.cshtml" />
+    <Content Include="Views\Home\_menu.cshtml" />
+    <Content Include="Views\Home\_map.cshtml" />
+    <Content Include="Views\Home\_leftPanel.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Areas\Administrator\Views\Brand\" />

@@ -32,6 +32,7 @@ using SmartFLEET.Web.Automapper;
 using SmartFLEET.Web.Hubs;
 using System.Web;
 using Microsoft.ApplicationInsights.Extensibility;
+using SmartFleet.Web.Framework.DataTables;
 
 namespace SmartFLEET.Web
 {
@@ -427,18 +428,10 @@ namespace SmartFLEET.Web
             });
             var mapper = mapperConfiguration.CreateMapper();
             builder.RegisterInstance(mapper).As<IMapper>();
+            var queryBuilder = new DataTablesLinqQueryBulider();
+            builder.RegisterInstance(queryBuilder).As<DataTablesLinqQueryBulider>();
             #endregion
-             //var bus = BusControl();
-            //try
-            //{
-              
-            //    bus.StartAsync();
-            //}
-            //catch (Exception e)
-            //{
-            //    Debug.WriteLine(e.Message);
-            //    bus.StopAsync();
-            //}
+
             var container = builder.Build();
             var path =  Server.MapPath("/") + @"bin\microservices";
             MicroServicesLoader.Loader(path);

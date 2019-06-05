@@ -6,9 +6,10 @@ using System.Web.Mvc;
 using AutoMapper;
 using SmartFleet.Core.Helpers;
 using SmartFleet.Data;
+using SmartFleet.Service.Models;
+using SmartFleet.Service.Report;
 using SmartFleet.Service.Tracking;
 using SmartFleet.Service.Vehicles;
-using SmartFLEET.Web.DailyRports;
 using SmartFLEET.Web.Models;
 
 namespace SmartFLEET.Web.Controllers
@@ -39,13 +40,13 @@ namespace SmartFLEET.Web.Controllers
             //var start = 
             var endPeriod = DateTime.Now;
             var startPeriod = DateTime.Now.Date;
-            var vehicle = await _vehicleService.GetVehicleById(id);
+            var vehicle = await _vehicleService.GetVehicleByIdAsync(id);
             var positions = await _positionService.GetVehiclePositionsByPeriod(id, startPeriod, endPeriod);
             if (!positions.Any())
                 return Json(new List<TargetViewModel>(), JsonRequestBehavior.AllowGet);
             var gpsCollection = positions.Select(x =>
                 new { Latitude = x.Lat, Longitude = x.Long, GpsStatement = x.Timestamp.ToString("O") });
-            var positionReport = new PositionReport();
+            var positionReport = new ActivitiesRerport();
             return Json(new { Periods = positionReport.BuildDailyReport(positions, startPeriod, vehicle.VehicleName), GpsCollection = gpsCollection }, JsonRequestBehavior.AllowGet);
 
         }
@@ -61,7 +62,7 @@ namespace SmartFLEET.Web.Controllers
             if (!positions.Any()) return Json(new List<TargetViewModel>(), JsonRequestBehavior.AllowGet);
             var gpsCollection = positions.OrderBy(x=>x.Timestamp)
                 .Select(x =>new { Latitude = x.Lat, Longitude = x.Long, GpsStatement = x.Timestamp.ToString("O") });
-            var positionReport = new PositionReport();
+            var positionReport = new ActivitiesRerport();
             var result = positionReport.BuildDailyReport(positions.OrderBy(x=>x.Timestamp).ToList(), startPeriod, vehicle.VehicleName) ;
             var distance = result.Where(x => x.MotionStatus == "Moving").Sum(x => x.Distance);
             return Json(new {Vehiclename = vehicle?.VehicleName, Distance = Math.Round(distance,2), Periods = result,GpsCollection = gpsCollection.Distinct()}, JsonRequestBehavior.AllowGet);

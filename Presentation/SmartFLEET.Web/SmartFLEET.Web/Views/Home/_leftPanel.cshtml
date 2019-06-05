@@ -1,0 +1,24 @@
+﻿<div class="ui-layout-west" style="; width: 300px;margin:10px">
+    
+    
+    <div class="input-group" style="margin:-5px">
+        <input type="text" class="form-control" placeholder="Recherche .." id="search">
+        <span class="input-group-btn">
+            <button class="btn btn-default" type="button" id="btn-search">Ok</button>
+        </span>
+    </div>
+    <nav id="left-panel" style="margin-top: 10px;overflow: auto; height: 60%" role="navigation">
+
+        <div id="container">
+
+        </div>
+    </nav>
+    <div id="cc" class="easyui-calendar calendar easyui-fluid" style="overflow: auto;bottom: 60px; height: 200px; left: 50px;position: absolute"></div>
+    
+    <div id="position-scope" ng-controller="positionController">
+
+    </div>   
+    <div class="easyui-window" id="prg-wwin">
+        <div id="prgBar" class="easyui-progressbar" style="width:400px;"></div>
+    </div>
+</div>

@@ -6,9 +6,9 @@ using System.Web.Mvc;
 using AutoMapper;
 using SmartFleet.Core.Domain.Vehicles;
 using SmartFleet.Service.Customers;
+using SmartFleet.Service.Report;
 using SmartFleet.Service.Tracking;
 using SmartFleet.Service.Vehicles;
-using SmartFLEET.Web.DailyRports;
 using SmartFLEET.Web.Models;
 
 namespace SmartFLEET.Web.Controllers
@@ -45,7 +45,7 @@ namespace SmartFLEET.Web.Controllers
         public ActionResult Index()
         {
             var user = User.Identity;
-            var cst = _customerService.GetOwnerCustomer(user.Name);
+            var cst = _customerService.GetCustomerbyid(user.Name);
             CurrentGroup = cst?.Name;
             ViewBag.GroupName = CurrentGroup;
             return View();
@@ -57,7 +57,7 @@ namespace SmartFLEET.Web.Controllers
         /// <returns></returns>
         public async Task<JsonResult> AllVehiclesWithLastPosition()
         {
-            var report = new PositionReport();
+            var report = new ActivitiesRerport();
             var user = User.Identity;
 
             var positions =  report.PositionViewModels(await _positionService.GetLastVehiclPosition(user.Name));
@@ -71,7 +71,7 @@ namespace SmartFLEET.Web.Controllers
         public async Task<JsonResult> LoadNodes()
         {
             var user = User.Identity;
-            var cst = _customerService.GetOwnerCustomer(user.Name);
+            var cst = _customerService.GetCustomerbyid(user.Name);
             var nodes = JsTreeModels();
             if (cst == null)
                 return Json(nodes, JsonRequestBehavior.AllowGet);

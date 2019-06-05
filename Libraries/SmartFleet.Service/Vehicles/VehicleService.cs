@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data.Entity;
 using System.Diagnostics;
 using System.Linq;
@@ -62,13 +63,67 @@ namespace SmartFleet.Service.Vehicles
                 return await _db.Vehicles.Where(x => x.CustomerId == customerId).ToArrayAsync().ConfigureAwait(false);
             }
         }
-        public async Task<Vehicle> GetVehicleById(Guid id)
+        public async Task<Vehicle> GetVehicleByIdAsync(Guid id)
         {
             using (var contextFScope = _dbContextScopeFactory.Create())
             {
                 _db = contextFScope.DbContexts.Get<SmartFleetObjectContext>();
                 return await _db.Vehicles.FindAsync(id).ConfigureAwait(false);
             }
+        }
+        public async Task<Vehicle> GetVehicleByIdWithDetailAsync(Guid id)
+        {
+            using (var contextFScope = _dbContextScopeFactory.Create())
+            {
+                _db = contextFScope.DbContexts.Get<SmartFleetObjectContext>();
+                return await _db.Vehicles.Include(x => x.Brand).Include(x => x.Customer).Include(x => x.Model)
+                    .Include(x => x.Boxes).FirstOrDefaultAsync(v => v.Id == id);
+            }
+        }
+        public async Task<List<Vehicle>> GetAllvehiclesQuery()
+        {
+            using (var contextFScope = _dbContextScopeFactory.Create())
+            {
+                _db = contextFScope.DbContexts.Get<SmartFleetObjectContext>();
+                return await _db.Vehicles
+                    .Include("Brand")
+                    .Include("Model")
+                    .Include("Customer")
+                    .ToListAsync();
+            }
+        }
+
+        public async Task<List<Vehicle>> GetAllvehiclesOfCustomer(Guid customerId)
+        {
+            using (var contextFScope = _dbContextScopeFactory.Create())
+            {
+                _db = contextFScope.DbContexts.Get<SmartFleetObjectContext>();
+                return await _db.Vehicles
+                    .Where(v=>v.CustomerId == customerId)
+                    //.Include("Brand")
+                    //.Include("Model")
+                    //.Include("Customer")
+                    .ToListAsync();
+            }
+        }
+
+        public IQueryable<Vehicle> GetvehiclesOfCustomer(Guid customerId)
+        {
+            var contextFScope = _dbContextScopeFactory.Create();
+            
+                _db = contextFScope.DbContexts.Get<SmartFleetObjectContext>();
+                return _db.Vehicles.Where(v => v.CustomerId == customerId)
+                    .Include("Brand")
+                    .Include("Model");
+        }
+        public IQueryable<Vehicle> GetAllvehicles()
+        {
+            var contextFScope = _dbContextScopeFactory.Create();
+
+            _db = contextFScope.DbContexts.Get<SmartFleetObjectContext>();
+            return _db.Vehicles
+                .Include("Brand")
+                .Include("Model");
         }
     }
 }

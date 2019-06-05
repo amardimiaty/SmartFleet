@@ -7,13 +7,15 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using AutoMapper;
+using Microsoft.AspNet.SignalR;
 using SmartFleet.Data;
 using SmartFleet.Service.Common;
 using SmartFleet.Service.Customers;
+using SmartFleet.Service.Models;
+using SmartFleet.Service.Report;
 using SmartFleet.Service.Tracking;
 using SmartFleet.Service.Vehicles;
-using SmartFLEET.Web.DailyRports;
-using SmartFLEET.Web.Models;
+using SmartFLEET.Web.Hubs;
 
 namespace SmartFLEET.Web.Controllers
 {
@@ -64,7 +66,7 @@ namespace SmartFLEET.Web.Controllers
         [HttpGet]
         public async Task<ActionResult> GetVehicles()
         {
-            var cst = _customerService.GetOwnerCustomer(User.Identity.Name);
+            var cst = _customerService.GetCustomerbyid(User.Identity.Name);
             var vehicles = await ObjectContext.Vehicles.Where(x => x.CustomerId == cst.Id).Select(x=>new {x.VehicleName, x.Id}).ToArrayAsync();
             return Json(vehicles, JsonRequestBehavior.AllowGet);
         }
@@ -89,19 +91,32 @@ namespace SmartFLEET.Web.Controllers
                 throw;
             }
 
-
+            var hubContext = GlobalHost.ConnectionManager.GetHubContext<SignalRHandler>();
+            var report = new CompleteDailyReport();
+            var connctionId = SignalRHubManager.Connections[User.Identity.Name];
             var endPeriod = start.AddHours(24).AddTicks(-1);
-            var vehicle = await _vehicleService.GetVehicleById(id);
+            var vehicle = await _vehicleService.GetVehicleByIdAsync(id);
             var positions = await _positionService.GetVehiclePositionsByPeriod(id, start, endPeriod);
-            if (positions.Any())
-                return Json(new CompleteDailyReport(positions.OrderBy(p => p.Timestamp).ToList(), vehicle), JsonRequestBehavior.AllowGet);
-            return Json(
-                new CompleteDailyReport
-                {
-                    VehicleName = vehicle?.VehicleName,
-                    ReportDate = start.ToShortDateString(),
-                    Positions = new List<TargetViewModel>()
-                }, JsonRequestBehavior.AllowGet);
+            hubContext.Clients.Client(connctionId)
+                .sendprogressVal(50);
+            if (!positions.Any())
+            {
+                return Json(new CompleteDailyReport
+                    {
+                        VehicleName = vehicle?.VehicleName,
+                        ReportDate = start.ToShortDateString(),
+                        Positions = new List<TargetViewModel>()
+                    }, JsonRequestBehavior.AllowGet);
+
+            }
+            report.UpdateProgress += val =>
+            {
+                hubContext.Clients.Client(connctionId)
+                    .sendprogressVal(val);
+            };
+            report.Build(positions.OrderBy(p => p.Timestamp).ToList(), vehicle);
+
+            return Json(report, JsonRequestBehavior.AllowGet);
 
         }
 
@@ -127,7 +142,7 @@ namespace SmartFLEET.Web.Controllers
 
 
             var endPeriod = start.AddHours(24).AddTicks(-1);
-            var vehicle = await _vehicleService.GetVehicleById(id);
+            var vehicle = await _vehicleService.GetVehicleByIdAsync(id);
             var positions = await _positionService.GetVehiclePositionsByPeriod(id, start, endPeriod);
             MemoryStream stream = new MemoryStream();
             if (positions.Any())

@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace SmartFLEET.Web.Models
+﻿namespace SmartFleet.Service.Models
 {
     public class TargetViewModel
     {

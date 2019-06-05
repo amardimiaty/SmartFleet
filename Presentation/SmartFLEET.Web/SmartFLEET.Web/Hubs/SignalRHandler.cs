@@ -8,7 +8,7 @@ using SmartFleet.Core.Domain.Gpsdevices;
 using SmartFleet.Core.Geofence;
 using SmartFleet.Core.ReverseGeoCoding;
 using SmartFleet.Data;
-using SmartFLEET.Web.Models;
+using SmartFleet.Service.Models;
 
 namespace SmartFLEET.Web.Hubs
 {
@@ -69,6 +69,7 @@ namespace SmartFLEET.Web.Hubs
         public void Join(string groupName)
         {
             Groups.Add(Context.ConnectionId, groupName);
+            SignalRHubManager.Connections.Add(Context.User.Identity.Name, Context.ConnectionId);
             SignalRHubManager.Clients = Clients;
         }
 
@@ -80,6 +81,7 @@ namespace SmartFLEET.Web.Hubs
         public override Task OnDisconnected(bool stopCalled)
         {
             SignalRHubManager.Clients = Clients;
+            SignalRHubManager.Connections.Clear();
             return base.OnDisconnected(stopCalled);
         }
 

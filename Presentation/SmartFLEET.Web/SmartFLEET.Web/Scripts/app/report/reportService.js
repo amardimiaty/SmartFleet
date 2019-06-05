@@ -12,5 +12,11 @@
             url: '../VehicleReport/GetVehicles'
         });
     }
+    this.getReportContent = function getReportContent() {
+        return $http({
+            method: 'GET',
+            url: '../VehicleReport/Index'
+        });
+    }
 
 }]);

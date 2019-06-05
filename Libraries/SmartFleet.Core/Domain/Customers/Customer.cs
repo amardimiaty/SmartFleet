@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Newtonsoft.Json;
 using SmartFleet.Core.Domain.Users;
 using SmartFleet.Core.Domain.Vehicles;
 
@@ -20,7 +21,7 @@ namespace SmartFleet.Core.Domain.Customers
         public string State { get; set; }
         public string Street { get; set; }
         public string ZipCode { get; set; }
-        public int CustomerStatus { get; set; }
+        public CustomerStatus CustomerStatus { get; set; }
        // public virtual ICollection<Box> Boxes { get; set; }
         public  ICollection<User> Users { get; set; }
         public  ICollection<Vehicle> Vehicles { get; set; }

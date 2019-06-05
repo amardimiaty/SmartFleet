@@ -652,27 +652,6 @@
             <param name="startPeriod"></param>
             <returns></returns>
         </member>
-        <member name="T:SmartFLEET.Web.DailyRports.PositionReport">
-            <summary>
-            
-            </summary>
-        </member>
-        <member name="M:SmartFLEET.Web.DailyRports.PositionReport.PositionViewModels(System.Collections.Generic.List{SmartFleet.Core.Domain.Movement.Position})">
-            <summary>
-            
-            </summary>
-            <param name="positionsOfVehicle"></param>
-            <returns></returns>
-        </member>
-        <member name="M:SmartFLEET.Web.DailyRports.PositionReport.BuildDailyReport(System.Collections.Generic.List{SmartFleet.Core.Domain.Movement.Position},System.DateTime,System.String)">
-            <summary>
-            
-            </summary>
-            <param name="positions"></param>
-            <param name="startPeriod"></param>
-            <param name="vehicleName"></param>
-            <returns></returns>
-        </member>
         <member name="M:SmartFLEET.Web.MvcApplication.Application_AuthenticateRequest(System.Object,System.EventArgs)">
             <summary>
             

@@ -1,12 +1,11 @@
 ﻿using System;
-using System.Linq;
 using SmartFleet.Core.Contracts.Commands;
 using SmartFleet.Core.Domain.Movement;
 using SmartFleet.Core.Domain.Vehicles;
 using SmartFleet.Core.Geofence;
 using SmartFleet.Data;
 
-namespace SmartFLEET.Web.Models
+namespace SmartFleet.Service.Models
 {
     public class PositionViewModel
     {

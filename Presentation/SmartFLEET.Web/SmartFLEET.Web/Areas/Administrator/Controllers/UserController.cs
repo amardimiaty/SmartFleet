@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Web.Mvc;
 using SmartFleet.Data;
 using SmartFLEET.Web.Areas.Administrator.Models;
@@ -27,6 +28,19 @@ namespace SmartFLEET.Web.Areas.Administrator.Controllers
 
             return View(ObjectContext.UserAccounts.Include("Customer").ToList().Select(x=>new UserViewModel(x)));
         }
-        
+
+        public ActionResult Users()
+        {
+            return PartialView("_Users");
+        }
+        public ActionResult NewUser()
+        {
+            return PartialView("_NewUser");
+        }
+
+        public JsonResult GetTimeZones()
+        {
+            return Json(TimeZoneInfo.GetSystemTimeZones(), JsonRequestBehavior.AllowGet);
+        }
     }
 }

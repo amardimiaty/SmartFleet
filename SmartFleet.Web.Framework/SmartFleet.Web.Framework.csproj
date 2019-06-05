@@ -58,6 +58,7 @@
     <Compile Include="DataTables\DataTablesQueryModel.cs" />
     <Compile Include="DataTables\DataTablesResultModel.cs" />
     <Compile Include="DataTables\DataTablesSearchModel.cs" />
+    <Compile Include="DataTables\StringExtension.cs" />
     <Compile Include="Infrastructure\Automapper\CreateMaps.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

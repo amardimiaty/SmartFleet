@@ -131,6 +131,40 @@ namespace SmartFLEET.Web.HtmlHelpers
 
             return new MvcHtmlString(sb.ToString());
         }
+        public static MvcHtmlString BootstrapModalAngular(this HtmlHelper helper, string modalId, string modalTite,
+            string template)
+        {
+            StringBuilder sb = new StringBuilder();
+            var openContent = $@"<div id='{modalId}'  data-backdrop='false' class='modal fade' role='dialog'>
+                <div class='modal-dialog'>
+
+                <!-- Modal content-->
+                <div class='modal-content'>";
+            var modalHeader = $@"<div class='modal-header'>
+                <button type = 'button' class='close' data-dismiss='modal'>&times;</button>
+                <h4 class='modal-title'>{modalTite}</h4>
+                </div>";
+            //here the content will be loaded
+            var modalBody = $@" <div class='modal-body'>
+                <div > </div>
+                    {template}
+                </div>"
+
+                ;
+            var modalFooter = $@"<div class='modal-footer'>
+                                <button type = 'button' ng-click='save()' class='btn btn-info' >Enregistrer</button>
+                              <button type = 'button' class='btn btn-default' data-dismiss='modal'>Fermer</button>
+                             
+                </div>";
+            var closeContent = @"</div></div></div>";
+            sb.Append(openContent);
+            sb.Append(modalHeader);
+            sb.Append(modalBody);
+            sb.Append(modalFooter);
+            sb.Append(closeContent);
+
+            return new MvcHtmlString(sb.ToString());
+        }
         private static StringBuilder RecursiveBuilder(List<Vehicle> direction)
         {
           

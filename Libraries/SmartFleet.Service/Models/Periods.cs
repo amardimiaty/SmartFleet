@@ -1,7 +1,7 @@
 ﻿using System;
 using SmartFleet.Core.Domain.Movement;
 
-namespace SmartFLEET.Web.Models
+namespace SmartFleet.Service.Models
 {
     public class Periods
     {

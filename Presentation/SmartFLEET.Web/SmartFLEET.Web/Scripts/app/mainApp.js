@@ -13,4 +13,11 @@ app.config([
     }
 ]);
 
+app.directive('reportVehicle', function () {
+    return {
+        restrict: 'E',
+        templateUrl: '../VehicleReport/Index',
+    };
+});
+
 

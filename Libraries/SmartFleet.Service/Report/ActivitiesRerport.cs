@@ -4,15 +4,23 @@ using System.Diagnostics;
 using System.Linq;
 using SmartFleet.Core.Domain.Movement;
 using SmartFleet.Core.Geofence;
-using SmartFLEET.Web.Models;
+using SmartFleet.Service.Models;
 
-namespace SmartFLEET.Web.DailyRports
+namespace SmartFleet.Service.Report
 {
     /// <summary>
     /// 
     /// </summary>
-    public class PositionReport
+
+
+    public delegate void UpdateProgress(int val);
+
+    public class ActivitiesRerport : IActivitiesRerport
     {
+        /// <summary>
+        /// 
+        /// </summary>
+        public UpdateProgress UpdateProgress { get; set; }  
         /// <summary>
         /// 
         /// </summary>
@@ -38,8 +46,8 @@ namespace SmartFLEET.Web.DailyRports
         /// <returns></returns>
         public List<TargetViewModel> BuildDailyReport(List<Position> positions, DateTime startPeriod, string vehicleName)
         {
-           // string timeZone = "W. Central Africa Standard Time";
-          //  TimeZoneInfo cstZone = TimeZoneInfo.FindSystemTimeZoneById(timeZone);
+            // string timeZone = "W. Central Africa Standard Time";
+            //  TimeZoneInfo cstZone = TimeZoneInfo.FindSystemTimeZoneById(timeZone);
             //foreach (var position in positions.OrderBy(w=>w.Timestamp))
             //    position.Timestamp = TimeZoneInfo.ConvertTimeFromUtc(position.Timestamp, cstZone);
             // ReSharper disable once TooManyChainedReferences
@@ -130,11 +138,17 @@ namespace SmartFLEET.Web.DailyRports
 
         // ReSharper disable once MethodTooLong
         // ReSharper disable once TooManyArguments
-        private static List<TargetViewModel> BuildReport(List<Position> positions, DateTime startPeriod, string vehicleName, List<Periods> periods)
+        public List<TargetViewModel> BuildReport(List<Position> positions, DateTime startPeriod, string vehicleName, List<Periods> periods)
         {
             List<TargetViewModel> targets = new List<TargetViewModel>();
+            var i = 50;
+            var max = periods.Count;
             foreach (var position in periods.Distinct())
             {
+
+                if (i < 100) i += 100 / max;
+                else i = 99;
+                UpdateProgress?.Invoke(i);
                 var trgt = new TargetViewModel();
                 // get the first period 
                 var firstPosition = GetFirstPosition(positions, position);
@@ -202,7 +216,7 @@ namespace SmartFLEET.Web.DailyRports
                 var index = GetPreviousPositionIndexx(positions, lastPosition);
                 if (index == -1)
                     index = 0;
-              var p1 = new GeofenceHelper.Position();
+                var p1 = new GeofenceHelper.Position();
                 p1.Latitude = positions.ElementAt(index).Lat;
                 p1.Longitude = positions.ElementAt(index).Long;
                 var p2 = new GeofenceHelper.Position();
@@ -211,8 +225,8 @@ namespace SmartFLEET.Web.DailyRports
 
                 trgt.Distance = Math.Round(GeofenceHelper.HaversineFormula(p1,p2, GeofenceHelper.DistanceType.Kilometers), 2);
                 var avgSpeed = GetAvgSpeed(positions, firstPosition, lastPosition);
-                trgt.AvgSpeed = Math.Round(avgSpeed, 2);
-                trgt.MaxSpeed = Math.Round(GetMaxSpeed(positions, firstPosition, lastPosition), 2);
+                trgt.AvgSpeed = Math.Round((double) avgSpeed, 2);
+                trgt.MaxSpeed = Math.Round((double) GetMaxSpeed(positions, firstPosition, lastPosition), 2);
               
             }
 

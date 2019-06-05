@@ -17,12 +17,11 @@ namespace SmartFLEET.Web.Areas.Administrator.Models
         {
             _context = context;
             _context.Configuration.ProxyCreationEnabled = false;
-               //  Brand_Id = null;
-               VehicleTypes = new List<KeyValuePair<int, string>>();
-            foreach (var vehicleType in Enum.GetValues(typeof(VehicleType))
-                .Cast<VehicleType>())
+            //  Brand_Id = null;
+            VehicleTypes = new List<KeyValuePair<int, string>>();
+            foreach (var vehicleType in Enum.GetValues(typeof(VehicleType)) .Cast<VehicleType>())
             {
-                VehicleTypes.Add(new KeyValuePair<int, string>((int)vehicleType, vehicleType.ToString()));
+                VehicleTypes.Add(new KeyValuePair<int, string>((int) vehicleType, vehicleType.ToString()));
             }
         }
 

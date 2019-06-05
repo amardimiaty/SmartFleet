@@ -10,4 +10,8 @@
         //  console.log(user);
         return $http.post("../Administrator/user/AddUser", user);
     }
+    this.getTimeZones = function getTimeZones() {
+        //  console.log(user);
+        return $http.post("../Administrator/User/GetTimeZones");
+    }
 }]);

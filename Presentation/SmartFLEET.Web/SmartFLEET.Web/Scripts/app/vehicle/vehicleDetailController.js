@@ -5,7 +5,7 @@ function vehicleDetailController($scope, vehicleService, $stateParams) {
     $scope.id = $stateParams.vehicleId;
     console.log($stateParams.vehicleId);
     $scope.vehicle = {};
-    vehicleService.getVehicle($stateParams.vehicleId).then(function(resp) {
+    vehicleService.getVehicleOfCustomer($stateParams.vehicleId).then(function (resp) {
         $scope.vehicle = resp.data;
     });
 }
