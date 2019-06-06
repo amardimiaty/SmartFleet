@@ -121,7 +121,7 @@
     <Compile Include="Models\LogVm.cs" />
     <Compile Include="Properties\Annotations.cs" />
     <Compile Include="TcpClient\Client.cs" />
-    <Compile Include="TeltonikaPacketBuilder.cs" />
+    <Compile Include="Encoding\TeltonikaPacketEncoder.cs" />
     <Compile Include="ViewModel\MainViewModel.cs" />
     <Compile Include="ViewModel\TeltonikaEmulatorViewModel.cs" />
     <Compile Include="ViewModel\ViewModelLocator.cs" />

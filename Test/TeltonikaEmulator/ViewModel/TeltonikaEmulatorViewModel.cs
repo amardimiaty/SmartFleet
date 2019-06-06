@@ -1,7 +1,5 @@
 ﻿using System.ComponentModel;
-using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -10,6 +8,7 @@ using System.Windows.Input;
 using GalaSoft.MvvmLight.Command;
 using Microsoft.Win32;
 using TeltonikaEmulator.Annotations;
+using TeltonikaEmulator.Encoding;
 using TeltonikaEmulator.Helpers;
 using TeltonikaEmulator.Models;
 using TeltonikaEmulator.Parsers;
@@ -28,7 +27,7 @@ namespace TeltonikaEmulator.ViewModel
         private int _port;
         private DeepObservableCollection<LogVm> _logs;
         CancellationTokenSource _cts;
-        public string[] File { get; set; }
+        private readonly string[] _file;
         #endregion
 
         #region ctor
@@ -43,8 +42,7 @@ namespace TeltonikaEmulator.ViewModel
             _ipAddress = "127.0.0.1";
             _port = 34400;
             Logs = new DeepObservableCollection<LogVm>();
-           // _fileName = Path.Combine(System.IO.Path.GetDirectoryName(Assembly.GetEntryAssembly().Location), "Resource") + "\\19-05-07_352093082435032.csv"; 
-            File = ResourFiles.Resource._19_05_07_352093082435032.Split('\r');
+             _file = ResourFiles.Resource._19_05_07_352093082435032?.Split('\r');
         }
 
         private void CancelTasks()
@@ -59,7 +57,7 @@ namespace TeltonikaEmulator.ViewModel
         private void Emulate()
         {
             _cts = new CancellationTokenSource();
-            if (string.IsNullOrEmpty(_fileName) &&  File.Length ==0)
+            if (string.IsNullOrEmpty(_fileName) &&  _file.Length ==0)
             {
                 MessageBox.Show("Le chemin vers le fichier log est vide", "Attention", MessageBoxButton.OK,
                     MessageBoxImage.Warning);
@@ -89,7 +87,7 @@ namespace TeltonikaEmulator.ViewModel
 
                     config.IMEIs = new[] {_imei};
                 }
-                TeltonikaPacketBuilder.UpdateLogDataGird += log =>
+                TeltonikaPacketEncoder.UpdateLogDataGird += log =>
                 {
                     Application.Current.Dispatcher.Invoke(() =>
                     {
@@ -99,8 +97,8 @@ namespace TeltonikaEmulator.ViewModel
                 };
                 // extracting and parsing and encoding  avl data. 
                 var encodedData = (!string.IsNullOrEmpty(_fileName))?
-                    TeltonikaPacketBuilder.Build(AvlDataParser.ParseAvlData(_fileName)):
-                    TeltonikaPacketBuilder.Build(AvlDataParser.ParseAvlData(File));
+                    TeltonikaPacketEncoder.Encoding(AvlDataParser.ParseAvlData(_fileName)):
+                    TeltonikaPacketEncoder.Encoding(AvlDataParser.ParseAvlData(_file));
                 // launch the emulation
                 var emulator = new Emulator();
                 emulator.UpdateLogDataGird += log =>

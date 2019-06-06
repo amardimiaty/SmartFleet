@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using TeltonikaEmulator.Encoding;
 using TeltonikaEmulator.Models;
 using TeltonikaEmulator.TcpClient;
 
