@@ -45,8 +45,8 @@ namespace SmartFLEET.Web.Controllers
         public ActionResult Index()
         {
             var user = User.Identity;
-            var cst = _customerService.GetCustomerbyid(user.Name);
-            CurrentGroup = cst?.Name;
+            var cst = _customerService.GetCustomerbyName(user.Name);
+            CurrentGroup = cst?.Id.ToString();
             ViewBag.GroupName = CurrentGroup;
             return View();
         }
@@ -71,7 +71,7 @@ namespace SmartFLEET.Web.Controllers
         public async Task<JsonResult> LoadNodes()
         {
             var user = User.Identity;
-            var cst = _customerService.GetCustomerbyid(user.Name);
+            var cst = _customerService.GetCustomerbyName(user.Name);
             var nodes = JsTreeModels();
             if (cst == null)
                 return Json(nodes, JsonRequestBehavior.AllowGet);

@@ -24,7 +24,7 @@
         <div class="form-group">
             <label class="col-md-4 control-label" for="Email">Email</label>
             <div class="col-md-5">
-                <input id="Email" ng-model="customer.Email" ng-required="true" name="Email" type="text" placeholder="" class="form-control input-md">
+                <input  validate-email ng-model="customer.Email" ng-required="true"  type="email" placeholder="" class="form-control input-md">
 
             </div>
         </div>
@@ -59,7 +59,7 @@
     </fieldset>
     <list-users></list-users>
     <div class="modal-footer">
-        <button type="button" class="btn btn-success" ng-disabled="customerForm.$invalid ||customerForm.$pristine" ng-click="onValidate(customer)" >Valider</button>
+        <button type="button" class="btn btn-success"  ng-click="onValidate(customer)" >Valider</button>
 
         <button type="button" ui-sref="customers" class="btn btn-default" data-dismiss="modal">Close</button>
     </div>

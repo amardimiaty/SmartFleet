@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Data.Entity;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using AutoMapper;
 using SmartFleet.Data;
+using SmartFLEET.Web.Areas.Administrator.Models;
 
 namespace SmartFLEET.Web.Controllers
 {
@@ -26,7 +28,15 @@ namespace SmartFLEET.Web.Controllers
             Mapper = mapper;
         }
 
+        public ValidationViewModel ValidationViewModel()
+        {
+            ValidationViewModel validationModel;
+            var errors = (from modelStateValue in ModelState.Values
+                from error in modelStateValue.Errors
+                select error.ErrorMessage).ToList();
+            validationModel = new ValidationViewModel(errors, "Validation errors");
+            return validationModel;
+        }
 
-      
     }
 }

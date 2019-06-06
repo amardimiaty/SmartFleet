@@ -132,7 +132,7 @@ namespace SmartFLEET.Web.HtmlHelpers
             return new MvcHtmlString(sb.ToString());
         }
         public static MvcHtmlString BootstrapModalAngular(this HtmlHelper helper, string modalId, string modalTite,
-            string template)
+            string template , string dissablesave = null)
         {
             StringBuilder sb = new StringBuilder();
             var openContent = $@"<div id='{modalId}'  data-backdrop='false' class='modal fade' role='dialog'>
@@ -151,11 +151,12 @@ namespace SmartFLEET.Web.HtmlHelpers
                 </div>"
 
                 ;
-            var modalFooter = $@"<div class='modal-footer'>
+            var modalFooter = string.IsNullOrEmpty(dissablesave)? $@"<div class='modal-footer'>
                                 <button type = 'button' ng-click='save()' class='btn btn-info' >Enregistrer</button>
-                              <button type = 'button' class='btn btn-default' data-dismiss='modal'>Fermer</button>
-                             
-                </div>";
+                              <button type = 'button' class='btn btn-default' data-dismiss='modal'>Fermer</button></div>"
+                : $@"<div class='modal-footer'>
+                                <button type = 'button' ng-click='save()' ng-disabled='{dissablesave}.$invalid || {dissablesave}.$pristine' class='btn btn-info' >Enregistrer</button>
+                               <button type = 'button' class='btn btn-default' data-dismiss='modal'>Fermer</button></div>";
             var closeContent = @"</div></div></div>";
             sb.Append(openContent);
             sb.Append(modalHeader);

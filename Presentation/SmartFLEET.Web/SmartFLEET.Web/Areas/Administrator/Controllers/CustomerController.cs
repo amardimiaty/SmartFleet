@@ -1,15 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using AutoMapper;
 using SmartFleet.Core.Domain.Customers;
+using SmartFleet.Core.Domain.Users;
 using SmartFleet.Data;
 using SmartFleet.Service.Customers;
 using SmartFleet.Web.Framework.DataTables;
 using SmartFLEET.Web.Areas.Administrator.Models;
+using SmartFLEET.Web.Areas.Administrator.Validation;
 using SmartFLEET.Web.Controllers;
-using SmartFLEET.Web.Models;
 
 namespace SmartFLEET.Web.Areas.Administrator.Controllers
 {
@@ -50,15 +52,21 @@ namespace SmartFLEET.Web.Areas.Administrator.Controllers
         [HttpPost]
         public ActionResult AddCustomer(AddCustomerViewModel model)
         {
-            if (ModelState.IsValid)
+            var validator = new AddcustomerValidator(_customerService);
+            var vaalidation =  validator.Validate(model);
+            if (vaalidation.IsValid)
             {
                 var customer = Mapper.Map<Customer>(model);
-                var result = _customerService.AddCustomer(customer);
+                var result = _customerService.AddCustomer(customer, Mapper.Map<List<User>>(model.UserVms));
                 return Json(result, JsonRequestBehavior.AllowGet);
-            }
 
-            return Json("", JsonRequestBehavior.AllowGet);
+            }
+            ValidationViewModel validationModel = new ValidationViewModel(vaalidation.Errors.Select(x => x.ErrorMessage).ToList(), "Validation errors");
+        
+            return Json(validationModel, JsonRequestBehavior.AllowGet);
         }
+
+       
 
         public JsonResult GetNewCustomer()
         {
@@ -72,7 +80,7 @@ namespace SmartFLEET.Web.Areas.Administrator.Controllers
        // [HttpPost]
         public async Task<JsonResult> GetCustomer(Guid id)
         {
-            var customer = await _customerService.GetCustomerbyid(id);
+            var customer = await _customerService.GetCustomerbyName(id);
             return Json(Mapper.Map <CustomerVm>(customer), JsonRequestBehavior.AllowGet);
         }
       

@@ -2,6 +2,7 @@
 using AutoMapper;
 using SmartFleet.Core.Contracts.Commands;
 using SmartFleet.Core.Domain.Customers;
+using SmartFleet.Core.Domain.Users;
 using SmartFleet.Core.Domain.Vehicles;
 using SmartFleet.Service.Models;
 using SmartFLEET.Web.Areas.Administrator.Models;
@@ -34,6 +35,7 @@ namespace SmartFLEET.Web.Automapper
 
                 //.ForMember(x => x.CustomerStatus, o => o.MapFrom(v => v.CustomerStatus.ToString()))
                 .ReverseMap();
+            CreateMap<User, UserVm>().ReverseMap();
             CreateMap<PositionViewModel, CreateTk103Gps>();
             CreateMap<Vehicle, VehicleViewModel>()
                 .ForMember(x=>x.Customer, o=>o.MapFrom(v=>v.Customer.Name))

@@ -72,13 +72,13 @@
       <HintPath>..\..\..\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
     </Reference>
     <Reference Include="FluentValidation, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7de548da2fbae0f0, processorArchitecture=MSIL">
-      <HintPath>..\..\..\packages\FluentValidation.8.0.100\lib\net45\FluentValidation.dll</HintPath>
+      <HintPath>..\..\..\packages\FluentValidation.8.4.0\lib\net45\FluentValidation.dll</HintPath>
     </Reference>
     <Reference Include="FluentValidation.Mvc, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7de548da2fbae0f0, processorArchitecture=MSIL">
-      <HintPath>..\..\..\packages\FluentValidation.Mvc5.8.0.100\lib\net45\FluentValidation.Mvc.dll</HintPath>
+      <HintPath>..\..\..\packages\FluentValidation.Mvc5.8.4.0\lib\net45\FluentValidation.Mvc.dll</HintPath>
     </Reference>
     <Reference Include="FluentValidation.ValidatorAttribute, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7de548da2fbae0f0, processorArchitecture=MSIL">
-      <HintPath>..\..\..\packages\FluentValidation.ValidatorAttribute.8.0.100\lib\net45\FluentValidation.ValidatorAttribute.dll</HintPath>
+      <HintPath>..\..\..\packages\FluentValidation.ValidatorAttribute.8.4.0\lib\net45\FluentValidation.ValidatorAttribute.dll</HintPath>
     </Reference>
     <Reference Include="GreenPipes, Version=2.1.2.111, Culture=neutral, PublicKeyToken=b800c4cfcdeea87b, processorArchitecture=MSIL">
       <HintPath>..\..\..\packages\GreenPipes.2.1.2\lib\net452\GreenPipes.dll</HintPath>
@@ -290,6 +290,9 @@
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Areas\Administrator\AdministratorAreaRegistration.cs" />
     <Compile Include="Areas\Administrator\Controllers\DriverController.cs" />
+    <Compile Include="Areas\Administrator\Models\UserVm.cs" />
+    <Compile Include="Areas\Administrator\Validation\AddcustomerValidator.cs" />
+    <Compile Include="Areas\Administrator\Validation\UserVmValidator.cs" />
     <Compile Include="Areas\Api\ApiAreaRegistration.cs" />
     <Compile Include="Areas\Api\Controllers\BaseApiController.cs" />
     <Compile Include="Areas\Api\v1\Controllers\VehicleController.cs" />

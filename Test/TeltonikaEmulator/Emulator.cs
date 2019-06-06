@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using TeltonikaEmulator.Encoding;
+//using TeltonikaEmulator.Encoding;
 using TeltonikaEmulator.Models;
 using TeltonikaEmulator.TcpClient;
 
@@ -30,7 +29,7 @@ namespace TeltonikaEmulator
             "356173063374313","356173068588909","356173067195417","356173067288295","356173067285838","356173067261078","356173068588214","356173066517553","356173068365597","356173067289244",
             "356173068694004","356173061869652","356173061406877","356173063352616","356173067905211","356173067286711","356173067197066","356173065437753","356173068562128","356173066412243"};
 
-        public   void  Emulate(EmulationConfig config, List<EncodedAvlData> encodedData, CancellationToken token )
+        public   void  Emulate(EmulationConfig config, List<Encoding.EncodedAvlData> encodedData, CancellationToken token )
         {
             switch (config.SourceOfImeIs)
             {
@@ -89,7 +88,7 @@ namespace TeltonikaEmulator
 
         }
 
-        private async Task RunEmulation(EmulationConfig config, string i1, IGrouping<string, EncodedAvlData> data, CancellationToken token)
+        private async Task RunEmulation(EmulationConfig config, string i1, IGrouping<string, Encoding.EncodedAvlData> data, CancellationToken token)
         {
 
             // initialiser le client
@@ -113,7 +112,7 @@ namespace TeltonikaEmulator
                 return;
             }
             // authentification par l'envoi de l'IMEI
-            Byte[] imei = BitConverter.GetBytes((ushort)15).Reverse().Concat(Encoding.ASCII.GetBytes(i1)).ToArray();
+            Byte[] imei = BitConverter.GetBytes((ushort)15).Reverse().Concat(System.Text.Encoding.ASCII.GetBytes(i1)).ToArray();
 
             await _client.SendAsync(imei, token);
 

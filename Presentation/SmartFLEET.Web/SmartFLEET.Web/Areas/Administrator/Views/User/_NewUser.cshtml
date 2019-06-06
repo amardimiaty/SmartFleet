@@ -23,7 +23,7 @@
             <div class="form-group">
                 <label class="col-md-4 control-label" for="Email">Email</label>
                 <div class="col-md-5">
-                    <input id="Email" ng-model="user.Email" ng-required="true" name="Email" type="text" placeholder="" class="form-control input-md">
+                    <input id="Email" type='email' validate-email ng-model="user.EmailAddress" ng-required="true" name="Email"  placeholder="" class="form-control input-md">
 
                 </div>
             </div>
@@ -42,13 +42,22 @@
          
             <!-- Textarea -->
             <div class="form-group">
-                <label class="col-md-4 control-label" for="Street">PhoneNumber</label>
+                <label class="col-md-4 control-label " for="Street">PhoneNumber</label>
                 <div class="col-md-5">
                     <input  class="form-control" ng-model="user.PhoneNumber" id="Street" name="Street"/>
                 </div>
             </div>
+            <div class="form-group">
+                <label class="col-md-4 control-label " for="Street">Role</label>
 
-        </fieldset>
+                <label class="radio-inline"><input type="radio" value="Customer" ng-model="user.role" name="optradio">Owner</label>
+                <label class="radio-inline"><input type="radio" value="User" ng-model="user.role" name="optradio">User</label>
+            </div>
+                
+
+                <!-- Default checked -->
+                
+</fieldset>
        
     </form>
 

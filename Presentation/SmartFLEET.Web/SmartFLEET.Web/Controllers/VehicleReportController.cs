@@ -66,7 +66,7 @@ namespace SmartFLEET.Web.Controllers
         [HttpGet]
         public async Task<ActionResult> GetVehicles()
         {
-            var cst = _customerService.GetCustomerbyid(User.Identity.Name);
+            var cst = _customerService.GetCustomerbyName(User.Identity.Name);
             var vehicles = await ObjectContext.Vehicles.Where(x => x.CustomerId == cst.Id).Select(x=>new {x.VehicleName, x.Id}).ToArrayAsync();
             return Json(vehicles, JsonRequestBehavior.AllowGet);
         }

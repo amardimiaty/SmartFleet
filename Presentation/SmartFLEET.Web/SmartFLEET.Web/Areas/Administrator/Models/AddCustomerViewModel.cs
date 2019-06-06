@@ -2,21 +2,28 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Globalization;
+using FluentValidation.Attributes;
+using SmartFLEET.Web.Areas.Administrator.Validation;
 
 namespace SmartFLEET.Web.Areas.Administrator.Models
 {
+    [Validator(typeof(AddcustomerValidator))]
     public class AddCustomerViewModel
     {
+        public AddCustomerViewModel()
+        {
+            UserVms = new List<UserVm>();
+        }
         public Guid Id { get; set; }
-        [Required]
+       
         public string Name { get; set; }
-        [Required]
+       
         public string Email { get; set; }
-        [Required]
+        
         public string Tel { get; set; }
         public string Country { get; set; }
         public string State { get; set; }
-        [Required]
+       
         public string Street { get; set; }
         public string ZipCode { get; set; }
         public int CustomerStatus { get; set; }
@@ -38,5 +45,7 @@ namespace SmartFLEET.Web.Areas.Administrator.Models
             CountryList.Sort();
             return CountryList;
         }
+
+        public List<UserVm> UserVms { get; set; }
     }
 }
