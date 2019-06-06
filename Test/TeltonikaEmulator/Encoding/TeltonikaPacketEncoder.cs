@@ -4,13 +4,13 @@ using System.Linq;
 using TeltonikaEmulator.Models;
 using TeltonikaEmulator.TcpClient;
 
-namespace TeltonikaEmulator
+namespace TeltonikaEmulator.Encoding
 {
-    public static class TeltonikaPacketBuilder
+    public static class TeltonikaPacketEncoder
     {
         public static UpdateLogDataGird UpdateLogDataGird;
 
-        public static List<EncodedAvlData> Build(List<AvlData> data)
+        public static List<EncodedAvlData> Encoding(List<AvlData> data)
         {
 
             var encodedData = new List<EncodedAvlData>();
@@ -159,7 +159,7 @@ namespace TeltonikaEmulator
             {
                 Date = DateTime.Now,
                 Type = LogType.Info,
-                Description = "Le codage des données Avl est terminé ..."
+                Description = "L'encodage des données Avl est terminé ..."
             });
             return encodedData;
         }
