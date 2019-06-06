@@ -16,7 +16,6 @@ namespace TeltonikaEmulator.TcpClient
         private readonly string _server;
         private System.Net.Sockets.TcpClient _client;
         private NetworkStream _stream;
-        public UpdateLogDataGird UpdateLogDataGird;
         private int minBufferSize = 8192;
         private int maxBufferSize = 15 * 1024 * 1024;
         private int _bufferSize = 4;
@@ -77,11 +76,16 @@ namespace TeltonikaEmulator.TcpClient
                 }
                 else OnDisconnected?.Invoke(this, EventArgs.Empty);
             }
+            catch (Exception e)
+            {
+                Thread.Sleep(500);
+               // await SendAsync(data, token);
+            }
         }
 
 
 
-        public async Task<Byte[]> Receive(CancellationToken token = default(CancellationToken))
+        public async Task<Byte[]> ReceiveAsync(CancellationToken token = default(CancellationToken))
         {
             byte[] buffer = new byte[_bufferSize];
             byte[] data = new byte[4];
@@ -115,62 +119,6 @@ namespace TeltonikaEmulator.TcpClient
             return data;
 
         }
-
-        public async Task OnReceive(CancellationToken token = default(CancellationToken))
-        {
-
-            try
-            {
-                byte[] buffer = new byte[_bufferSize];
-                if (!IsConnected || IsRecieving)
-                    throw new InvalidOperationException();
-                IsRecieving = true;
-                while (IsConnected)
-                {
-                    token.ThrowIfCancellationRequested();
-                    int bytesRead = await _stream.ReadAsync(buffer, 0, buffer.Length, token);
-                    if (bytesRead > 0)
-                    {
-                        if (bytesRead == buffer.Length)
-                            _bufferSize = Math.Min(_bufferSize * 10, maxBufferSize);
-                        else
-                        {
-                            do
-                            {
-                                int reducedBufferSize = Math.Max(_bufferSize / 10, minBufferSize);
-                                if (bytesRead < reducedBufferSize)
-                                    _bufferSize = reducedBufferSize;
-
-                            } while (bytesRead > minBufferSize);
-                        }
-                        if (OnDataReceived != null)
-                        {
-                            var data = new byte[bytesRead];
-                            Array.Copy(buffer, data, bytesRead);
-                            IsRecieving = false;
-                            OnDataReceived.Invoke(this, data);
-                        }
-                        // break;
-                    }
-                    buffer = new byte[_bufferSize];
-                }
-            }
-            catch (ObjectDisposedException)
-            {
-            }
-            catch (IOException ex)
-            {
-                var evt = OnDisconnected;
-                if (ex.InnerException != null && ex.InnerException is ObjectDisposedException) { } // for SSL streams
-
-                if (evt != null)
-                    evt(this, EventArgs.Empty);
-            }
-            finally
-            {
-                IsRecieving = false;
-            }
-        }
         public bool IsRecieving { get; set; }
 
         public bool IsConnected { get; set; }
@@ -192,7 +140,7 @@ namespace TeltonikaEmulator.TcpClient
                 await CloseIfCanceled(cancellationToken);
 
             }
-            catch (Exception)
+            catch (Exception e)
             {
                 CloseIfCanceled(cancellationToken).Wait();
                 throw;

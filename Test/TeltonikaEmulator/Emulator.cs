@@ -15,7 +15,7 @@ namespace TeltonikaEmulator
     {
         public  UpdateLogDataGird UpdateLogDataGird;
         public  UpdateStartBtn UpdateStartBtn;
-        private static Client _client;
+       
         static String[] IMEIs = new String[100]{
             /*"123456789012345","123456789012345","123456789012345","123456789012345","123456789012345","123456789012345","123456789012345","123456789012345","123456789012345","123456789012345",*/
             "356173060307977","356173060968455","356173060305146","356173066531356","356307049444762","356173062198986","356173064102267","356173062199299","356173065042694","356173065835030",
@@ -29,7 +29,7 @@ namespace TeltonikaEmulator
             "356173063374313","356173068588909","356173067195417","356173067288295","356173067285838","356173067261078","356173068588214","356173066517553","356173068365597","356173067289244",
             "356173068694004","356173061869652","356173061406877","356173063352616","356173067905211","356173067286711","356173067197066","356173065437753","356173068562128","356173066412243"};
 
-        public  void  Emulate(EmulationConfig config, List<EncodedAvlData> encodedData, CancellationToken token )
+        public   void  Emulate(EmulationConfig config, List<EncodedAvlData> encodedData, CancellationToken token )
         {
             switch (config.SourceOfImeIs)
             {
@@ -58,7 +58,8 @@ namespace TeltonikaEmulator
                 default:
                     throw new ArgumentOutOfRangeException();
             }
-             Parallel.For((long)0, config.BoxNumber, async( index, state) =>
+
+            Parallel.For((long)0, config.BoxNumber, async (index, state) =>
             {
                 try
                 {
@@ -68,13 +69,11 @@ namespace TeltonikaEmulator
                         try
                         {
                             token.ThrowIfCancellationRequested();
-                            await RunEmulation(config, i1, data, token);
+                            await RunEmulation(config,config.IMEIs[ i1], data, token);
                         }
                         catch (OperationCanceledException e)
                         {
-                            _client.CloseStream();
-                            _client.Disconnect();
-                            _client.Dispose();
+                           
                             UpdateStartBtn?.Invoke(false);
                             state.Stop();
                             throw;
@@ -86,15 +85,14 @@ namespace TeltonikaEmulator
                     GetLog(e.Message, LogType.Error);
                 }
             });
-           
 
         }
 
-        private  async Task RunEmulation(EmulationConfig config, long i1, IGrouping<string, EncodedAvlData> data, CancellationToken token)
+        private async Task RunEmulation(EmulationConfig config, string i1, IGrouping<string, EncodedAvlData> data, CancellationToken token)
         {
 
             // initialiser le client
-            _client = new Client(config.IpAddress, config.Port);
+            var _client = new Client(config.IpAddress, config.Port);
             _client.OnDisconnected += (obj, args) =>
             {
                 GetLog($"Le serveur  {config.IpAddress} : {config.Port} est déconnecté...", LogType.Error);
@@ -114,22 +112,22 @@ namespace TeltonikaEmulator
                 return;
             }
             // authentification par l'envoi de l'IMEI
-            Byte[] imei = BitConverter.GetBytes((ushort)15).Reverse().Concat(Encoding.ASCII.GetBytes(config.IMEIs[i1])).ToArray();
-           
+            Byte[] imei = BitConverter.GetBytes((ushort)15).Reverse().Concat(Encoding.ASCII.GetBytes(i1)).ToArray();
+
             await _client.SendAsync(imei, token);
-           
-           var bt =  await _client.Receive(token);
+
+            var bt = await _client.ReceiveAsync(token);
             if (bt[0] == 0x001)
             {
-                GetLog($"Envoie de {data.Count()} trames  IEMI :{config.IMEIs[i1]} ... ", LogType.Info);
-
+                GetLog($"Envoie de {data.Count()} trames  IEMI :{i1} ... ", LogType.Info);
+                // envoi des trames AVL
                 foreach (var encodedAvlData in data)
                 {
                     if (token.IsCancellationRequested)
                         return;
-                    
+
                     await _client.SendAsync(encodedAvlData.Data, token);
-                    var aqt = await _client.Receive(token);
+                    var aqt = await _client.ReceiveAsync(token);
                     Console.WriteLine(aqt[3]);
                     Thread.Sleep((int)config.SleepPeriod);
                 }
@@ -137,11 +135,7 @@ namespace TeltonikaEmulator
                 _client.Disconnect();
             }
 
-            // envoi des trames AVL
-
-
         }
-   
         private  void GetLog(string message, LogType type)
         {
             UpdateLogDataGird?.Invoke(new LogVm

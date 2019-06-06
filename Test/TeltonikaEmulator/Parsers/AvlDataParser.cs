@@ -5,15 +5,12 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using TeltonikaEmulator.Models;
-using TeltonikaEmulator.TcpClient;
 
 namespace TeltonikaEmulator.Parsers
 {
 
     public static class AvlDataParser
     {
-        public static UpdateLogDataGird UpdateLogDataGird;
-
         /// <summary>
         /// Parses the avl data.
         /// </summary>
@@ -21,62 +18,157 @@ namespace TeltonikaEmulator.Parsers
         /// <returns></returns>
         public static List<AvlData> ParseAvlData(string path)
         {
-            
-            var data = new List<AvlData>();
-            var input = File.ReadAllLines(path);
-            var gpsElement = new List<GpsElement>();
-            var ioElement = new List<IoElement>();
-            foreach (var line in input.Skip(1))
+            try
             {
-                gpsElement.Add(ParseGpsElement(line));
-                ioElement.Add(ParseIoElement(line, gpsElement.Last().DataUtc));
 
-            }
-            foreach (var gps in gpsElement .OrderBy(x=>x.DataUtc))
-            {
-                var avlData = new AvlData();
-                avlData.GpsElement = gps;
-                avlData.Timestamp = gps.DataUtc;
-               
-                data.Add(avlData);
-            }
-            for (var i = 0; i < ioElement.Count; i++)
-            {
-                data.ElementAt(i).IoElement = ioElement.ElementAt(i);
-                Regex propertyRegEx = new Regex(@" ([A-Z]\w+)");
-                Regex propertyRegEx1 = new Regex(@"(?<propertyName>\w+) : (?<value>\w+) ");
-
-
-                var matches = propertyRegEx.Matches(input[i+1]);
-               
-                foreach (Match match in matches)
+                var data = new List<AvlData>();
+                var input = File.ReadAllLines(path);
+                var gpsElement = new List<GpsElement>();
+                var ioElement = new List<IoElement>();
+                foreach (var line in input.Skip(1))
                 {
-                    if (!match.Success) continue;
-                    SetPriority(match, input, i+1, data);
-                }
-                var matches2 = propertyRegEx1.Matches(input[i+1]);
-                foreach (Match match in matches2)
-                {
-                    if (!match.Success || !match.Groups["propertyName"].Success) continue;
+                    gpsElement.Add(ParseGpsElement(line));
+                    ioElement.Add(ParseIoElement(line, gpsElement.Last().DataUtc));
 
-                    if (match.Groups["propertyName"].Value.Trim() == "TNSock")
+                }
+
+                foreach (var gps in gpsElement.OrderBy(x => x.DataUtc))
+                {
+                    var avlData = new AvlData();
+                    avlData.GpsElement = gps;
+                    avlData.Timestamp = gps.DataUtc;
+
+                    data.Add(avlData);
+                }
+
+                for (var i = 0; i < ioElement.Count; i++)
+                {
+                    data.ElementAt(i).IoElement = ioElement.ElementAt(i);
+                    Regex propertyRegEx = new Regex(@" ([A-Z]\w+)");
+                    Regex propertyRegEx1 = new Regex(@"(?<propertyName>\w+) : (?<value>\w+) ");
+
+
+                    var matches = propertyRegEx.Matches(input[i + 1]);
+
+                    foreach (Match match in matches)
                     {
-                        data.ElementAt(i).SocketNumber = match.Groups["value"].Value;
-                        continue;
+                        if (!match.Success) continue;
+                        SetPriority(match, input, i + 1, data);
                     }
-                    if (match.Groups["propertyName"].Value.Trim() == "Index")
+
+                    var matches2 = propertyRegEx1.Matches(input[i + 1]);
+                    foreach (Match match in matches2)
                     {
-                        data.ElementAt(i).PacketIndex = Convert.ToInt32(match.Groups["value"].Value);
+                        if (!match.Success || !match.Groups["propertyName"].Success) continue;
+
+                        if (match.Groups["propertyName"].Value.Trim() == "TNSock")
+                        {
+                            data.ElementAt(i).SocketNumber = match.Groups["value"].Value;
+                            continue;
+                        }
+
+                        if (match.Groups["propertyName"].Value.Trim() == "Index")
+                        {
+                            data.ElementAt(i).PacketIndex = Convert.ToInt32(match.Groups["value"].Value);
+                        }
                     }
                 }
+
+                //UpdateLogDataGird?.Invoke(new LogVm
+                //{
+                //    Date = DateTime.Now,
+                //    Type = LogType.Info,
+                //    Description = "Parsing Avl data is completed ..."
+                //});
+                return data;
             }
-            //UpdateLogDataGird?.Invoke(new LogVm
-            //{
-            //    Date = DateTime.Now,
-            //    Type = LogType.Info,
-            //    Description = "Parsing Avl data is completed ..."
-            //});
-            return data;
+            catch (FileNotFoundException e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+        }
+        public static List<AvlData> ParseAvlData(string [] input)
+        {
+            try
+            {
+
+                var data = new List<AvlData>();
+              //  var input = File.ReadAllLines(path);
+                var gpsElement = new List<GpsElement>();
+                var ioElement = new List<IoElement>();
+                foreach (var line in input.Skip(1))
+                {
+                    gpsElement.Add(ParseGpsElement(line));
+                    ioElement.Add(ParseIoElement(line, gpsElement.Last().DataUtc));
+
+                }
+
+                foreach (var gps in gpsElement.OrderBy(x => x.DataUtc))
+                {
+                    var avlData = new AvlData();
+                    avlData.GpsElement = gps;
+                    avlData.Timestamp = gps.DataUtc;
+
+                    data.Add(avlData);
+                }
+
+                for (var i = 0; i < ioElement.Count; i++)
+                {
+                    data.ElementAt(i).IoElement = ioElement.ElementAt(i);
+                    Regex propertyRegEx = new Regex(@" ([A-Z]\w+)");
+                    Regex propertyRegEx1 = new Regex(@"(?<propertyName>\w+) : (?<value>\w+) ");
+
+
+                    var matches = propertyRegEx.Matches(input[i + 1]);
+
+                    foreach (Match match in matches)
+                    {
+                        if (!match.Success) continue;
+                        SetPriority(match, input, i + 1, data);
+                    }
+
+                    var matches2 = propertyRegEx1.Matches(input[i + 1]);
+                    foreach (Match match in matches2)
+                    {
+                        if (!match.Success || !match.Groups["propertyName"].Success) continue;
+
+                        if (match.Groups["propertyName"].Value.Trim() == "TNSock")
+                        {
+                            data.ElementAt(i).SocketNumber = match.Groups["value"].Value;
+                            continue;
+                        }
+
+                        if (match.Groups["propertyName"].Value.Trim() == "Index")
+                        {
+                            data.ElementAt(i).PacketIndex = Convert.ToInt32(match.Groups["value"].Value);
+                        }
+                    }
+                }
+
+                //UpdateLogDataGird?.Invoke(new LogVm
+                //{
+                //    Date = DateTime.Now,
+                //    Type = LogType.Info,
+                //    Description = "Parsing Avl data is completed ..."
+                //});
+                return data;
+            }
+            catch (FileNotFoundException e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
         }
 
         /// <summary>

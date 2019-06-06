@@ -1,5 +1,7 @@
 ﻿using System.ComponentModel;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -26,6 +28,7 @@ namespace TeltonikaEmulator.ViewModel
         private int _port;
         private DeepObservableCollection<LogVm> _logs;
         CancellationTokenSource _cts;
+        public string[] File { get; set; }
         #endregion
 
         #region ctor
@@ -40,6 +43,8 @@ namespace TeltonikaEmulator.ViewModel
             _ipAddress = "127.0.0.1";
             _port = 34400;
             Logs = new DeepObservableCollection<LogVm>();
+           // _fileName = Path.Combine(System.IO.Path.GetDirectoryName(Assembly.GetEntryAssembly().Location), "Resource") + "\\19-05-07_352093082435032.csv"; 
+            File = ResourFiles.Resource._19_05_07_352093082435032.Split('\r');
         }
 
         private void CancelTasks()
@@ -54,7 +59,7 @@ namespace TeltonikaEmulator.ViewModel
         private void Emulate()
         {
             _cts = new CancellationTokenSource();
-            if (string.IsNullOrEmpty(_fileName))
+            if (string.IsNullOrEmpty(_fileName) &&  File.Length ==0)
             {
                 MessageBox.Show("Le chemin vers le fichier log est vide", "Attention", MessageBoxButton.OK,
                     MessageBoxImage.Warning);
@@ -93,7 +98,9 @@ namespace TeltonikaEmulator.ViewModel
                     });
                 };
                 // extracting and parsing and encoding  avl data. 
-                var encodedData = TeltonikaPacketBuilder.Build(AvlDataParser.ParseAvlData(_fileName));
+                var encodedData = (!string.IsNullOrEmpty(_fileName))?
+                    TeltonikaPacketBuilder.Build(AvlDataParser.ParseAvlData(_fileName)):
+                    TeltonikaPacketBuilder.Build(AvlDataParser.ParseAvlData(File));
                 // launch the emulation
                 var emulator = new Emulator();
                 emulator.UpdateLogDataGird += log =>

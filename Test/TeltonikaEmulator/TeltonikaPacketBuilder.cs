@@ -21,13 +21,13 @@ namespace TeltonikaEmulator
             {
                 var index = 0;
                 var dataCount = DataCount(avlData.ToList());
-                var header = new Byte[dataCount + crcSize + headerSize];
-                var dataFiledLength = dataCount + crcSize - 2;
+                var header = new Byte[dataCount + crcSize - 2+12];
+                var length = dataCount + crcSize - 2;
                 var numberData = Convert.ToByte(avlData.Count());
                 // four zeros
                 Array.Copy(BitConverter.GetBytes(default(UInt32)), header, 4);
                 // data field length
-                Array.Copy(BitConverter.GetBytes(dataFiledLength).Reverse().ToArray(), 0, header, 4, 4);
+                Array.Copy(BitConverter.GetBytes(length).Reverse().ToArray(), 0, header, 4, 4);
                 index = index + 8;
                 // codec Id
                 header[index] = 0x08;
@@ -167,12 +167,16 @@ namespace TeltonikaEmulator
         static int DataCount(List<AvlData> data)
         {
             var gpsCount = data.Select(x => x.GpsElement).Count();
-            var ioCount = data.Select(x => x.IoElement).First().TotalNumberOfIoProperties;
-            var sumOfIoElements = data.Select(x => x.IoElement).Select(x => x.OneBytesIoProperties).Count() * 2 +
-                                  data.Select(x => x.IoElement).Select(x => x.TwoBytesIoProperties).Count() * 3 +
-                                  data.Select(x => x.IoElement).Select(x => x.FourBytesIoProperties).Count() * 5 +
-                                  data.Select(x => x.IoElement).Select(x => x.EightBytesIoProperties).Count() * 9;
-            var n = 5 + 30 * gpsCount + sumOfIoElements * ioCount;
+            var sumOfIoElements = 0;
+            foreach (var d in data)
+            {
+                sumOfIoElements += d.IoElement.EightBytesIoProperties.Count * 9;
+                sumOfIoElements += d.IoElement.FourBytesIoProperties.Count * 5;
+                sumOfIoElements += d.IoElement.TwoBytesIoProperties.Count * 3;
+                sumOfIoElements += d.IoElement.OneBytesIoProperties.Count * 2;
+            }
+      
+            var n = 15 + 30 * gpsCount + sumOfIoElements ;
             return n;
 
         }
