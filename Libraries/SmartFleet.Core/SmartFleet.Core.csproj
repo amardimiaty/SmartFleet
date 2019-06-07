@@ -156,6 +156,7 @@
     <Compile Include="Data\IRepository.cs" />
     <Compile Include="Data\IScopeRepository.cs" />
     <Compile Include="Domain\Customers\Customer.cs" />
+    <Compile Include="Domain\Customers\InterestArea.cs" />
     <Compile Include="Domain\EcoDrive\AlarmType.cs" />
     <Compile Include="Domain\EcoDrive\VehicleAlarrm.cs" />
     <Compile Include="Domain\Gpsdevices\Box.cs" />

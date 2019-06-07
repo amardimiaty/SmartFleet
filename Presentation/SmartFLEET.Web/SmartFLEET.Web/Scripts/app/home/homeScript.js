@@ -23,7 +23,7 @@ $(document).ready(function () {
     //layout.close("west");
     initJstree();
     loadData(0.33);
-    initMap();
+    initMap('map');
     loadData(0.67);
     initSignalR();
     
@@ -77,6 +77,24 @@ $(document).ready(function () {
        // closable: false,
         draggable: false
     });
+    $('#zone-interest').window({
+        left: 315,
+        top: 60,
+        collapsible: false,
+        minimizable: false,
+        maximizable: false,
+        // closable: false,
+        draggable: false
+    });
+    $('#zone-win').window({
+        left: 315,
+        top: 60,
+        collapsible: false,
+        minimizable: false,
+        maximizable: false,
+        // closable: false,
+        draggable: false
+    });
     $('#prg-wwin').window({
         //left: 315,
         //top: 55,
@@ -89,6 +107,8 @@ $(document).ready(function () {
     $("#chronogram").window('close');
     $("#report-win").window('close');
     $('#prg-wwin').window('close');
+    $('#zone-interest').window('close');
+    $('#zone-win').window('close');
     $("#btn-report").on('click', function() {
         downloadFullReport = true;
         getPossition = false;
@@ -101,6 +121,18 @@ $(document).ready(function () {
         $("#report-win").window('close');
         layout.open('west');
     });
+    $('#btn-settings').on('click', function() {
+        $("#zone-interest").window('open');
+        $("#chronogram").window('close');
+        $("#report-win").window('close');
+        $('#prg-wwin').window('close');
+    })
+    //$('#dg').edatagrid({
+    //    url: 'get_users.php',
+    //    saveUrl: 'save_user.php',
+    //    updateUrl: 'update_user.php',
+    //    destroyUrl: 'destroy_user.php'
+    //});
 });
 
 function formatDate(date) {
@@ -119,18 +151,18 @@ function getScope(ctrlName) {
     var sel = 'div[ng-controller="' + ctrlName + '"]';
     return angular.element(sel).scope();
 }
-function initMap() {
-    map = L.map('map', {
+function initMap(mapId) {
+    map = L.map(mapId, {
         center: [36.7525000, 3.0419700],
         zoom: 8,
         zoomControl: true
     });
-    var circle = L.circle([36.7525000, 3.0419700], {
-        color: 'red',
-        fillColor: '#f03',
-        fillOpacity: 0.5,
-        radius: 40000
-    }).addTo(map);
+    //var circle = L.circle([36.7525000, 3.0419700], {
+    //    color: 'red',
+    //    fillColor: '#f03',
+    //    fillOpacity: 0.5,
+    //    radius: 40000
+    //}).addTo(map);
     markerGroup = L.layerGroup().addTo(map);
     layout = L;
     // load a tile layer
@@ -141,7 +173,7 @@ function initMap() {
         success: onGetAllVehiclesSuccess
     });
     window.dispatchEvent(new Event('resize'));
-    
+    map.invalidateSize();
 }
 function initSignalR() {
     hub = $.connection.signalRHandler;

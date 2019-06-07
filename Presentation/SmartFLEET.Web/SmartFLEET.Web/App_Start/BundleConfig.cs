@@ -29,7 +29,7 @@ namespace SmartFLEET.Web
                 "~/Scripts/modernizr-*"));
 
             bundles.Add(new ScriptBundle("~/bundles/bootstrap").Include(
-                "~/Scripts/bootstrap.js",
+                "~/Scripts/bootstrap3.min.js",
                 "~/Scripts/jq-layout.js",
                 "~/Scripts/leafjs/leaflet.js",
                 "~/Scripts/jstree/jstree.min.js",
@@ -65,7 +65,7 @@ namespace SmartFLEET.Web
                 ));
 
             bundles.Add(new StyleBundle("~/Content/css").Include(
-                "~/Content/bootstrap.min.css",
+                "~/Content/bootstrap3.css",
                 "~/Content/validationEngine.jquery.css",
                 "~/Content/font-awesome.css",
                 "~/Scripts/datatables/css/dataTables.bootstrap.css",

@@ -95,6 +95,18 @@
     <Compile Include="Migrations\201810152202172_addMotionStatus.Designer.cs">
       <DependentUpon>201810152202172_addMotionStatus.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201906071012050_addAreasOfinterest.cs" />
+    <Compile Include="Migrations\201906071012050_addAreasOfinterest.Designer.cs">
+      <DependentUpon>201906071012050_addAreasOfinterest.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201906072010224_fixxMissSpeling.cs" />
+    <Compile Include="Migrations\201906072010224_fixxMissSpeling.Designer.cs">
+      <DependentUpon>201906072010224_fixxMissSpeling.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201906072042459_addAreaIdvehicleDriver.cs" />
+    <Compile Include="Migrations\201906072042459_addAreaIdvehicleDriver.Designer.cs">
+      <DependentUpon>201906072042459_addAreaIdvehicleDriver.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SmartFleetObjectContext.cs" />
@@ -133,6 +145,15 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201810152202172_addMotionStatus.resx">
       <DependentUpon>201810152202172_addMotionStatus.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201906071012050_addAreasOfinterest.resx">
+      <DependentUpon>201906071012050_addAreasOfinterest.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201906072010224_fixxMissSpeling.resx">
+      <DependentUpon>201906072010224_fixxMissSpeling.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201906072042459_addAreaIdvehicleDriver.resx">
+      <DependentUpon>201906072042459_addAreaIdvehicleDriver.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

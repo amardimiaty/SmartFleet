@@ -524,15 +524,12 @@
             </summary>
             <param name="documentPath">The physical path to XML document.</param>
         </member>
-        <member name="T:SmartFLEET.Web.Automapper.SmartFleetAdminMappings">
+        <member name="M:SmartFLEET.Web.Controllers.InterestAreaController.AddNewZone(SmartFLEET.Web.Models.InterestAreaVm)">
             <summary>
             
             </summary>
-        </member>
-        <member name="M:SmartFLEET.Web.Automapper.SmartFleetAdminMappings.#ctor">
-            <summary>
-            
-            </summary>
+            <param name="model"></param>
+            <returns></returns>
         </member>
         <member name="T:SmartFLEET.Web.Controllers.AccountController">
             <summary>
@@ -651,6 +648,16 @@
             <param name="vehicleId"></param>
             <param name="startPeriod"></param>
             <returns></returns>
+        </member>
+        <member name="T:SmartFLEET.Web.Automapper.SmartFleetAdminMappings">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:SmartFLEET.Web.Automapper.SmartFleetAdminMappings.#ctor">
+            <summary>
+            
+            </summary>
         </member>
         <member name="M:SmartFLEET.Web.MvcApplication.Application_AuthenticateRequest(System.Object,System.EventArgs)">
             <summary>

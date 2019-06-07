@@ -18,8 +18,7 @@ namespace SmartFleet.Service.Customers
         private readonly IRepository<Customer> _customeRepository;
         private readonly SmartFleetObjectContext _objectContext;
         private readonly UserManager<User> _userManager;
-        public CustomerService(IRepository<Customer> customeRepository,
-            SmartFleetObjectContext objectContext)
+        public CustomerService(IRepository<Customer> customeRepository,SmartFleetObjectContext objectContext)
         {
             _customeRepository = customeRepository;
             _objectContext = objectContext;
@@ -77,6 +76,32 @@ namespace SmartFleet.Service.Customers
         public async Task<Boolean> GetUserbyName(string id)
         {
             return  await _userManager.Users.AnyAsync(u => u.UserName == id);
+        }
+
+        public async Task<List<InterestArea>> GetAllAreas(string userName, int page , int size)
+        {
+            var customer =await _userManager.Users.Include(x=>x.Customer).Select(x=> new { x.CustomerId , x.UserName}).FirstOrDefaultAsync(x => x.UserName == userName);
+            if (customer != null)
+                return await _objectContext.InterestAreas
+                    .OrderBy(x=>x.Name)
+                    .Skip(page-1)
+                    .Take(size*page)
+                    .ToListAsync();
+            return new List<InterestArea>();
+        }
+
+        public bool AddArea(InterestArea area)
+        {
+            try
+            {
+                _objectContext.InterestAreas.Add(area);
+                _objectContext.SaveChanges();
+                return true;
+            }
+            catch (Exception e)
+            {
+                return false;
+            }
         }
     }
 }

@@ -19,5 +19,11 @@ app.directive('reportVehicle', function () {
         templateUrl: '../VehicleReport/Index',
     };
 });
+app.directive('listZone', function () {
+    return {
+        restrict: 'E',
+        templateUrl: '../InterestArea/Index',
+    };
+});
 
 

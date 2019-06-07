@@ -30,12 +30,13 @@ namespace SmartFleet.Core.Domain.Vehicles
         [ForeignKey("Brand_Id")]
         public Brand Brand { get; set; }
         [ForeignKey("Model_Id")]
-
         public Model Model { get; set; }
         public int MaxSpeed { get; set; }
         public int Milestone { get; set; }
         [NotMapped]
         public Guid? Box_Id { get; set; }
+        public Guid? InteerestAreaId { get; set; }
+        public InterestArea InterestArea { get; set; }
         public ICollection<Driver> Drivers { get; set; }
         public ICollection<VehicleAlarrm> Alarrms { get; set; }
     }

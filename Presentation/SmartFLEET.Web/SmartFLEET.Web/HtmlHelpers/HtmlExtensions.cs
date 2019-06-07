@@ -101,7 +101,7 @@ namespace SmartFLEET.Web.HtmlHelpers
             string modalBodyId)
         {
             StringBuilder sb = new StringBuilder();
-            var openContent = $@"<div id='{modalId}'  data-backdrop='false' class='modal fade' role='dialog'>
+            var openContent = $@"<div id='{modalId}' style='margin: 5px;z-index: 10000'  data-backdrop='false' class='modal fade' role='dialog'>
                 <div class='modal-dialog'>
 
                 <!-- Modal content-->

@@ -20,7 +20,7 @@ namespace SmartFleet.Data
         public SmartFleetObjectContext()
         : base("DefaultConnection")
         {
-            Database.SetInitializer<SmartFleetObjectContext>(null);
+            Database.SetInitializer(new CreateDatabaseIfNotExists<SmartFleetObjectContext>());
             Configuration.LazyLoadingEnabled = false;
         }
 
@@ -32,6 +32,7 @@ namespace SmartFleet.Data
         public DbSet<Model> Models { get; set; }
         public DbSet<Brand> Brands { get; set; }
         public DbSet<User> UserAccounts { get; set; }
+        public DbSet<InterestArea> InterestAreas { get; set; }
        
         protected virtual TEntity AttachEntityToContext<TEntity>(TEntity entity) where TEntity : BaseEntity, new()
         {

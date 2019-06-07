@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SmartFleet.Core.Domain.Customers;
 
 namespace SmartFleet.Core.Domain.Vehicles
 {
@@ -14,6 +15,7 @@ namespace SmartFleet.Core.Domain.Vehicles
         public DateTime? OnService { get; set; }
         public string DriverNumber{ get; set; }
         public virtual ICollection<Vehicle> Vehicles{ get; set; }
-
+        public Guid? InteerestAreaId { get; set; }
+        public InterestArea InterestArea { get; set; }
     }
 }

@@ -14,5 +14,7 @@ namespace SmartFleet.Service.Customers
         Task<Customer> GetCustomerbyName(Guid id);
         IQueryable<Customer> GetCustomers();
         Task<bool> GetUserbyName(string id);
+        Task<List<InterestArea>> GetAllAreas(string userName, int page, int size );
+        bool AddArea(InterestArea area);
     }
 }
