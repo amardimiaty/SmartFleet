@@ -1,9 +1,26 @@
-﻿@using SmartFLEET.Web.HtmlHelpers
+﻿<nav class="navbar navbar-default navbar-lower" style="width: 98%" role="navigation">
+    <div>
+        <div class="collapse navbar-collapse collapse-buttons">
+            <form class="navbar-form navbar-left" role="search">
+                <button  ng-click="addZone()" class="btn btn-default btn-sm"><i class="fa fa-plus"></i></button>
 
+                <button class="btn btn-default btn-sm"><i class="fa fa-edit"></i></button>
+                <button class="btn btn-danger btn-sm"><i class="fa fa-trash"></i></button>
 
-    <table id="dg"  style="width:100%;height:320px"
-           toolbar="#toolbar" pagination="true" idField="id"
-           rownumbers="true"   url="@Url.Action("GetZones")" class="easyui-datagrid" fitColumns="true" singleSelect="true">
+            </form>
+        </div>
+    </div>
+</nav>
+
+<table id="dg"  
+       style="width:100%;height:380px"
+       toolbar="#toolbar" 
+       pagination="true" idField="Id"
+       rownumbers="true"
+       url="@Url.Action("GetZones")"
+       class="easyui-datagrid" 
+       fitColumns="true" 
+       singleSelect="true">
         <thead>
         <tr>
             <th field="Name" width="50" editor="{type:'validatebox',options:{required:true}}"> Zone</th>
@@ -15,19 +32,15 @@
 
         </tr>
         </thead>
-    </table>
 
-    <div id="toolbar">
-        <a  class="easyui-linkbutton" iconCls="icon-add" plain="true" ng-click="addZone()">Nouvelle zone</a>
-        <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-edit" plain="true" onclick="editUser()">Modifier</a>
-        <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-remove" plain="true" onclick="destroyUser()">Supprimer</a>
-    </div>
+    </table>
 
 <div id="zone-win"   class="easyui-window" data-options="left:320,top:20" title="Nouvelle zone" style=" bottom: 0; padding: 10px; width: 40%; height: 500px;z-index: 1001">
 
         @{
             Html.RenderPartial("_Create");
         }
-    </div>
+
+</div>
 
 

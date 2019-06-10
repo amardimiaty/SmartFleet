@@ -69,7 +69,9 @@ namespace SmartFLEET.Web.Hubs
         public void Join(string groupName)
         {
             Groups.Add(Context.ConnectionId, groupName);
-            SignalRHubManager.Connections.Add(Context.User.Identity.Name, Context.ConnectionId);
+            if (!SignalRHubManager.Connections.ContainsKey(Context.User.Identity.Name))
+                SignalRHubManager.Connections.Add(Context.User.Identity.Name, Context.ConnectionId);
+            else SignalRHubManager.Connections[Context.User.Identity.Name] = Context.ConnectionId;
             SignalRHubManager.Clients = Clients;
         }
 
@@ -81,7 +83,8 @@ namespace SmartFLEET.Web.Hubs
         public override Task OnDisconnected(bool stopCalled)
         {
             SignalRHubManager.Clients = Clients;
-            SignalRHubManager.Connections.Clear();
+            SignalRHubManager.Connections.Remove(Context.User.Identity.Name);
+            //SignalRHubManager.Connections.Clear();
             return base.OnDisconnected(stopCalled);
         }
 

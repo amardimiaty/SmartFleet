@@ -35,6 +35,7 @@ namespace SmartFLEET.Web.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
+        [AllowAnonymous]
         public ActionResult Login()
         {
             if (User.Identity.IsAuthenticated)
@@ -48,6 +49,7 @@ namespace SmartFLEET.Web.Controllers
         /// <param name="model"></param>
         /// <returns></returns>
         [HttpPost]
+        [AllowAnonymous]
         public async Task<ActionResult> Login(LoginModel model)
         {
             if (User.Identity.IsAuthenticated)
@@ -56,7 +58,9 @@ namespace SmartFLEET.Web.Controllers
             var userExists =
                 await _authenticationService.Authentication(model.UserName, model.Password, model.RememberMe);
             if (userExists == null) return View();
-            return _authenticationService.GetRoleByUserId(userExists.Id).Any(identityUserRole => identityUserRole.Equals("customer") || identityUserRole.Equals("user")) ? RedirectToAction("Index", "Home") : RedirectToAction("Index", "Admin", new {area = "Administrator"});
+            return _authenticationService.GetRoleByUserId(userExists.Id).Any(identityUserRole => identityUserRole.Equals("customer") || identityUserRole.Equals("user")) ?
+                RedirectToAction("Index", "Home") :
+                RedirectToAction("Index", "Admin", new {area = "Administrator"});
         }
 
         /// <summary>

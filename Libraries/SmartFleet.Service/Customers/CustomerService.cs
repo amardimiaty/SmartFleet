@@ -9,6 +9,7 @@ using Microsoft.AspNet.Identity.EntityFramework;
 using SmartFleet.Core.Data;
 using SmartFleet.Core.Domain.Customers;
 using SmartFleet.Core.Domain.Users;
+using SmartFleet.Core.Domain.Vehicles;
 using SmartFleet.Data;
 
 namespace SmartFleet.Service.Customers
@@ -59,6 +60,17 @@ namespace SmartFleet.Service.Customers
             return user?.Customer;
         }
 
+        public async Task<Customer> GetCustomerWithZonesAndVehicles(string name)
+        {
+            var user = await _userManager.Users
+                .Include(x => x.Customer)
+                .Include(x => x.Customer.Areas)
+                .Include(x => x.Customer.Vehicles)
+                .FirstOrDefaultAsync(x => x.UserName == name);
+
+            return user?.Customer;
+        }
+
         public async Task<Customer> GetCustomerbyName(Guid id)
         {
             var cst = _objectContext.Customers
@@ -90,6 +102,16 @@ namespace SmartFleet.Service.Customers
             return new List<InterestArea>();
         }
 
+        public async Task<List<InterestArea>> GetAllAreas(string userName)
+        {
+            var customer = await _userManager.Users.Include(x => x.Customer).Select(x => new { x.CustomerId, x.UserName }).FirstOrDefaultAsync(x => x.UserName == userName);
+            if (customer != null)
+                return await _objectContext.InterestAreas
+                    .OrderBy(x => x.Name)
+                    .ToListAsync();
+            return new List<InterestArea>();
+        }
+
         public bool AddArea(InterestArea area)
         {
             try
@@ -102,6 +124,20 @@ namespace SmartFleet.Service.Customers
             {
                 return false;
             }
+        }
+
+        public async Task<List<Vehicle>> GetAllVehiclesOfUser(string userName,int page, int rows )
+        {
+            var vehicles = await _userManager.Users.Where(x => x.UserName == userName)
+                .Include(x => x.Customer)
+                .Include(x => x.Customer.Vehicles)
+                .SelectMany(x => x.Customer.Vehicles)
+                .OrderBy(v => v.VehicleName)
+                .Skip(page-1)
+                .Take(page*rows)
+               
+                .ToListAsync();
+            return vehicles;
         }
     }
 }

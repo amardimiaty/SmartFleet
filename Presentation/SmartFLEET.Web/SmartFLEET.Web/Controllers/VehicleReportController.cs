@@ -15,6 +15,8 @@ using SmartFleet.Service.Models;
 using SmartFleet.Service.Report;
 using SmartFleet.Service.Tracking;
 using SmartFleet.Service.Vehicles;
+using SmartFLEET.Web.Areas.Administrator.Models;
+using SmartFLEET.Web.Helpers;
 using SmartFLEET.Web.Hubs;
 
 namespace SmartFLEET.Web.Controllers
@@ -69,6 +71,18 @@ namespace SmartFLEET.Web.Controllers
             var cst = _customerService.GetCustomerbyName(User.Identity.Name);
             var vehicles = await ObjectContext.Vehicles.Where(x => x.CustomerId == cst.Id).Select(x=>new {x.VehicleName, x.Id}).ToArrayAsync();
             return Json(vehicles, JsonRequestBehavior.AllowGet);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public async Task<JsonResult> AllVehiclesWithLastPosition()
+        {
+            var report = new ActivitiesRerport();
+            var user = User.Identity;
+            var positions = report.PositionViewModels(await _positionService.GetLastVehiclPosition(user.Name));
+            return Json(positions, JsonRequestBehavior.AllowGet);
         }
 
         /// <summary>
@@ -157,7 +171,17 @@ namespace SmartFLEET.Web.Controllers
         }
 
         // ReSharper disable once MethodTooLong
-     
-       
+        public async Task<JsonResult> GetListOfVehicls()
+        {
+            var parm = RequestHelper.GetDataGridParams(Request);
+            var vehicles = Mapper.Map<List<VehicleViewModel>>(await _customerService.GetAllVehiclesOfUser(User.Identity.Name, parm.page, parm.rows));
+            return Json(vehicles, JsonRequestBehavior.AllowGet);
+        }
+        [HttpGet]
+        public ActionResult GetListOfvehicles()
+        {
+            return PartialView("_List");
+        }
+
     }
 }

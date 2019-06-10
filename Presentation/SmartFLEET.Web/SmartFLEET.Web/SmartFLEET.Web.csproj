@@ -351,6 +351,7 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Helpers\RequestHelper.cs" />
     <Compile Include="HtmlHelpers\HtmlExtensions.cs" />
     <Compile Include="Hubs\SignalRHandler.cs" />
     <Compile Include="Hubs\SignalRHubManager.cs" />
@@ -3048,6 +3049,8 @@
     <Content Include="Views\Home\_leftPanel.cshtml" />
     <Content Include="Views\InterestArea\_List.cshtml" />
     <Content Include="Views\InterestArea\_Create.cshtml" />
+    <Content Include="Views\VehicleReport\_List.cshtml" />
+    <Content Include="Views\Home\_settings.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Areas\Administrator\Views\Brand\" />
@@ -3101,7 +3104,7 @@
           <AutoAssignPort>True</AutoAssignPort>
           <DevelopmentServerPort>51670</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
-          <IISUrl>http://localhost:51671/</IISUrl>
+          <IISUrl>http://localhost:5167/</IISUrl>
           <NTLMAuthentication>False</NTLMAuthentication>
           <UseCustomServer>False</UseCustomServer>
           <CustomServerUrl>

@@ -4,8 +4,10 @@ using System.Data.Entity;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNet.Identity;
 using SmartFleet.Core.Data;
 using SmartFleet.Core.Domain.Gpsdevices;
+using SmartFleet.Core.Domain.Users;
 using SmartFleet.Core.Domain.Vehicles;
 using SmartFleet.Data;
 
@@ -15,10 +17,12 @@ namespace SmartFleet.Service.Vehicles
     {
         private readonly IDbContextScopeFactory _dbContextScopeFactory;
         private SmartFleetObjectContext _db;
+        private readonly UserManager<User> _userManager;
 
         public VehicleService(IDbContextScopeFactory dbContextScopeFactory)
         {
              _dbContextScopeFactory = dbContextScopeFactory;
+
         }
 
         public async Task<bool> AddNewVehicle(Vehicle vehicle)
@@ -125,5 +129,7 @@ namespace SmartFleet.Service.Vehicles
                 .Include("Brand")
                 .Include("Model");
         }
+
+    
     }
 }

@@ -33,7 +33,16 @@ namespace SmartFleet.Service.Vehicles
         /// <param name="id"></param>
         /// <returns></returns>
         Task<Vehicle> GetVehicleByIdWithDetailAsync(Guid id);
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         Task<List<Vehicle>> GetAllvehiclesQuery();
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="customerId"></param>
+        /// <returns></returns>
         Task<List<Vehicle>> GetAllvehiclesOfCustomer(Guid  customerId);
         /// <summary>
         /// get all vehicles for a specific  customer

@@ -17,8 +17,7 @@ namespace SmartFleet.Data
     public class SmartFleetObjectContext:IdentityDbContext<IdentityUser>, IDbContext
     {
        
-        public SmartFleetObjectContext()
-        : base("DefaultConnection")
+        public SmartFleetObjectContext(): base("DefaultConnection")
         {
             Database.SetInitializer(new CreateDatabaseIfNotExists<SmartFleetObjectContext>());
             Configuration.LazyLoadingEnabled = false;

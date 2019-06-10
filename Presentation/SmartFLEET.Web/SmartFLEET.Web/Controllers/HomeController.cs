@@ -51,18 +51,6 @@ namespace SmartFLEET.Web.Controllers
             return View();
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <returns></returns>
-        public async Task<JsonResult> AllVehiclesWithLastPosition()
-        {
-            var report = new ActivitiesRerport();
-            var user = User.Identity;
-
-            var positions =  report.PositionViewModels(await _positionService.GetLastVehiclPosition(user.Name));
-            return Json(positions, JsonRequestBehavior.AllowGet);
-        }
       
         /// <summary>
         /// 
@@ -71,18 +59,23 @@ namespace SmartFLEET.Web.Controllers
         public async Task<JsonResult> LoadNodes()
         {
             var user = User.Identity;
-            var cst = _customerService.GetCustomerbyName(user.Name);
-            var nodes = JsTreeModels();
+            var cst = await _customerService.GetCustomerWithZonesAndVehicles(user.Name);
+            // add root nodes
+            var nodes = AddRootNodes();
             if (cst == null)
                 return Json(nodes, JsonRequestBehavior.AllowGet);
-            var vehicles = await _vehicleService.GetVehiclesFromCustomer(cst.Id);
-            nodes.AddRange(vehicles.Select(JsTreeModel));
+            // add customer zones to root node
+            nodes.AddRange(AddAreaNodes(cst.Areas.Select(x => x.Name).ToArray()));
 
+            foreach (var area in cst.Areas)
+                nodes.AddRange(cst.Vehicles.Where(x => x.InteerestAreaId == area.Id).Select(x => AddVehicleNodes(x, area.Name)));
+            // add not assigned vehicless
+            nodes.AddRange(cst.Vehicles.Where(v=> cst.Areas.All(a => a.Id != v.InteerestAreaId)).Select(x=>AddVehicleNodes(x, "not-assigned")));
             return Json(nodes, JsonRequestBehavior.AllowGet);
         }
        
         [NonAction]
-        private static JsTreeModel JsTreeModel(Vehicle vehicle)
+        private static JsTreeModel AddVehicleNodes(Vehicle vehicle, string area)
         {
             var node = new JsTreeModel();
             node.id = vehicle.Id.ToString();
@@ -90,29 +83,48 @@ namespace SmartFLEET.Web.Controllers
             node.text = vehicle.VehicleName == string.Empty ?
                 vehicle.LicensePlate :
                 " " + vehicle.VehicleName;
-            node.parent = "vehicles-" + Guid.Empty;
+            node.parent = area +"-"+ Guid.Empty;
             node.icon = "la la-car ";
             return node;
         }
         [NonAction]
-        private static List<JsTreeModel> JsTreeModels()
+        private static List<JsTreeModel> AddAreaNodes(string [] areas)
         {
-            var nodes = new List<JsTreeModel>();
+            // ReSharper disable once ComplexConditionExpression
+            var nodes = areas.Select(area => new JsTreeModel
+                {
+                    id = area + "-" + Guid.Empty,
+                    parent = "vehicles",
+                    text = area,
+                }) .ToList();
             nodes.Add(new JsTreeModel
             {
-                id = "vehicles-" + Guid.Empty,
+                id = "not-assigned-" + Guid.Empty,
+                parent = "vehicles",
+                text = "Not assigned",
+            });
+           
+            return nodes;
+        }
+
+        private static List<JsTreeModel> AddRootNodes()
+        {
+            var nodes = new List<JsTreeModel>();
+           
+            nodes.Add(new JsTreeModel
+            {
+                id = "vehicles",
                 parent = "#",
                 text = "Vehicules",
             });
             nodes.Add(new JsTreeModel
             {
-                id = "drivers-" + Guid.Empty,
+                id = "drivers" ,
                 parent = "#",
                 text = "Condcuteurs",
             });
             return nodes;
         }
-
 
     }
 }

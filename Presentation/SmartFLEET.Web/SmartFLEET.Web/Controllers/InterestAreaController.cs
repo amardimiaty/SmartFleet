@@ -1,15 +1,18 @@
 ﻿using System;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using AutoMapper;
 using SmartFleet.Core.Domain.Customers;
 using SmartFleet.Data;
 using SmartFleet.Service.Customers;
+using SmartFLEET.Web.Helpers;
 using SmartFLEET.Web.Models;
 
 namespace SmartFLEET.Web.Controllers
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public class InterestAreaController : BaseController
     {
         private readonly ICustomerService _customerService;
@@ -43,7 +46,7 @@ namespace SmartFLEET.Web.Controllers
                     var area = Mapper.Map<InterestArea>(model);
                     area.Id = Guid.NewGuid();
                     area.CustomerId = custome.Id;
-                   var r=  _customerService.AddArea(area);
+                    var r = _customerService.AddArea(area);
                     return Json(r, JsonRequestBehavior.AllowGet);
                 }
             }
@@ -51,12 +54,21 @@ namespace SmartFLEET.Web.Controllers
             var validation = ValidationViewModel();
             return Json(validation, JsonRequestBehavior.AllowGet);
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         public async Task<ActionResult> GetZones()
         {
-            var r = Request.Form.ToString().Split('&');
-            var page =Convert.ToInt32(Regex.Match(r[0], @"\d+").Value);
-            var rows = Convert.ToInt32(Regex.Match(r[1], @"\d+").Value);
-            return Json(await _customerService.GetAllAreas(User.Identity.Name, page, rows), JsonRequestBehavior.AllowGet);
+            // ReSharper disable once TooManyChainedReferences
+            var q = RequestHelper.GetDataGridParams(Request);
+
+            return Json(await _customerService.GetAllAreas(User.Identity.Name, q.page, q.rows), JsonRequestBehavior.AllowGet);
         }
+        public async Task<ActionResult> GetAllZones()
+        {
+            return Json(await _customerService.GetAllAreas(User.Identity.Name), JsonRequestBehavior.AllowGet);
+        }
+
     }
 }

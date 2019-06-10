@@ -524,11 +524,22 @@
             </summary>
             <param name="documentPath">The physical path to XML document.</param>
         </member>
+        <member name="T:SmartFLEET.Web.Controllers.InterestAreaController">
+            <summary>
+            
+            </summary>
+        </member>
         <member name="M:SmartFLEET.Web.Controllers.InterestAreaController.AddNewZone(SmartFLEET.Web.Models.InterestAreaVm)">
             <summary>
             
             </summary>
             <param name="model"></param>
+            <returns></returns>
+        </member>
+        <member name="M:SmartFLEET.Web.Controllers.InterestAreaController.GetZones">
+            <summary>
+            
+            </summary>
             <returns></returns>
         </member>
         <member name="T:SmartFLEET.Web.Controllers.AccountController">
@@ -586,12 +597,6 @@
             </summary>
             <returns></returns>
         </member>
-        <member name="M:SmartFLEET.Web.Controllers.HomeController.AllVehiclesWithLastPosition">
-            <summary>
-            
-            </summary>
-            <returns></returns>
-        </member>
         <member name="M:SmartFLEET.Web.Controllers.HomeController.LoadNodes">
             <summary>
             
@@ -628,6 +633,12 @@
             <returns></returns>
         </member>
         <member name="M:SmartFLEET.Web.Controllers.VehicleReportController.GetVehicles">
+            <summary>
+            
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:SmartFLEET.Web.Controllers.VehicleReportController.AllVehiclesWithLastPosition">
             <summary>
             
             </summary>

@@ -26,7 +26,7 @@ $(document).ready(function () {
     initMap('map');
     loadData(0.67);
     initSignalR();
-    
+    initCalender();
     //    $("#accordion").accordion();
     $("#vehicles").select2({
         // width: 175
@@ -36,28 +36,7 @@ $(document).ready(function () {
     //$("#daily-report").tabs();
    
     loadData(1);
-    $('#cc').calendar({
-        onSelect: function (date) {
-            if (downloadFullReport) {
-                $("#chronogram").window('close');
-                $("#prg-wwin").window('open');
-                $('#prgBar').progressbar('setValue', 0);
-                var $reportScope = getScope('reportController');
-                $reportScope.startPeriod = formatDate(date);
-                $reportScope.vehicleId = anchorId;
-                $reportScope.Download();
-                $reportScope.$apply();
-               
-            } else {
-                var $positionScope = getScope('positionController');
-                $positionScope.vehicleId = anchorId;
-                $positionScope.Download(formatDate(date));
-                $positionScope.$apply();
-            }
-            
-
-        }
-    });
+   
     var height = $(window).height()/2 + 130;
     $('#chronogram').window({
         left: 315,
@@ -121,19 +100,48 @@ $(document).ready(function () {
         $("#report-win").window('close');
         layout.open('west');
     });
-    $('#btn-settings').on('click', function() {
-        $("#zone-interest").window('open');
-        $("#chronogram").window('close');
-        $("#report-win").window('close');
-        $('#prg-wwin').window('close');
+    $('#btn-settings').on('click',
+        function() {
+            $("#zone-interest").window('open');
+            $("#chronogram").window('close');
+            $("#report-win").window('close');
+            $('#prg-wwin').window('close');
+        });
+    window.addEventListener('resize', function (event) {
+        // do stuff here
+        $("#left-panel").height( $(window).height()-300);
+    });
+    
+    $("#search-tree").on('keyup',function() {
+        var term = $("#search-tree").val();
+        $("#container").jstree('search', term);
     })
-    //$('#dg').edatagrid({
-    //    url: 'get_users.php',
-    //    saveUrl: 'save_user.php',
-    //    updateUrl: 'update_user.php',
-    //    destroyUrl: 'destroy_user.php'
-    //});
 });
+
+function initCalender() {
+    $('#cc').calendar({
+        onSelect: function (date) {
+            if (downloadFullReport) {
+                $("#chronogram").window('close');
+                $("#prg-wwin").window('open');
+                $('#prgBar').progressbar('setValue', 0);
+                var $reportScope = getScope('reportController');
+                $reportScope.startPeriod = formatDate(date);
+                $reportScope.vehicleId = anchorId;
+                $reportScope.Download();
+                $reportScope.$apply();
+
+            } else if (getPossition) {
+                var $positionScope = getScope('positionController');
+                $positionScope.vehicleId = anchorId;
+                $positionScope.Download(formatDate(date));
+                $positionScope.$apply();
+            }
+
+
+        }
+    });
+}
 
 function formatDate(date) {
     var d = new Date(date),
@@ -157,23 +165,44 @@ function initMap(mapId) {
         zoom: 8,
         zoomControl: true
     });
-    //var circle = L.circle([36.7525000, 3.0419700], {
-    //    color: 'red',
-    //    fillColor: '#f03',
-    //    fillOpacity: 0.5,
-    //    radius: 40000
-    //}).addTo(map);
     markerGroup = L.layerGroup().addTo(map);
     layout = L;
     // load a tile layer
     var defaultLayer = L.tileLayer.provider('OpenStreetMap.Mapnik').addTo(map);
     map.addLayer(defaultLayer);
-    $.ajax({
-        url: '/Home/AllVehiclesWithLastPosition',
-        success: onGetAllVehiclesSuccess
-    });
+
+    initVehicleMarkers();
+    initZones();
     window.dispatchEvent(new Event('resize'));
     map.invalidateSize();
+}
+function initVehicleMarkers() {
+    $.ajax({
+        url: '/VehicleReport/AllVehiclesWithLastPosition',
+        success: onGetAllVehiclesSuccess
+    });
+}
+function initZones() {
+    $.ajax({
+        url: '/InterestArea/GetAllZones',
+        success: onGetAllZonesSuccess
+    });
+}
+function onGetAllZonesSuccess(data) {
+    console.log(data);
+    for (var i = 0; i < data.length; i++) {
+        var c = L.circle([data[i].Latitude, data[i].Longitude], {
+            color: 'red',
+            fillColor: '#f03',
+            fillOpacity: 0.5,
+            radius: data[i].Radius
+        }).addTo(map);
+        var marker = L.marker([data[i].Latitude, data[i].Longitude], { title: data[i].Name }).bindTooltip(data[i].Name,
+            {
+                permanent: true,
+                direction: 'top'
+            }).addTo(map);
+    }
 }
 function initSignalR() {
     hub = $.connection.signalRHandler;
@@ -285,7 +314,7 @@ function initJstree() {
             "data": { "url": "/Home/LoadNodes" }
         },
         "search": {
-            "case_insensitive": true,
+            "case_insensitive": false,
             "show_only_matches": true
         },
         'contextmenu': {
