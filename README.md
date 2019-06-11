@@ -10,7 +10,7 @@ SmartFleet is an Open source solution supports teltonika and tk103 protocols
 - generate reports by selecting peridos and saving them as a PDF file.
 - We are working now for adding new features such as adding drivers, displaying fuel consumption reports and possibly supporting card drivers.
 to sing-in to the this part just use: customer@smartFleet/123456
-- How to deploy the solution:
+# How to deploy the solution:
 - after cloning the solution and and restauring nuget packages , you have to create a dabase instance on Sql server, then change connection string from web.config in the web solution ( once done the solution creates the database for you on the start and seed some data like roles and some users ).
 - to  copile the solution you have to install azure tools for Visual studio (the version used is Vs 2017 community ).
 - when every thing is Ok you can run the application as azure service by selecting SmartFleet.Azure a start up projet , this project will run tow roles one is the tcp Server role that listening to boxes connections on prot 34400. and the web role.
