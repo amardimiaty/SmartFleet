@@ -1,5 +1,5 @@
 # SmartFleet
-SmartFleet is an Open source solution supports teltonika protocol and TCP protocol tk103
+SmartFleet is an Open source solution supports teltonika and tk103 protocols 
 - This solution  can be deployed on Azure cloud. 
 - It is a distributed system that supports  AMQP protocol (for managing the comming data from boxes ) and stores  data on the MicroSoft server database.
 - The solution consists of two sides :
