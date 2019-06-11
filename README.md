@@ -3,12 +3,13 @@ SmartFleet is an Open source solution supports teltonika and tk103 protocols
 - This solution  can be deployed on Azure cloud. 
 - It is a distributed system that supports  AMQP protocol (for managing the comming data from boxes ) and stores  data on the MicroSoft server database.
 - The solution consists of two sides :
-- one for administration management, where you can add users, customers and vehicles (we work on it because it  incomplete yet).
+- one for administration management, where you can add users, customers and vehicles to sing-in to the this part just use: admin@smartFleet/123456 (we work on it because it  incomplete yet).
 - the seconde side is for customers where:
 - You can  track your vehicles on run time.
 - You can display the full itinerary on the map with the different activities over the time as a chronogram  along with a lot of informations such as speed, duration and addresses.
 - generate reports by selecting peridos and saving them as a PDF file.
 - We are working now for adding new features such as adding drivers, displaying fuel consumption reports and possibly supporting card drivers.
+to sing-in to the this part just use: customer@smartFleet/123456
 - How to deploy the solution:
 - after cloning the solution and and restauring nuget packages , you have to create a dabase instance on Sql server, then change connection string from web.config in the web solution ( once done the solution creates the database for you on the start and seed some data like roles and some users ).
 - to  copile the solution you have to install azure tools for Visual studio (the version used is Vs 2017 community ).
