@@ -18,6 +18,8 @@ if you want to test web project  :
 
 4 - sign in by the customer account and go th the home to see the list of vehicles with thier positions on the map.
 
-![](https://github.com/pentest30/SmartFleet/blob/master/smart-fleet1.png)
-![](https://github.com/pentest30/SmartFleet/blob/master/smart-fleet2.png)
-![](https://github.com/pentest30/SmartFleet/blob/master/smart-fleet3.png)
+![](https://github.com/pentest30/SmartFleet/blob/master/scr1.png)
+![](https://github.com/pentest30/SmartFleet/blob/master/scr2.png)
+![](https://github.com/pentest30/SmartFleet/blob/master/src3.png)
+![](https://github.com/pentest30/SmartFleet/blob/master/src4.png)
+![](https://github.com/pentest30/SmartFleet/blob/master/src5.png)
