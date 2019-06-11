@@ -21,5 +21,6 @@ if you want to test web project  :
 ![](https://github.com/pentest30/SmartFleet/blob/master/src1.png)
 ![](https://github.com/pentest30/SmartFleet/blob/master/src2.png)
 ![](https://github.com/pentest30/SmartFleet/blob/master/src3.png)
+![](https://github.com/pentest30/SmartFleet/blob/master/src6.png)
 ![](https://github.com/pentest30/SmartFleet/blob/master/src4.png)
 ![](https://github.com/pentest30/SmartFleet/blob/master/src5.png)
