@@ -12,7 +12,7 @@ SmartFleet is an Open source solution supports teltonika and tk103 protocols
 to sing-in to the this part just use: customer@smartFleet/123456.
 
 # How to deploy the solution:
-- after cloning the solution and and restauring nuget packages , you have to create a dabase instance on Sql server, then change connection string from web.config in the web solution ( once done the solution creates the database for you on the start and seeds some data like roles and some users see : Global.asax in web soltuion).
+- after cloning the solution and  restauring nuget packages , you have to create a dabase instance on Sql server, then change connection string from web.config in the web solution ( once done the solution creates the database for you on the start and seeds some data like roles and some users see : Global.asax in web soltuion).
 - to  copile the solution you have to install azure tools for Visual studio (the version used is Vs 2017 community ).
 - when every thing is Ok you can run the application as azure service by selecting SmartFleet.Azure a start up projet , this project will run tow roles one is the tcp Server role that listening to boxes connections on prot 34400. and the web role.
 - if you want to test the Server tcp  there is a small project called TeltonikaEmulator in test directory with some real data from real boxe (the file is attached as a resource ).
