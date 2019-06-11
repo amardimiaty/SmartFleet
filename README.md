@@ -3,7 +3,7 @@ SmartFleet is an Open source solution supports teltonika and tk103 protocols
 - This solution  can be deployed on Azure cloud. 
 - It is a distributed system that supports  AMQP protocol (for managing the comming data from boxes ) and stores  data on the MicroSoft server database.
 - The web solution consists of two parts :
-- one for administration management, where you can add users, customers and vehicles to sing-in to the this part just use: admin@smartFleet/123456 (we work on it because it  incomplete yet).
+- one for administration management, where you can add users, customers and vehicles to sing-in to the this part just use: admin@smartFleet/123456 (we work on it because it's incomplete yet).
 - the seconde part is for customers where:
 - You can  track your vehicles on run time.
 - You can display the full itinerary on the map with the different activities over the time as a chronogram  along with a lot of informations such as speed, duration and addresses.
