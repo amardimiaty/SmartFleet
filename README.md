@@ -7,7 +7,7 @@ SmartFleet is an Open source solution supports teltonika and tk103 protocols
 - the seconde part is for customers where:
 - You can  track your vehicles on run time.
 - You can display the full itinerary on the map with the different activities over the time as a chronogram  along with a lot of informations such as speed, duration and addresses.
-- generate reports by selecting peridos and saving them as a PDF file.
+- generate reports by selecting periods from calander and saving them as a PDF file.
 - We are working now for adding new features such as adding drivers, displaying fuel consumption reports and possibly supporting card drivers.
 to sing-in to the this part just use: customer@smartFleet/123456.
 
