@@ -17,7 +17,10 @@ if you want to test web project  :
 3- add a vehicle with the mountend  Gps device and the owner customer (once gps device sends data to the server it'll be stored on the database ).
 
 4 - sign in by the customer account and go th the home to see the list of vehicles with thier positions on the map.
-
-![](https://github.com/pentest30/SmartFleet/blob/master/smart-fleet1.png)
-![](https://github.com/pentest30/SmartFleet/blob/master/smart-fleet2.png)
-![](https://github.com/pentest30/SmartFleet/blob/master/smart-fleet3.png)
+![](https://github.com/pentest30/SmartFleet/blob/master/src0.png)
+![](https://github.com/pentest30/SmartFleet/blob/master/src1.png)
+![](https://github.com/pentest30/SmartFleet/blob/master/src2.png)
+![](https://github.com/pentest30/SmartFleet/blob/master/src3.png)
+![](https://github.com/pentest30/SmartFleet/blob/master/src6.png)
+![](https://github.com/pentest30/SmartFleet/blob/master/src4.png)
+![](https://github.com/pentest30/SmartFleet/blob/master/src5.png)
