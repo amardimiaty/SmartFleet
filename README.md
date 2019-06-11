@@ -1,22 +1,13 @@
 # SmartFleet
-Gps Tracker yet supports FMXXX teltonika and Tk103 protocols.  
-how to test the listners:
-
-for devices that use Tk103 protocol like Gt02a  and thier chinese clones :
-
-1- send the server config to your GPS tracker.
-
-2- run the two projects inside Test Directory : GT02AServer  and EdgeService (service for data storing).
-
-if you want to test web project  :
-
-1- sign in using admin@smartFleet/123456  account .
-
-2- create a customer account (its aleardy exist two accounts from the initial seed ).
-
-3- add a vehicle with the mountend  Gps device and the owner customer (once gps device sends data to the server it'll be stored on the database ).
-
-4 - sign in by the customer account and go th the home to see the list of vehicles with thier positions on the map.
+SmartFleet is Open source solution supports teltonika protocol and TCP protocol 103
+- This solution  can be deployed on Azure cloud. 
+- It is a distribution project that supports the AMQP protocol (for managing the comming data from boxes ) and stores  data on the MicroSoft server database.
+The program consists of two sides one for administration management, where you can add users, customers and cars (we work on it because it  incomplete yet).
+the seconde side is for customers where:
+You can  track your vehicles on run time.
+You can display the full itinerary on the map with the different activities over the time as a chronogram  along with a lot of informations such as speed, duration and addresses.
+View reports by selecting peridos and saving them as a PDF file.
+- We are working now for adding new features such as adding drivers, displaying fuel consumption reports and possibly supporting card drivers.
 ![](https://github.com/pentest30/SmartFleet/blob/master/src0.png)
 ![](https://github.com/pentest30/SmartFleet/blob/master/src1.png)
 ![](https://github.com/pentest30/SmartFleet/blob/master/src2.png)
