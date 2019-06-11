@@ -91,11 +91,50 @@ function positionController($scope, positionService,  reportService) {
                     initGpsData(resp.data.Periods, resp.data.GpsCollection, "gps-activity");
                     var lat = resp.data.Periods[length].Latitude;
                     var lng = resp.data.Periods[length].Logitude;
-                    map.setView([lat, lng], 15);
+                    addStopPins(resp.data.Periods);
+                    map.setView([lat, lng], 8);
                 }
                 $('#map').waitMe("hide");
                 //$('#chronogram').html($("#pos-result"));
             });
         }
     }
+}
+function addStopPins(periods) {
+    var icon = new L.Icon();
+    icon.options.iconUrl = "../../assets/route_stop.png";
+
+    for (var i = 0; i <periods.length; i++) {
+        if (periods[i].MotionStatus === "Stopped") {
+            var tmp = initStopTempale(periods[i]);
+            var marker = L.marker([periods[i].Latitude, periods[i].Logitude], { icon: icon }).bindPopup(tmp,
+                {
+                    permanent: false,
+                    direction: 'topleft'
+                }).addTo(map);
+            markers.push(marker);
+        }
+    }
+
+}
+function initStopTempale(period) {
+    console.log(period);
+    var template = "<div><h4><b> <b>Véhicule</b>: " +
+        period.VehicleName +
+        "</b></h4> <b>Adresse</b>: " +
+        period.ArrivalAddres +
+        "" +
+        "<p> <b>Durée</b>: " +
+        secondsToHms( period.Duration) +
+        "" +
+        "<p> <b>Latitude</b>: " +
+
+        period.Latitude +
+        "</p>" +
+        "</h5>" +
+        "<p> <b>Longitude</b>:  " +
+        period.Logitude +
+        "</p>" +
+        "</div>";
+    return template;
 }

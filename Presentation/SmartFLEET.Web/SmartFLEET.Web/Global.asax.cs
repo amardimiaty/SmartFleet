@@ -392,7 +392,7 @@ namespace SmartFLEET.Web
             BundleConfig.RegisterBundles(BundleTable.Bundles);
             BundleTable.EnableOptimizations = false;
             // seed user administrator and roles
-            //  SeedInitialData();
+             SeedInitialData();
 
             #region register different services and classes using autofac
 #if DEBUG

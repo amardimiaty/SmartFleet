@@ -107,12 +107,22 @@ namespace SmartFLEET.Web.Controllers
 
             var hubContext = GlobalHost.ConnectionManager.GetHubContext<SignalRHandler>();
             var report = new CompleteDailyReport();
-            var connctionId = SignalRHubManager.Connections[User.Identity.Name];
+            var connctionId = string.Empty;
+            try
+            {
+               connctionId= SignalRHubManager.Connections[User.Identity.Name];
+            }
+            catch (Exception)
+            {
+                // ignored
+            }
+
             var endPeriod = start.AddHours(24).AddTicks(-1);
             var vehicle = await _vehicleService.GetVehicleByIdAsync(id);
             var positions = await _positionService.GetVehiclePositionsByPeriod(id, start, endPeriod);
-            hubContext.Clients.Client(connctionId)
-                .sendprogressVal(50);
+
+            if (!string.IsNullOrEmpty(connctionId))
+                hubContext.Clients.Client(connctionId).sendprogressVal(50);
             if (!positions.Any())
             {
                 return Json(new CompleteDailyReport
@@ -125,11 +135,12 @@ namespace SmartFLEET.Web.Controllers
             }
             report.UpdateProgress += val =>
             {
+                if(string.IsNullOrEmpty(connctionId))
+                    return;
                 hubContext.Clients.Client(connctionId)
                     .sendprogressVal(val);
             };
             report.Build(positions.OrderBy(p => p.Timestamp).ToList(), vehicle);
-
             return Json(report, JsonRequestBehavior.AllowGet);
 
         }

@@ -100,6 +100,15 @@ $(document).ready(function () {
         $("#report-win").window('close');
         layout.open('west');
     });
+    $("#btn-auto").on('click', function () {
+        downloadFullReport = false;
+        getPossition = false;
+        $("#zone-interest").window('close');
+        $("#chronogram").window('close');
+        $("#report-win").window('close');
+        $('#prg-wwin').window('close');
+        //layout.toggle('west');
+    });
     $('#btn-settings').on('click',
         function() {
             $("#zone-interest").window('open');
@@ -111,11 +120,12 @@ $(document).ready(function () {
         // do stuff here
         $("#left-panel").height( $(window).height()-300);
     });
-    
-    $("#search-tree").on('keyup',function() {
-        var term = $("#search-tree").val();
-        $("#container").jstree('search', term);
-    })
+
+    $("#search-tree").on('keyup',
+        function() {
+            var term = $("#search-tree").val();
+            $("#container").jstree('search', term);
+        });
 });
 
 function initCalender() {
@@ -137,8 +147,6 @@ function initCalender() {
                 $positionScope.Download(formatDate(date));
                 $positionScope.$apply();
             }
-
-
         }
     });
 }
@@ -373,7 +381,9 @@ function onGetTargetsSuccess(result) {
     $("#vehicle-name").html("Véhicule: " + result.Periods[0].VehicleName);
     $("#date-pos").html("Date: " + result.Periods[0].CurrentDate);
     initGpsData(result.Periods, result.GpsCollection, "gps-activity");
-    $("#map").waitMe("hide");;
+    $("#map").waitMe("hide");
+    console.log(result.Periods);
+    
 }
 function initWait() {
     $("#map").waitMe({
@@ -485,13 +495,13 @@ function initGpsData(periods, gpsCollection, divName) {
                             "background-color:#048b9a;height:30px;border-color:transparent!important; border-radius:0;margin-top: 20px;border-width:0!important;";
                     }
                     break;
-                //default:
-                //    {
-                //        activity = "Ralenti";
-                //        style =
-                //            "background-color:#dab30a;height:30px;border-color:transparent!important; border-radius:0;margin-top: 20px;border-width:0!important;";
-                //    }
-                //    break;
+                default:
+                    {
+                        activity = "Ralenti";
+                        style =
+                            "background-color:#dab30a;height:30px;border-color:transparent!important; border-radius:0;margin-top: 20px;border-width:0!important;";
+                    }
+                    break;
             }
             var startTime = v.StartPeriod.split('T')[1].split(':')[0] +
                 ':' +

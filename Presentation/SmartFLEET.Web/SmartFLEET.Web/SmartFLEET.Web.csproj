@@ -378,6 +378,7 @@
     <Content Include="assets\log.gif" />
     <Content Include="assets\position_45x45.png" />
     <Content Include="assets\rapport_45x45.png" />
+    <Content Include="assets\route_stop.png" />
     <Content Include="assets\track.jpg" />
     <Content Include="assets\vehicles\LightVehicleMoving.png" />
     <Content Include="assets\vehicles\LightVehicleMovingLeft.png" />
