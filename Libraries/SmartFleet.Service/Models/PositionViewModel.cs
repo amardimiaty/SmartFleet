@@ -23,7 +23,7 @@ namespace SmartFleet.Service.Models
             Speed = position.Speed;
             VehicleName = vehicle.VehicleName;
             VehicleId = vehicle.Id.ToString();
-            CustomerName = vehicle.Customer?.Name;
+            CustomerName = vehicle.Customer?.Id.ToString();
             TimeStampUtc = position.Timestamp;
             SetVehicleImage(vehicle);
         }
@@ -40,7 +40,7 @@ namespace SmartFleet.Service.Models
             Speed = tk103Gps.Speed;
             VehicleName = vehicle.VehicleName;
             VehicleId = vehicle.Id.ToString();
-            CustomerName = vehicle.Customer?.Name;
+            CustomerName = vehicle.Customer?.Id.ToString();
             TimeStampUtc = tk103Gps.TimeStampUtc;
             SetVehicleImage(vehicle);
         }
@@ -57,7 +57,7 @@ namespace SmartFleet.Service.Models
             Speed = tk103Gps.Speed;
             VehicleName = vehicle.VehicleName;
             VehicleId = vehicle.Id.ToString();
-            CustomerName = vehicle.Customer?.Name;
+            CustomerName = vehicle.Customer?.Id.ToString();
             TimeStampUtc = tk103Gps.Timestamp;
             //SetVehicleImage(vehicle ,dir);
         }
@@ -84,7 +84,7 @@ namespace SmartFleet.Service.Models
             Speed = tk103Gps.Speed;
             VehicleName = vehicle.VehicleName;
             VehicleId = vehicle.Id.ToString();
-            CustomerName = vehicle.Customer?.Name;
+            CustomerName = vehicle.Customer?.Id.ToString();
             TimeStampUtc = tk103Gps.TimeStampUtc;
             SetVehicleImage(vehicle);
         }
@@ -105,7 +105,7 @@ namespace SmartFleet.Service.Models
             Speed = tk103Gps.Speed;
             VehicleName = vehicle.VehicleName;
             VehicleId = vehicle.Id.ToString();
-            CustomerName = vehicle.Customer?.Name;
+            CustomerName = vehicle.Customer?.Id.ToString();
             TimeStampUtc = tk103Gps.Timestamp;
             SetVehicleImage(vehicle, dir);
 
