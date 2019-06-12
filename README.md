@@ -5,6 +5,7 @@ SmartFleet is an Open source solution supports teltonika and tk103 protocols
 - The web solution consists of two parts :
 - one for administration management, where you can add users, customers and vehicles to sing-in to the this part just use: admin@smartFleet/123456 (we work on it because it's incomplete yet).
 - the seconde part is for customers where:
+-add zone of interest to the map from setting icon. 
 - You can  track your vehicles on run time.
 - You can display the full itinerary on the map with the different activities over the time as a chronogram  along with a lot of informations such as speed, duration and addresses.
 - generate reports by selecting periods from calender and saving them as a PDF file.
