@@ -55,5 +55,7 @@ namespace SmartFleet.Service.Vehicles
         /// </summary>
         /// <returns></returns>
         IQueryable<Vehicle> GetAllvehicles();
+
+        double GetFuelConsuptionByPeriod(DateTime start, DateTime end, Guid vehicleId, int totalDistancce);
     }
 }

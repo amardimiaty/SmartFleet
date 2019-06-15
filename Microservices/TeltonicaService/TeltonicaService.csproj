@@ -16,7 +16,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\..\Presentation\SmartFLEET.Web\SmartFLEET.Web\bin\microservices\</OutputPath>
+    <OutputPath>..\..\Presentation\SmartFLEET.Web\SmartFLEET.Web\bin\microservices\teltonika\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -95,6 +95,7 @@
     <Compile Include="BootstrapService.cs" />
     <Compile Include="Handlers\TeltonikaHandler.cs" />
     <Compile Include="Infrastucture\DependencyRegistrar.cs" />
+    <Compile Include="Infrastucture\TeltonikaMapping.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

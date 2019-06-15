@@ -1,4 +1,4 @@
-﻿namespace SmartFleet.Core.Contracts
+﻿namespace SmartFleet.Core.Domain.Vehicles
 {
     public enum VehicleEvent:int
     {

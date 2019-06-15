@@ -368,15 +368,15 @@ namespace SmartFLEET.Web
         }
         protected void Application_Start()
         {
-            #region add mastransit consumer
+            #region add masstransit consumer
 
             try
             {
-                MassTransitConfig.ConfigureReceiveBus((cfg, hst) =>
-                    cfg.ReceiveEndpoint(hst, "Smartfleet.Web.endpoint", e =>
-                        e.Consumer<SignalRHandler>())
-
-                ).Start();
+                
+                RabbitMqConfig
+                    .InitReceiverBus<SignalRHandler>("Smartfleet.Web.endpoint")
+                    .StartAsync()
+                    .GetAwaiter();
             }
             catch (Exception e)
             {

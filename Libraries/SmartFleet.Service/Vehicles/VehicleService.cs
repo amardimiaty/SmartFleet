@@ -44,8 +44,6 @@ namespace SmartFleet.Service.Vehicles
                       //  _db.Boxes.AddOrUpdate(box);
                         _db.Vehicles.Add(vehicle);
                         await contextFScope.SaveChangesAsync().ConfigureAwait(false);
-
-
                     }
                     return true;
                 }
@@ -104,9 +102,6 @@ namespace SmartFleet.Service.Vehicles
                 _db = contextFScope.DbContexts.Get<SmartFleetObjectContext>();
                 return await _db.Vehicles
                     .Where(v=>v.CustomerId == customerId)
-                    //.Include("Brand")
-                    //.Include("Model")
-                    //.Include("Customer")
                     .ToListAsync();
             }
         }
@@ -130,6 +125,80 @@ namespace SmartFleet.Service.Vehicles
                 .Include("Model");
         }
 
-    
+        public double GetFuelConsuptionByPeriod(DateTime start, DateTime end,  Guid vehicleId, int Total_Distance)
+        {
+            var contextFScope = _dbContextScopeFactory.Create();
+            _db = contextFScope.DbContexts.Get<SmartFleetObjectContext>();
+            var l100Fuel = default(double);
+            var fuelRecords = FuelConsumptions(start, end, vehicleId);
+
+            if (fuelRecords.Count > 0)
+            {
+                var nextRecord = GetNextFuelConsumption(end, vehicleId);
+                if (nextRecord != null)
+                    fuelRecords.Add(nextRecord);
+
+                //Gestion du nombre de litres consommés qui revient à 0 à chaque ignition OFF
+                var vehicleFuelZeroDetected = false;
+                var vehicleFuelConsummedReset = false;
+                var previousValidFuelConsumed = default(Int32);
+                var previousFuelConsummed = fuelRecords.First().TotalFuelConsumed;
+                var Fuel = 0;
+                foreach (var record in fuelRecords)
+                {
+                    //Si on détecté un retour à zéro et qu'une nouvelle valeure positif arrive
+                    if (vehicleFuelZeroDetected && record.TotalFuelConsumed > 0)
+                    {
+                        //Détection d'un véhicule dont le nombre de litres de consommés revient à zéro à chaque ignition off
+                        if (record.TotalFuelConsumed < previousValidFuelConsumed)
+                            vehicleFuelConsummedReset = true;
+                        //Sinon il ne s'agissait que d'un pic négatif à zéro mais le nombre de litres consommés évolue normalement
+                        else
+                            Fuel -= previousValidFuelConsumed;
+                        vehicleFuelZeroDetected = false;
+                    }
+                    //Si le nombre de litres consommés diminue
+                    else if (previousFuelConsummed - 5 > record.TotalFuelConsumed)
+                    {
+                        vehicleFuelZeroDetected = true;
+                        previousValidFuelConsumed = previousFuelConsummed;
+                        Fuel += previousFuelConsummed;
+                    }
+
+                    previousFuelConsummed = record.TotalFuelConsumed;
+                }
+
+                //S'il s'agit un véhicule dont le nombre total de litres consommés revient à zéro à chque ignition OFF
+                if (vehicleFuelConsummedReset)
+                    Fuel += fuelRecords.Last().TotalFuelConsumed - fuelRecords.First().TotalFuelConsumed;
+                else
+                    Fuel = fuelRecords.Last(p => p.TotalFuelConsumed > 0).TotalFuelConsumed -
+                                    fuelRecords.First(p => p.TotalFuelConsumed > 0).TotalFuelConsumed;
+
+                l100Fuel = Math.Round((double) (Fuel * 100 / Total_Distance), 1);
+            }
+
+            return l100Fuel;
+        }
+
+        private List<FuelConsumption> FuelConsumptions(DateTime start, DateTime end, Guid vehicleId)
+        {
+            var fuelRecords = _db.FuelConsumptions
+                .Where(p => p.VehicleId == vehicleId &&
+                            p.DateTimeUtc >= start &&
+                            p.DateTimeUtc < end)
+                .OrderBy(p => p.DateTimeUtc)
+                .ToList();
+            return fuelRecords;
+        }
+
+        private FuelConsumption GetNextFuelConsumption(DateTime end, Guid vehicleId)
+        {
+            var nextRecord = _db.FuelConsumptions
+                .OrderBy(p => p.DateTimeUtc)
+                .FirstOrDefault(p => p.VehicleId == vehicleId &&
+                                     p.DateTimeUtc >= end);
+            return nextRecord;
+        }
     }
 }

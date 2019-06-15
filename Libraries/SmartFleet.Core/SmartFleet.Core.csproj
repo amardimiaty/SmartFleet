@@ -147,8 +147,10 @@
     <Compile Include="Contracts\Commands\CreateTk103Gps.cs" />
     <Compile Include="Contracts\Commands\TLEcoDriverAlertEvent.cs" />
     <Compile Include="Contracts\Commands\TLExcessSpeedEvent.cs" />
+    <Compile Include="Contracts\Commands\TlFuelEevents.cs" />
     <Compile Include="Contracts\Commands\TLFuelMilstoneEvent.cs" />
     <Compile Include="Contracts\Commands\TLGpsDataEvent.cs" />
+    <Compile Include="Contracts\Commands\TLGpsDataEvents.cs" />
     <Compile Include="Contracts\Commands\TNIoProperty.cs" />
     <Compile Include="Data\Enums\DbContextScopeOption.cs" />
     <Compile Include="Data\IAmbientDbContextLocator.cs" />
@@ -171,9 +173,11 @@
     <Compile Include="Domain\Users\User.cs" />
     <Compile Include="Domain\Vehicles\Brand.cs" />
     <Compile Include="Domain\Vehicles\Driver.cs" />
+    <Compile Include="Domain\Vehicles\FuelConsumption.cs" />
     <Compile Include="Domain\Vehicles\Model.cs" />
     <Compile Include="Domain\Vehicles\Vehicle.cs" />
-    <Compile Include="Contracts\VehicleEvent.cs" />
+    <Compile Include="Domain\Vehicles\VehicleAlert.cs" />
+    <Compile Include="Domain\Vehicles\VehicleEvent.cs" />
     <Compile Include="Domain\Vehicles\VehicleStatus.cs" />
     <Compile Include="Domain\Vehicles\VehicleType.cs" />
     <Compile Include="Geofence\GeofenceHelper.cs" />
@@ -186,6 +190,7 @@
     <Compile Include="Infrastructure\MassTransit\BusConsumerStarter.cs" />
     <Compile Include="Infrastructure\MassTransit\MassTransitConfig.cs" />
     <Compile Include="Infrastructure\MassTransit\MicroServicesLoader.cs" />
+    <Compile Include="Infrastructure\MassTransit\RabbitMqConfig.cs" />
     <Compile Include="Infrastructure\Registration\IDependencyRegistrar.cs" />
     <Compile Include="Infrastructure\Registration\Resolver.cs" />
     <Compile Include="IFMParserProtocol.cs" />

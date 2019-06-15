@@ -2,36 +2,40 @@
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Diagnostics;
+using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using MassTransit;
-using SmartFleet.Core.Contracts;
 using SmartFleet.Core.Contracts.Commands;
 using SmartFleet.Core.Data;
 using SmartFleet.Core.Domain.Gpsdevices;
 using SmartFleet.Core.Domain.Vehicles;
+using SmartFleet.Core.Geofence;
+using SmartFleet.Core.ReverseGeoCoding;
 using SmartFleet.Data;
 using TeltonicaService.Infrastucture;
 
 namespace TeltonicaService.Handlers
 {
 
-    public class TeltonikaHandler : IConsumer<CreateTeltonikaGps>
+    public class TeltonikaHandler : IConsumer<TLGpsDataEvents>
     {
         private SmartFleetObjectContext _db;
         private IMapper _mappe;
+        private ReverseGeoCodingService _reverseGeoCodingService;
         public IDbContextScopeFactory DbContextScopeFactory { get; }
 
         public TeltonikaHandler()
         {
 
             DbContextScopeFactory = DependencyRegistrar.ResolveDbContextScopeFactory();
+            _reverseGeoCodingService = DependencyRegistrar.ResolveGeoCodeService();
             InitMapper();
         }
 
         private void InitMapper()
         {
-            var mapperConfiguration = new MapperConfiguration(cfg => { cfg.AddProfile(new TeltonikaMappings()); });
+            var mapperConfiguration = new MapperConfiguration(cfg => { cfg.AddProfile(new TeltonikaMapping()); });
             _mappe = mapperConfiguration.CreateMapper();
         }
 
@@ -43,47 +47,103 @@ namespace TeltonicaService.Handlers
                 return await _db.Boxes.Include(x => x.Vehicle).SingleOrDefaultAsync(b => b.Imei == context.Imei);
             }
         }
-        public async Task Consume(ConsumeContext<CreateTeltonikaGps> context)
+        public async Task Consume(ConsumeContext<TLGpsDataEvents> context)
         {
 
             try
             {
-                var box = await Getbox(context.Message);
-                if (box != null)
+                var box = await Getbox(context.Message.Events.LastOrDefault());
+                List<TLEcoDriverAlertEvent> ecoDriveEvents = new List<TLEcoDriverAlertEvent>();
+                List<TLGpsDataEvent> gpsDataEvents = new List<TLGpsDataEvent>();
+                List<TLFuelMilstoneEvent> tlFuelMilstoneEvents = new List<TLFuelMilstoneEvent>();
+                List<TLExcessSpeedEvent> speedEvents = new List<TLExcessSpeedEvent>();
+                foreach (var teltonikaGps in context.Message.Events)
                 {
+                    if (box == null) continue;
                     // envoi des données GPs
-                    var gpsDataEvent = _mappe.Map<TLGpsDataEvent>(context.Message);
+                    var gpsDataEvent = _mappe.Map<TLGpsDataEvent>(teltonikaGps);
                     gpsDataEvent.BoxId = box.Id;
-                     Trace.WriteLine(gpsDataEvent.DateTimeUtc + " lat:" + gpsDataEvent.Lat + " long:" + gpsDataEvent.Long);
-                    await context.Publish(gpsDataEvent);
-                    if (box.Vehicle != null)
+                    Trace.WriteLine(gpsDataEvent.DateTimeUtc + " lat:" + gpsDataEvent.Lat + " long:" + gpsDataEvent.Long);
+                    // await context.Publish(gpsDataEvent);
+                    gpsDataEvents.Add(gpsDataEvent);
+
+                    if (box.Vehicle == null) continue;
+                    InitAllIoElements(teltonikaGps);
+                    var canInfo = ProceedTNCANFilters(teltonikaGps);
+                    if (canInfo != default(TLFuelMilstoneEvent))
                     {
-                        InitAllIoElements(context.Message);
-                        var canInfo = ProceedTNCANFilters(context.Message);
                         canInfo.VehicleId = box.Vehicle.Id;
-                        await context.Publish(canInfo);
-                        // ReSharper disable once ComplexConditionExpression
-                        if (box.Vehicle.MaxSpeed <= context.Message.Speed && box.Vehicle.MaxSpeed>0
-                            || context.Message.Speed > 85)
-                        {
-                            var alertExeedSpeed = ProceedTLSpeedingAlert(context.Message, box.Vehicle.Id,
-                                box.Vehicle.CustomerId);
-                            await context.Publish(alertExeedSpeed);
-                            
-                        }
-                        var ecoDriveEvent = ProceedEcoDriverEvents(context.Message, box.Vehicle.Id,
-                            box.Vehicle.CustomerId);
-                       if(ecoDriveEvent!=default(TLEcoDriverAlertEvent))
-                           await context.Publish(ecoDriveEvent);
+                        if (box.Vehicle.CustomerId.HasValue)
+                            canInfo.CustomerId = box.Vehicle.CustomerId.Value;
+                        // await context.Publish(canInfo);
+                        tlFuelMilstoneEvents.Add(canInfo);
                     }
+
+                    // ReSharper disable once ComplexConditionExpression
+                    if (box.Vehicle.SpeedAlertEnabled && box.Vehicle.MaxSpeed <= teltonikaGps.Speed
+                        || teltonikaGps.Speed > 85)
+                    {
+                        var alertExeedSpeed = ProceedTLSpeedingAlert(teltonikaGps, box.Vehicle.Id,
+                            box.Vehicle.CustomerId);
+                        // await context.Publish(alertExeedSpeed);
+                        speedEvents.Add(alertExeedSpeed);
+                    }
+
+                    var ecoDriveEvent = ProceedEcoDriverEvents(teltonikaGps, box.Vehicle.Id,
+                        box.Vehicle.CustomerId);
+                    if (ecoDriveEvent != default(TLEcoDriverAlertEvent))
+                        //ecoDriveEvents.Add(ecoDriveEvent);
+                        await context.Publish(ecoDriveEvent);
                 }
 
+                if (speedEvents.Any())
+                   await context.Publish(speedEvents.OrderBy(x => x.EventUtc).LastOrDefault());
+                if (gpsDataEvents.Any())
+                {
+                    var finalgpsDataEvents = new List<TLGpsDataEvent>();
+                    var firstRecord = gpsDataEvents.First();
+                    finalgpsDataEvents.Add(firstRecord);
+                    finalgpsDataEvents.AddRange(gpsDataEvents.Skip(1)
+                        .Where(tlGpsDataEvent => !(ClaculateDistance(firstRecord.Lat, firstRecord.Long, tlGpsDataEvent.Lat, tlGpsDataEvent.Long) < 5)));
+                    await GeoReverseCodeGpsData(finalgpsDataEvents);
+                    foreach (var finalgpsDataEvent in finalgpsDataEvents)
+                        await context.Publish(finalgpsDataEvent);
+                }
+
+                if (tlFuelMilstoneEvents.Any())
+                {
+                    var events = new TlFuelEevents
+                    {
+                        Id = Guid.NewGuid(),
+                        Events = tlFuelMilstoneEvents
+                    };
+                    await context.Publish(events);
+
+                }
             }
             catch (Exception e)
             {
                 Trace.TraceWarning(e.Message + " details:" + e.StackTrace);
                 //throw;
             }
+
+        }
+        private async Task GeoReverseCodeGpsData(List<TLGpsDataEvent> gpsRessult)
+        {
+            foreach (var gpSdata in gpsRessult)
+                gpSdata.Address = await _reverseGeoCodingService.ReverseGoecode(gpSdata.Lat, gpSdata.Long);
+
+        }
+        double ClaculateDistance(double lat1, double log,double lat2 ,double  log2) 
+        {
+            var p1 = new GeofenceHelper.Position();
+            p1.Latitude = lat1;
+            p1.Longitude =log;
+            var p2 = new GeofenceHelper.Position();
+            p2.Latitude = lat2;
+            p2.Longitude = log2;
+
+           return Math.Round(GeofenceHelper.HaversineFormula(p1, p2, GeofenceHelper.DistanceType.Kilometers), 2);
 
         }
 
@@ -114,13 +174,16 @@ namespace TeltonicaService.Handlers
 
             if (data.AllIoElements != null && data.AllIoElements.ContainsKey(TNIoProperty.Fuel_level_1_X))
                 fuelLevel = Convert.ToUInt32(data.AllIoElements[TNIoProperty.Fuel_level_1_X]);
-            return new TLFuelMilstoneEvent
-            {
-                FuelConsumption = Convert.ToInt32(fuelUsed),
-                Milestone = Convert.ToInt32(milestone),
-                DateTimeUtc = data.Timestamp,
-                FuelLevel = Convert.ToInt32(fuelLevel)
-            };
+            // ReSharper disable once ComplexConditionExpression
+            if (fuelLevel != default(UInt32) && fuelLevel>0)
+                return new TLFuelMilstoneEvent
+                {
+                    FuelConsumption = Convert.ToInt32(fuelUsed),
+                    Milestone = Convert.ToInt32(milestone),
+                    DateTimeUtc = data.Timestamp,
+                    FuelLevel = Convert.ToInt32(fuelLevel)
+                };
+            return default(TLFuelMilstoneEvent);
         }
 
         private TLExcessSpeedEvent ProceedTLSpeedingAlert(CreateTeltonikaGps data, Guid vehicleId, Guid? customerId)
@@ -216,15 +279,6 @@ namespace TeltonicaService.Handlers
         }
 
 
-    }
-
-    public class TeltonikaMappings : Profile
-    {
-        public TeltonikaMappings()
-        {
-            CreateMap< CreateTeltonikaGps, TLGpsDataEvent>()
-                .ForMember(x => x.DateTimeUtc, o => o.MapFrom(v => v.Timestamp))
-                .ReverseMap();
-        }
+       
     }
 }

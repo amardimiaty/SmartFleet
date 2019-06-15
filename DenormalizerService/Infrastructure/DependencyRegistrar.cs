@@ -1,11 +1,8 @@
-﻿using System;
-using System.Configuration;
-using Autofac;
+﻿using Autofac;
 using DenormalizerService.Handler;
 using MassTransit;
-using MassTransit.AzureServiceBusTransport;
-using Microsoft.ServiceBus;
 using SmartFleet.Core.Data;
+using SmartFleet.Core.Infrastructure.MassTransit;
 using SmartFleet.Core.Infrastructure.Registration;
 using SmartFleet.Data.Dbcontextccope.Implementations;
 
@@ -18,36 +15,10 @@ namespace DenormalizerService.Infrastructure
         public void Register(ContainerBuilder builder)
         {
 
-            /*builder.Register(context =>
-                {
-                    return Bus.Factory.CreateUsingAzureServiceBus(sbc =>
-                    {
-                        var serviceUri = ServiceBusEnvironment.CreateServiceUri("sb",
-                            ConfigurationManager.AppSettings["AzureSbNamespace"],
-                            ConfigurationManager.AppSettings["AzureSbPath"]);
-
-                        var host = ServiceBusBusFactoryConfiguratorExtensions.Host(sbc, serviceUri,
-                            h =>
-                            {
-                                h.TokenProvider = TokenProvider.CreateSharedAccessSignatureTokenProvider(
-                                    ConfigurationManager.AppSettings["AzureSbKeyName"],
-                                    ConfigurationManager.AppSettings["AzureSbSharedAccessKey"], TimeSpan.FromDays(1),
-                                    TokenScope.Namespace);
-                            });
-
-                        sbc.ReceiveEndpoint(host, "denormalizer.dev.endpoint", e =>
-                        {
-                            // Configure your consumer(s)
-                            ConsumerExtensions.Consumer<DenormalizerHandler>(e);
-                            e.DefaultMessageTimeToLive = TimeSpan.FromMinutes(1);
-                            e.EnableDeadLetteringOnMessageExpiration = false;
-                        });
-                    });
-                })
+            builder.Register(context => RabbitMqConfig.InitReceiverBus<DenormalizerHandler>("Denormalizer.endpoint"))
                 .SingleInstance()
                 .As<IBusControl>()
-                .As<IBus>();*/
-            //builder.RegisterType<SmartFleetObjectContext>().As<SmartFleetObjectContext>();
+                .As<IBus>();
             builder.RegisterType<DbContextScopeFactory>().As<IDbContextScopeFactory>();
 
             Container = builder.Build();

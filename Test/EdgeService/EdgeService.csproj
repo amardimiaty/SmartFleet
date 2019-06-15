@@ -90,7 +90,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Handler\TeltonikaHandler.cs" />
+    <Compile Include="Handler\TeltonikaedgeHandler.cs" />
     <Compile Include="Handler\Tk103Handler.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

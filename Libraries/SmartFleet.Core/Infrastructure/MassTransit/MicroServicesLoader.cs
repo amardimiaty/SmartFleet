@@ -18,7 +18,7 @@ namespace SmartFleet.Core.Infrastructure.MassTransit
             //  Gets all compiled assemblies.
             //  This is particularly useful when extending applications functionality from 3rd parties,
             //  if there are interfaces within the modules.
-            var assemblies = Directory.GetFiles(path, "*Service.dll", SearchOption.TopDirectoryOnly)
+            var assemblies = Directory.GetFiles(path, "*Service.dll", SearchOption.AllDirectories)
                 .Select(Assembly.LoadFrom);
 
             foreach (var assembly in assemblies)

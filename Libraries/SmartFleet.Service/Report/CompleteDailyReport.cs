@@ -43,6 +43,7 @@ namespace SmartFleet.Service.Report
             Positions.AddRange(positionReport.BuildDailyReport(positions, positions.FirstOrDefault().Timestamp.Date, vehicle.VehicleName));
             Distance = Enumerable.Where(Positions, x => x.MotionStatus == MotionStatus.Moving.ToString()).Sum(x => x.Distance);
             Distance = Math.Round((double) Distance, 2);
+
         }
         public string Day { get; set; }
         public double MaxSpeed { get; set; }

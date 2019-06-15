@@ -84,14 +84,20 @@ namespace TeltonikaListner
                 List<byte> list = new List<byte>();
                 foreach (var b1 in buffer.Skip(9).Take(1)) list.Add(b1);
                 int dataCount = Convert.ToInt32(list[0]);
-                var gpsResult = await ParsseAvlData(imei, buffer);
                 var bytes = Convert.ToByte(dataCount);
-               if(client.Connected)
-                   await stream.WriteAsync(new byte[] { 0x00, 0x00, 0x00, bytes }, 0, 4);
-                if (!gpsResult.Any() && imei.Any()) continue;
-                foreach (var gpSdata in gpsResult)
-                    if (_bus != null)
-                        await _bus.Publish(gpSdata);
+                if (client.Connected)
+                    await stream.WriteAsync(new byte[] { 0x00, 0x00, 0x00, bytes }, 0, 4);
+
+                var gpsResult = await ParsseAvlData(imei, buffer);
+               
+                 if (!gpsResult.Any() && imei.Any()) continue;
+                var events = new TLGpsDataEvents
+                {
+                    Id = Guid.NewGuid(),
+                    Events = gpsResult
+                };
+                await _bus.Publish(events);
+           
                 // break;
             }
             // ReSharper disable once FunctionNeverReturns
@@ -102,17 +108,12 @@ namespace TeltonikaListner
             List<CreateTeltonikaGps> gpsResult = new List<CreateTeltonikaGps>();
             var parser = new DevicesParser();
             gpsResult.AddRange(parser.Decode(new List<byte>(buffer), imei));
-            await GeoReverseCodeGpsData(gpsResult);
+           // await GeoReverseCodeGpsData(gpsResult);
             LogAvlData(gpsResult);
             return gpsResult;
         }
 
-        private  async Task GeoReverseCodeGpsData(List<CreateTeltonikaGps> gpsRessult)
-        {
-            foreach (var gpSdata in gpsRessult)
-                gpSdata.Address = await _reverseGeoCodingService.ReverseGoecode(gpSdata.Lat, gpSdata.Long);
-
-        }
+       
         private static void LogAvlData(List<CreateTeltonikaGps> gpsResult)
         {
             foreach (var gpsData in gpsResult.OrderBy(x => x.Timestamp))

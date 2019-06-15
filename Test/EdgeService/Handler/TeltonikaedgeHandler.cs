@@ -14,7 +14,7 @@ using SmartFleet.Data;
 namespace EdgeService.Handler
 {
 
-    public class TeltonikaHandler : IConsumer<CreateTeltonikaGps>
+    public class TeltonikaedgeHandler : IConsumer<CreateTeltonikaGps>
         , IConsumer<CreateBoxCommand>
     {
         public static Semaphore Semaphore;
@@ -25,7 +25,7 @@ namespace EdgeService.Handler
         private SmartFleetObjectContext _db;
         private readonly ReverseGeoCodingService _geoCodingService;
 
-        public TeltonikaHandler()
+        public TeltonikaedgeHandler()
         {
             _dbContextScopeFactory = Program.ResolveDbContextScopeFactory();
             _geoCodingService = new ReverseGeoCodingService();

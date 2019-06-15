@@ -111,6 +111,18 @@
     <Compile Include="Migrations\201906081130083_addlisofzonestoCutomer.Designer.cs">
       <DependentUpon>201906081130083_addlisofzonestoCutomer.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201906151316009_addEcoDriveEntities.cs" />
+    <Compile Include="Migrations\201906151316009_addEcoDriveEntities.Designer.cs">
+      <DependentUpon>201906151316009_addEcoDriveEntities.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201906151401526_addvehicleAndCusstomerFuel.cs" />
+    <Compile Include="Migrations\201906151401526_addvehicleAndCusstomerFuel.Designer.cs">
+      <DependentUpon>201906151401526_addvehicleAndCusstomerFuel.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201906151715335_addtotalFuel.cs" />
+    <Compile Include="Migrations\201906151715335_addtotalFuel.Designer.cs">
+      <DependentUpon>201906151715335_addtotalFuel.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SmartFleetObjectContext.cs" />
@@ -161,6 +173,15 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201906081130083_addlisofzonestoCutomer.resx">
       <DependentUpon>201906081130083_addlisofzonestoCutomer.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201906151316009_addEcoDriveEntities.resx">
+      <DependentUpon>201906151316009_addEcoDriveEntities.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201906151401526_addvehicleAndCusstomerFuel.resx">
+      <DependentUpon>201906151401526_addvehicleAndCusstomerFuel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201906151715335_addtotalFuel.resx">
+      <DependentUpon>201906151715335_addtotalFuel.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

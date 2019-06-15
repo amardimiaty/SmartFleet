@@ -14,7 +14,7 @@ namespace SmartFleet.Core.Domain.Vehicles
 
         public Vehicle()
         {
-            this.Boxes = new List<Box>();
+            Boxes = new List<Box>();
         }
 
         public string VehicleName { get; set; }
@@ -31,8 +31,10 @@ namespace SmartFleet.Core.Domain.Vehicles
         public Brand Brand { get; set; }
         [ForeignKey("Model_Id")]
         public Model Model { get; set; }
-        public int MaxSpeed { get; set; }
+        public int? MaxSpeed { get; set; }
         public int Milestone { get; set; }
+        public bool SpeedAlertEnabled { get; set; }
+        public bool CANEnabled { get; set; }
         [NotMapped]
         public Guid? Box_Id { get; set; }
         public Guid? InteerestAreaId { get; set; }

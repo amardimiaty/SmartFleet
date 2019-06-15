@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data.Entity;
 using System.Diagnostics;
+using System.Linq;
 using System.Threading.Tasks;
 using DenormalizerService.Infrastructure;
 using MassTransit;
@@ -8,6 +10,7 @@ using SmartFleet.Core.Contracts.Commands;
 using SmartFleet.Core.Data;
 using SmartFleet.Core.Domain.Gpsdevices;
 using SmartFleet.Core.Domain.Movement;
+using SmartFleet.Core.Domain.Vehicles;
 using SmartFleet.Core.ReverseGeoCoding;
 using SmartFleet.Data;
 
@@ -16,7 +19,10 @@ namespace DenormalizerService.Handler
     public class DenormalizerHandler : IConsumer<CreateTk103Gps>, 
         IConsumer<CreateNewBoxGps>, 
         IConsumer<TLGpsDataEvent>,
-        IConsumer<CreateBoxCommand>
+        IConsumer<CreateBoxCommand>,
+        IConsumer<TlFuelEevents>,
+        IConsumer<TLExcessSpeedEvent>,
+        IConsumer<TLEcoDriverAlertEvent>
     {
         private readonly IDbContextScopeFactory _dbContextScopeFactory;
         private readonly ReverseGeoCodingService _geoCodingService;
@@ -231,9 +237,68 @@ namespace DenormalizerService.Handler
                     Trace.WriteLine(e);
                     throw;
                 }
-
-               
             }
+        }
+
+        public async Task Consume(ConsumeContext<TlFuelEevents> context)
+        {
+            using (var contextFScope = _dbContextScopeFactory.Create())
+            {
+                _db = contextFScope.DbContexts.Get<SmartFleetObjectContext>();
+                using (DbContextTransaction scope = _db.Database.BeginTransaction())
+                {
+                    var lastRecord = await _db.FuelConsumptions.OrderByDescending(x => x.DateTimeUtc)
+                        .FirstOrDefaultAsync();
+                    var entity = SetFuelConsumptionobject(context.Message.Events.OrderBy(x => x.DateTimeUtc).First());
+                    // ReSharper disable once ComplexConditionExpression
+                    if (lastRecord != null && (lastRecord.FuelUsed - entity.FuelUsed < 0) || lastRecord == null)
+                    {
+                        _db.FuelConsumptions.Add(entity);
+                        await contextFScope.SaveChangesAsync().ConfigureAwait(false);
+                    }
+
+                    scope.Commit();
+                }
+            }
+        }
+
+        private static FuelConsumption SetFuelConsumptionobject(TLFuelMilstoneEvent context)
+        {
+            var entity = new FuelConsumption();
+
+            entity.VehicleId = context.VehicleId;
+            entity.FuelUsed = context.FuelConsumption;
+            entity.FuelLevel = context.FuelLevel;
+            entity.Milestone = context.Milestone;
+            entity.CustomerId = context.CustomerId;
+            entity.DateTimeUtc = context.DateTimeUtc;
+            //entity.TotalFuelConsumed += context.Message.FuelConsumption;
+            return entity;
+        }
+
+        public async Task Consume(ConsumeContext<TLExcessSpeedEvent> context)
+        {
+            //throw new NotImplementedException();
+            using (var contextFScope = _dbContextScopeFactory.Create())
+            {
+                _db = contextFScope.DbContexts.Get<SmartFleetObjectContext>();
+                _db.VehicleAlerts.Add(new VehicleAlert
+                {
+                    Id = Guid.NewGuid(),
+                    VehicleEvent =  context.Message.VehicleEventType,
+                    Speed =Convert.ToInt32( context.Message.Speed),
+                    EventUtc = context.Message.EventUtc,
+                    CustomerId = (Guid) context.Message.CustomerId,
+                    VehicleId = context.Message.VehicleId
+                });
+                await contextFScope.SaveChangesAsync().ConfigureAwait(false);
+
+            }
+        }
+
+        public async Task Consume(ConsumeContext<TLEcoDriverAlertEvent> context)
+        {
+            //throw new NotImplementedException();
         }
     }
 }

@@ -28,11 +28,7 @@ namespace TeltonicaService
 
             try
             {
-                MassTransitConfig.ConfigureReceiveBus((cfg, hst) =>
-                    cfg.ReceiveEndpoint(hst, "Teltonika.endpoint.service", e =>
-                        e.Consumer<TeltonikaHandler>())
-
-                ).Start();
+                DependencyRegistrar.ResolveServiceBus().Start();
             }
             catch (Exception e)
             {

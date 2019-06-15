@@ -9,5 +9,6 @@ namespace SmartFleet.Core.Contracts.Commands
         public DateTime DateTimeUtc { get;  set; }
         public int FuelLevel { get;  set; }
         public Guid VehicleId { get;  set; }
+        public Guid CustomerId { get; set; }
     }
 }

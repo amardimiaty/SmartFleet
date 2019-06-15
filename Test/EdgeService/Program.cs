@@ -25,7 +25,7 @@ namespace EdgeService
             Container.Resolve<IAmbientDbContextLocator>();
             MassTransitConfig.ConfigureReceiveBus((cfg, hst) =>
                 cfg.ReceiveEndpoint(hst, "Teltonika.endpoint", e =>
-                    e.Consumer<TeltonikaHandler>())
+                    e.Consumer<TeltonikaedgeHandler>())
 
             ).Start();   //busConfig.StartConsumerBus<Tk103Handler>("Tk1003.endpoint");
 

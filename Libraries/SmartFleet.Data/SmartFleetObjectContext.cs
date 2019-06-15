@@ -32,6 +32,8 @@ namespace SmartFleet.Data
         public DbSet<Brand> Brands { get; set; }
         public DbSet<User> UserAccounts { get; set; }
         public DbSet<InterestArea> InterestAreas { get; set; }
+        public DbSet<VehicleAlert> VehicleAlerts { get; set; }
+        public DbSet<FuelConsumption> FuelConsumptions { get; set; }
        
         protected virtual TEntity AttachEntityToContext<TEntity>(TEntity entity) where TEntity : BaseEntity, new()
         {
