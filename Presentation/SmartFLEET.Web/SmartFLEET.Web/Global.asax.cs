@@ -430,6 +430,7 @@ namespace SmartFLEET.Web
             });
             var mapper = mapperConfiguration.CreateMapper();
             builder.RegisterInstance(mapper).As<IMapper>();
+            SignalRHubManager.Mapper = mapper;
             var queryBuilder = new DataTablesLinqQueryBulider();
             builder.RegisterInstance(queryBuilder).As<DataTablesLinqQueryBulider>();
             #endregion

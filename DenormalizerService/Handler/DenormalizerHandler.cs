@@ -15,7 +15,7 @@ namespace DenormalizerService.Handler
 {
     public class DenormalizerHandler : IConsumer<CreateTk103Gps>, 
         IConsumer<CreateNewBoxGps>, 
-        IConsumer<CreateTeltonikaGps>,
+        IConsumer<TLGpsDataEvent>,
         IConsumer<CreateBoxCommand>
     {
         private readonly IDbContextScopeFactory _dbContextScopeFactory;
@@ -152,7 +152,7 @@ namespace DenormalizerService.Handler
                 await contextFScope.SaveChangesAsync().ConfigureAwait(false);
             }
         }
-        private async Task<Box> Item(CreateTeltonikaGps context)
+        private async Task<Box> Item(TLGpsDataEvent context)
         {
             using (var contextFScope = _dbContextScopeFactory.Create())
             {
@@ -162,7 +162,7 @@ namespace DenormalizerService.Handler
             }
 
         }
-        public async Task Consume(ConsumeContext<CreateTeltonikaGps> context)
+        public async Task Consume(ConsumeContext<TLGpsDataEvent> context)
         {
             try
             {
@@ -184,9 +184,9 @@ namespace DenormalizerService.Handler
                         position.Id = Guid.NewGuid();
                         position.Priority = context.Message.Priority;
                         position.Satellite = context.Message.Satellite;
-                        position.Timestamp = context.Message.Timestamp;
+                        position.Timestamp = context.Message.DateTimeUtc;
                         position.MotionStatus =  context.Message.Speed > 0.0 ? MotionStatus.Moving : MotionStatus.Stopped;
-                        item.LastGpsInfoTime = context.Message.Timestamp;
+                        item.LastGpsInfoTime = context.Message.DateTimeUtc;
                         _db.Positions.Add(position);
                        await contextFScope.SaveChangesAsync().ConfigureAwait(false);
                     }

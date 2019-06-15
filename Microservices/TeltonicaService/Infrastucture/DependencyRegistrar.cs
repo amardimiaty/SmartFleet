@@ -36,5 +36,6 @@ namespace TeltonicaService.Infrastucture
             return Container.Resolve<IDbContextScopeFactory>();
         }
 
+       
     }
 }

@@ -18,7 +18,7 @@ namespace DenormalizerService.Infrastructure
         public void Register(ContainerBuilder builder)
         {
 
-            builder.Register(context =>
+            /*builder.Register(context =>
                 {
                     return Bus.Factory.CreateUsingAzureServiceBus(sbc =>
                     {
@@ -46,7 +46,7 @@ namespace DenormalizerService.Infrastructure
                 })
                 .SingleInstance()
                 .As<IBusControl>()
-                .As<IBus>();
+                .As<IBus>();*/
             //builder.RegisterType<SmartFleetObjectContext>().As<SmartFleetObjectContext>();
             builder.RegisterType<DbContextScopeFactory>().As<IDbContextScopeFactory>();
 

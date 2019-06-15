@@ -1,6 +1,9 @@
-﻿using Autofac;
+﻿using System;
+using Autofac;
+using MassTransit;
 using SmartFleet.Core;
 using SmartFleet.Core.Infrastructure.MassTransit;
+using TeltonicaService.Handlers;
 using TeltonicaService.Infrastucture;
 
 namespace TeltonicaService
@@ -19,7 +22,23 @@ namespace TeltonicaService
 
         public void StartService()
         {
-            throw new System.NotImplementedException();
+            ContainerBuilder builder = new ContainerBuilder();
+            var dependencyRegistrar = new DependencyRegistrar();
+            dependencyRegistrar.Register(builder);
+
+            try
+            {
+                MassTransitConfig.ConfigureReceiveBus((cfg, hst) =>
+                    cfg.ReceiveEndpoint(hst, "Teltonika.endpoint.service", e =>
+                        e.Consumer<TeltonikaHandler>())
+
+                ).Start();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                //  throw;
+            }
         }
     }
 }

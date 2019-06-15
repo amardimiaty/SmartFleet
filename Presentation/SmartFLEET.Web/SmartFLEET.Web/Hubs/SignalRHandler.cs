@@ -9,6 +9,7 @@ using SmartFleet.Core.Geofence;
 using SmartFleet.Core.ReverseGeoCoding;
 using SmartFleet.Data;
 using SmartFleet.Service.Models;
+using SmartFLEET.Web.Models.Eveents;
 
 namespace SmartFLEET.Web.Hubs
 {
@@ -18,7 +19,9 @@ namespace SmartFLEET.Web.Hubs
     public class SignalRHandler : Hub,
         IConsumer<CreateTk103Gps>,
         IConsumer<CreateNewBoxGps>, 
-        IConsumer<CreateTeltonikaGps>
+        IConsumer<TLGpsDataEvent>,
+        IConsumer<TLExcessSpeedEvent>,
+        IConsumer<TLEcoDriverAlertEvent>
     {
         /// <summary>
         /// 
@@ -110,7 +113,7 @@ namespace SmartFLEET.Web.Hubs
             }
         }
 
-        public async Task Consume(ConsumeContext<CreateTeltonikaGps> context)
+        public async Task Consume(ConsumeContext<TLGpsDataEvent> context)
         {
             if (SignalRHubManager.Clients == null)
                 return;
@@ -138,6 +141,24 @@ namespace SmartFLEET.Web.Hubs
 
                 }
             }
+        }
+
+        public async Task Consume(ConsumeContext<TLExcessSpeedEvent> context)
+        {
+            if (context.Message.CustomerId != null)
+            {
+                var evt = SignalRHubManager.Mapper.Map<TLVehicleEventVM>(context.Message);
+                evt.SetEventMessage(context.Message.VehicleEventType);
+                await SignalRHubManager.Clients.Group(context.Message.CustomerId.ToString()).receiveVehicleEvent(evt);
+
+            }
+
+
+        }
+
+        public Task Consume(ConsumeContext<TLEcoDriverAlertEvent> context)
+        {
+            throw new System.NotImplementedException();
         }
     }
 }

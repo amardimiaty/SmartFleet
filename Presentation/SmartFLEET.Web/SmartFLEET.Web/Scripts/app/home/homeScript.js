@@ -216,6 +216,7 @@ function initSignalR() {
     hub = $.connection.signalRHandler;
     hub.client.receiveGpsStatements = onRecieveData;
     hub.client.sendprogressVal = onRecieveProgressVal;
+    hub.client.receiveVehicleEvent = onReceiveVehicleEvent;
     $.connection.hub.start().done(joinSignalRGroup);
 }
 function onRecieveProgressVal(val) {
@@ -269,6 +270,12 @@ function joinSignalRGroup() {
     hub.server.join(groupeName);
    // loadData(1);
 
+}
+function onReceiveVehicleEvent(event) {
+    $.bootstrapGrowl(event.Message, {
+        ele: 'body', // which element to append to
+        type: 'success' // (null, 'info', 'danger', 'success')
+    });
 }
 function onGetAllVehiclesSuccess(result) {
     for (var i = 0; i < result.length; i++) {

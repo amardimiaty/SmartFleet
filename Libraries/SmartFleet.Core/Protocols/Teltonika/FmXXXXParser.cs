@@ -158,6 +158,7 @@ namespace SmartFleet.Core.Protocols.Teltonika
                 gpsData.Speed =speed;
                 gpsData.Timestamp = dateTime;
                 gpsData.Imei = imei.Substring(0, 15);
+                gpsData.DataEventIO = eventIoElementId;
                 results.Add(gpsData);
                 //  dt.SaveGPSPositionFMXXXX(gpsData);
 

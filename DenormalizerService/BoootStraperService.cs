@@ -23,16 +23,7 @@ namespace DenormalizerService
             ContainerBuilder builder = new ContainerBuilder();
             var dependencyRegistrar = new DependencyRegistrar();
             dependencyRegistrar.Register(builder);
-            //_bus = DependencyRegistrar.ResolveServiceBus();
-            //try
-            //{
-            //    _bus.StartAsync();
-            //}
-            //catch (Exception e)
-            //{
-            //    Debug.WriteLine(e.Message);
-            //    _bus.StopAsync();
-            //}
+           
             try
             {
                 MassTransitConfig.ConfigureReceiveBus((cfg, hst) =>

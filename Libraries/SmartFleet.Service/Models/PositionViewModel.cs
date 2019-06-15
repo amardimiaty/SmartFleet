@@ -63,7 +63,7 @@ namespace SmartFleet.Service.Models
         }
         
 
-        private static double GetDirection(CreateTeltonikaGps tk103Gps, GeofenceHelper.Position lastPos)
+        private static double GetDirection(TLGpsDataEvent tk103Gps, GeofenceHelper.Position lastPos)
         {
                 
             var dir = !lastPos .Equals(default(GeofenceHelper.Position))
@@ -89,7 +89,7 @@ namespace SmartFleet.Service.Models
             SetVehicleImage(vehicle);
         }
 
-        public PositionViewModel(CreateTeltonikaGps tk103Gps, Vehicle vehicle, GeofenceHelper.Position lasPosition)
+        public PositionViewModel(TLGpsDataEvent tk103Gps, Vehicle vehicle, GeofenceHelper.Position lasPosition)
         {
             double dir = 0;
             if (Math.Abs(lasPosition.Latitude - tk103Gps.Lat) > 0.0 )
@@ -106,7 +106,7 @@ namespace SmartFleet.Service.Models
             VehicleName = vehicle.VehicleName;
             VehicleId = vehicle.Id.ToString();
             CustomerName = vehicle.Customer?.Id.ToString();
-            TimeStampUtc = tk103Gps.Timestamp;
+            TimeStampUtc = tk103Gps.DateTimeUtc;
             SetVehicleImage(vehicle, dir);
 
         }

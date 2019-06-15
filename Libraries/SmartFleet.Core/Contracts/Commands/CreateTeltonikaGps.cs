@@ -24,6 +24,7 @@ namespace SmartFleet.Core.Contracts.Commands
         public Dictionary<byte, long> IoElements_2B;
        // [JsonConverter(typeof(JsonDictionaryAttribute))]
         public Dictionary<byte, long> IoElements_4B;
+        public int DataEventIO;
         public short Altitude { get; set; }
         public short Direction { get; set; }
         public double Lat { get; set; }
@@ -39,5 +40,6 @@ namespace SmartFleet.Core.Contracts.Commands
         public int Mileage { get; set; }
         public int Temprature { get; set; }
         public string Address { get; set; }
+        public Dictionary<TNIoProperty, long> AllIoElements { get; set; }
     }
 }

@@ -7,6 +7,7 @@ using SmartFleet.Core.Domain.Vehicles;
 using SmartFleet.Service.Models;
 using SmartFLEET.Web.Areas.Administrator.Models;
 using SmartFLEET.Web.Models;
+using SmartFLEET.Web.Models.Eveents;
 
 namespace SmartFLEET.Web.Automapper
 {
@@ -38,6 +39,8 @@ namespace SmartFLEET.Web.Automapper
                 .ReverseMap();
             CreateMap<User, UserVm>().ReverseMap();
             CreateMap<InterestArea, InterestAreaVm>().ReverseMap();
+            CreateMap<TLVehicleEventVM, TLExcessSpeedEvent>().ReverseMap();
+            CreateMap<TLVehicleEventVM, TLExcessSpeedEvent>().ReverseMap();
             CreateMap<PositionViewModel, CreateTk103Gps>();
             CreateMap<Vehicle, VehicleViewModel>()
                 .ForMember(x=>x.Customer, o=>o.MapFrom(v=>v.Customer.Name))
