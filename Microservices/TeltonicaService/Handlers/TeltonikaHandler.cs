@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using System.Data.Entity;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
 using MassTransit;
 using SmartFleet.Core.Contracts.Commands;
 using SmartFleet.Core.Data;
 using SmartFleet.Core.Domain.Gpsdevices;
+using SmartFleet.Core.Domain.Movement;
 using SmartFleet.Core.Domain.Vehicles;
 using SmartFleet.Core.Geofence;
 using SmartFleet.Core.ReverseGeoCoding;
@@ -24,10 +26,11 @@ namespace TeltonicaService.Handlers
         private IMapper _mappe;
         private ReverseGeoCodingService _reverseGeoCodingService;
         public IDbContextScopeFactory DbContextScopeFactory { get; }
+        private static SemaphoreSlim _semaphore;
 
         public TeltonikaHandler()
         {
-
+            _semaphore = new SemaphoreSlim(1, 4);
             DbContextScopeFactory = DependencyRegistrar.ResolveDbContextScopeFactory();
             _reverseGeoCodingService = DependencyRegistrar.ResolveGeoCodeService();
             InitMapper();
@@ -47,11 +50,22 @@ namespace TeltonicaService.Handlers
                 return await _db.Boxes.Include(x => x.Vehicle).SingleOrDefaultAsync(b => b.Imei == context.Imei);
             }
         }
+
+        private async Task<PositionQuery> GetLastPostion(Guid boxId)
+        {
+            using (var contextFScope = DbContextScopeFactory.Create())
+            {
+                _db = contextFScope.DbContexts.Get<SmartFleetObjectContext>();
+                return await _db.Positions.OrderByDescending(x => x.Timestamp).Where(x => x.Box_Id == boxId).Select(p=>new PositionQuery(){VehicleId= p.Box.VehicleId, Lat = p.Lat, Long= p.Long}).FirstOrDefaultAsync();
+            }
+        }
+
         public async Task Consume(ConsumeContext<TLGpsDataEvents> context)
         {
 
             try
             {
+                await _semaphore.WaitAsync();
                 var box = await Getbox(context.Message.Events.LastOrDefault());
                 List<TLEcoDriverAlertEvent> ecoDriveEvents = new List<TLEcoDriverAlertEvent>();
                 List<TLGpsDataEvent> gpsDataEvents = new List<TLGpsDataEvent>();
@@ -75,6 +89,19 @@ namespace TeltonicaService.Handlers
                         canInfo.VehicleId = box.Vehicle.Id;
                         if (box.Vehicle.CustomerId.HasValue)
                             canInfo.CustomerId = box.Vehicle.CustomerId.Value;
+                        // calcul de la distance par rapport au dernier point GPS
+                        if (canInfo.Milestone <= 0)
+                        {
+                            var positionQuery = await GetLastPostion(box.Id);
+                            if (positionQuery != null)
+                            {
+                                var distance = CalculateDistance(positionQuery.Lat, positionQuery.Long, gpsDataEvent.Lat,
+                                    gpsDataEvent.Long);
+                                Trace.TraceInformation($"time :{gpsDataEvent.DateTimeUtc} Ditance: " + distance);
+                                canInfo.Milestone =distance;
+                                canInfo.MileStoneCalculated =true;
+                            } 
+                        }
                         // await context.Publish(canInfo);
                         tlFuelMilstoneEvents.Add(canInfo);
                     }
@@ -101,10 +128,11 @@ namespace TeltonicaService.Handlers
                 if (gpsDataEvents.Any())
                 {
                     var finalgpsDataEvents = new List<TLGpsDataEvent>();
-                    var firstRecord = gpsDataEvents.First();
+                    var firstRecord = gpsDataEvents.Last();
+
                     finalgpsDataEvents.Add(firstRecord);
                     finalgpsDataEvents.AddRange(gpsDataEvents.Skip(1)
-                        .Where(tlGpsDataEvent => !(ClaculateDistance(firstRecord.Lat, firstRecord.Long, tlGpsDataEvent.Lat, tlGpsDataEvent.Long) < 5)));
+                        .Where(tlGpsDataEvent => !(CalculateDistance(firstRecord.Lat, firstRecord.Long, tlGpsDataEvent.Lat, tlGpsDataEvent.Long) < 5)));
                     await GeoReverseCodeGpsData(finalgpsDataEvents);
                     foreach (var finalgpsDataEvent in finalgpsDataEvents)
                         await context.Publish(finalgpsDataEvent);
@@ -120,6 +148,8 @@ namespace TeltonicaService.Handlers
                     await context.Publish(events);
 
                 }
+                _semaphore.Release();
+
             }
             catch (Exception e)
             {
@@ -134,7 +164,7 @@ namespace TeltonicaService.Handlers
                 gpSdata.Address = await _reverseGeoCodingService.ReverseGoecode(gpSdata.Lat, gpSdata.Long);
 
         }
-        double ClaculateDistance(double lat1, double log,double lat2 ,double  log2) 
+        double CalculateDistance(double lat1, double log,double lat2 ,double  log2) 
         {
             var p1 = new GeofenceHelper.Position();
             p1.Latitude = lat1;
@@ -280,5 +310,12 @@ namespace TeltonicaService.Handlers
 
 
        
+    }
+
+    internal class PositionQuery
+    {
+        public Guid? VehicleId { get; set; }
+        public double Lat { get; internal set; }
+        public double Long { get; internal set; }
     }
 }

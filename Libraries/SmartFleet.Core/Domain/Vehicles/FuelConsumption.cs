@@ -12,7 +12,7 @@ namespace SmartFleet.Core.Domain.Vehicles
         public Guid CustomerId { get; set; }
         public Int32 FuelLevel { get; set; }
         public Int32 FuelUsed { get; set; }
-        public long Milestone { get; set; }
+        public double Milestone { get; set; }
         public DateTime DateTimeUtc { get; set; }
         public Customer Customer { get; set; }
         public Vehicle Vehicle { get; set; }

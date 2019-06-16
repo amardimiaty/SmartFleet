@@ -21,6 +21,7 @@ namespace SmartFleet.Data
         {
             Database.SetInitializer(new CreateDatabaseIfNotExists<SmartFleetObjectContext>());
             Configuration.LazyLoadingEnabled = false;
+            Database.CommandTimeout = 360;
         }
 
         public DbSet<Box> Boxes { get; set; }

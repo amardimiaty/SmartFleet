@@ -51,6 +51,7 @@ namespace SmartFleet.Service.Report
         public double Distance { get; set; }
         public string VehicleName { get; set; }
         public string ReportDate { get; set; }
+        public double FuelConsumption { get; set; }
         public List<TargetViewModel> Positions { get; set; }
     }
 }

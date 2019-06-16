@@ -103,7 +103,7 @@ namespace SmartFleet.Service.Common
                     BaseColor.BLACK));
                 pTable.AddCell(ItextSharpHelper.Cell(position.StartAddres, BaseColor.BLACK));
                 pTable.AddCell(ItextSharpHelper.Cell(position.ArrivalAddres, BaseColor.BLACK));
-                pTable.AddCell(ItextSharpHelper.Cell(position.AvgSpeed.ToString(CultureInfo.InvariantCulture),
+                pTable.AddCell(ItextSharpHelper.Cell(position.MotionStatus != "Stopped" ? position.AvgSpeed.ToString(CultureInfo.InvariantCulture):"0.0",
                     BaseColor.BLACK));
             }
 

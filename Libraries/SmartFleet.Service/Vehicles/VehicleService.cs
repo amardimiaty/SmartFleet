@@ -125,7 +125,7 @@ namespace SmartFleet.Service.Vehicles
                 .Include("Model");
         }
 
-        public double GetFuelConsuptionByPeriod(DateTime start, DateTime end,  Guid vehicleId, int Total_Distance)
+        public double GetFuelConsuptionByPeriod(DateTime start, DateTime end,  Guid vehicleId)
         {
             var contextFScope = _dbContextScopeFactory.Create();
             _db = contextFScope.DbContexts.Get<SmartFleetObjectContext>();
@@ -142,40 +142,42 @@ namespace SmartFleet.Service.Vehicles
                 var vehicleFuelZeroDetected = false;
                 var vehicleFuelConsummedReset = false;
                 var previousValidFuelConsumed = default(Int32);
-                var previousFuelConsummed = fuelRecords.First().TotalFuelConsumed;
-                var Fuel = 0;
+                var previousFuelConsummed = fuelRecords.First().FuelUsed;
+                var fuel = 0;
                 foreach (var record in fuelRecords)
                 {
                     //Si on détecté un retour à zéro et qu'une nouvelle valeure positif arrive
-                    if (vehicleFuelZeroDetected && record.TotalFuelConsumed > 0)
+                    if (vehicleFuelZeroDetected && record.FuelUsed > 0)
                     {
                         //Détection d'un véhicule dont le nombre de litres de consommés revient à zéro à chaque ignition off
-                        if (record.TotalFuelConsumed < previousValidFuelConsumed)
+                        if (record.FuelUsed < previousValidFuelConsumed)
                             vehicleFuelConsummedReset = true;
                         //Sinon il ne s'agissait que d'un pic négatif à zéro mais le nombre de litres consommés évolue normalement
                         else
-                            Fuel -= previousValidFuelConsumed;
+                            fuel -= previousValidFuelConsumed;
                         vehicleFuelZeroDetected = false;
                     }
                     //Si le nombre de litres consommés diminue
-                    else if (previousFuelConsummed - 5 > record.TotalFuelConsumed)
+                    else if (previousFuelConsummed - 5 > record.FuelUsed)
                     {
                         vehicleFuelZeroDetected = true;
                         previousValidFuelConsumed = previousFuelConsummed;
-                        Fuel += previousFuelConsummed;
+                        fuel += previousFuelConsummed;
                     }
 
-                    previousFuelConsummed = record.TotalFuelConsumed;
+                    previousFuelConsummed = record.FuelUsed;
                 }
 
                 //S'il s'agit un véhicule dont le nombre total de litres consommés revient à zéro à chque ignition OFF
                 if (vehicleFuelConsummedReset)
-                    Fuel += fuelRecords.Last().TotalFuelConsumed - fuelRecords.First().TotalFuelConsumed;
+                    fuel += fuelRecords.Last().FuelUsed - fuelRecords.First().FuelUsed;
                 else
-                    Fuel = fuelRecords.Last(p => p.TotalFuelConsumed > 0).TotalFuelConsumed -
-                                    fuelRecords.First(p => p.TotalFuelConsumed > 0).TotalFuelConsumed;
+                    fuel = fuelRecords.Last(p => p.FuelUsed > 0).FuelUsed -
+                                    fuelRecords.First(p => p.FuelUsed > 0).FuelUsed;
+                var Total_Distance = fuelRecords.Last().Milestone -
+                                     fuelRecords.First().Milestone;
 
-                l100Fuel = Math.Round((double) (Fuel * 100 / Total_Distance), 1);
+                l100Fuel = Math.Round(fuel * 100 / Total_Distance, 1);
             }
 
             return l100Fuel;

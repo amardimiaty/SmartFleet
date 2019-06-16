@@ -87,9 +87,9 @@ namespace SmartFleet.Service.Report
             }
             var tmp = new List<Periods>();
             // get rid of the periods with duration less than 60 sec
-            GetRidOfShortPeriods(periods, tmp);
+            //GetRidOfShortPeriods(periods, tmp);
             // create the final report
-            
+            ReMergePeriods(periods, tmp);
             return BuildReport(positions, startPeriod, vehicleName, periods);
         }
 

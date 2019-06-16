@@ -12,7 +12,8 @@ function reportController($scope, reportService, $compile, $http) {
     $scope.Distance = 0;
     $scope.vehicleId = "";
     $scope.optionsAvg = {};
-    $scope.options = {}
+    $scope.options = {};
+    $scope.optionsFuel = {};
     $scope.targetList = [];
     $scope.enableThresholds = true;
     $scope.activities = [];
@@ -21,6 +22,12 @@ function reportController($scope, reportService, $compile, $http) {
         '50': { color: 'yellow' },
         '70': { color: "orange" },
         '90': { color: 'red' }
+    }
+    $scope.thresholdsFuel = {
+        '0': { color: 'green' },
+        '35': { color: 'yellow' },
+        '50': { color: "orange" },
+        '80': { color: 'red' }
     }
     //$scope.vehicles = [];
     //reportService.getVehicles().then(function(resp) {
@@ -41,9 +48,11 @@ function reportController($scope, reportService, $compile, $http) {
        $http.get('../VehicleReport/GetDailyVehicleReport/?vehicleId=' + $scope.vehicleId + "&startPeriod=" + $scope.startPeriod)
             .then(function (resp) {
                 console.log(resp);
-                    $scope.optionsAvg = setOptions(resp.data.AvgSpeed != null ? resp.data.AvgSpeed : 0);
-                    $scope.options = setOptions(resp.data.MaxSpeed != null ? resp.data.MaxSpeed : 0);
-                    $scope.VehicleName = resp.data.VehicleName;
+                $scope.optionsAvg = setOptions(resp.data.AvgSpeed != null ? resp.data.AvgSpeed : 0, 'KM/H');
+                    $scope.options = setOptions(resp.data.MaxSpeed != null ? resp.data.MaxSpeed : 0, 'KM/H');
+                    $scope.optionsFuel = fuelOptions(resp.data.FuelConsumption != null ? resp.data.FuelConsumption : 0, 'L/100KM');
+
+               $scope.VehicleName = resp.data.VehicleName;
                     $scope.ReportDate = $scope.startPeriod;
                     $scope.Distance = resp.data.Distance;
 
@@ -80,10 +89,6 @@ function reportController($scope, reportService, $compile, $http) {
                    
                     $("#report-win").append($("#report-content"));
                     $("#prg-wwin").window('close');
-   
-              
-                
-                
             });
                
         
@@ -100,17 +105,32 @@ function reportController($scope, reportService, $compile, $http) {
         console.log("here !!");
     }
 }
-function setOptions(value) {
+function setOptions(value, measure) {
     return {
         type: 'arch',
         cap: 'round',
         size: 150,
         value: value,
         thick: 10,
-        label: 'KM/H',
+        label: measure,
         //append: 'Km/h',
         min: 0,
         max: 160,
+        foregroundColor: 'rgba(0, 150, 136, 1)',
+        backgroundColor: 'rgba(0, 0, 0, 0.1)'
+    };
+}
+function fuelOptions(value, measure) {
+    return {
+        type: 'semi',
+        cap: 'round',
+        size: 150,
+        value: value,
+        thick: 10,
+        label: measure,
+        //append: 'Km/h',
+        min: 0,
+        max: 80,
         foregroundColor: 'rgba(0, 150, 136, 1)',
         backgroundColor: 'rgba(0, 0, 0, 0.1)'
     };

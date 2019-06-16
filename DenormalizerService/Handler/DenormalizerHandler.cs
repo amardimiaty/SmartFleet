@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data.Entity;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using DenormalizerService.Infrastructure;
 using MassTransit;
@@ -26,11 +27,13 @@ namespace DenormalizerService.Handler
     {
         private readonly IDbContextScopeFactory _dbContextScopeFactory;
         private readonly ReverseGeoCodingService _geoCodingService;
+        private static SemaphoreSlim _semaphore;
 
         private SmartFleetObjectContext _db;
 
         public DenormalizerHandler()
         {
+            _semaphore = new SemaphoreSlim(1, 1);
             _geoCodingService = new ReverseGeoCodingService();
             _dbContextScopeFactory = DependencyRegistrar.ResolveDbContextScopeFactory();
         }
@@ -242,23 +245,28 @@ namespace DenormalizerService.Handler
 
         public async Task Consume(ConsumeContext<TlFuelEevents> context)
         {
+            //await _semaphore.WaitAsync();
+
             using (var contextFScope = _dbContextScopeFactory.Create())
             {
                 _db = contextFScope.DbContexts.Get<SmartFleetObjectContext>();
-                using (DbContextTransaction scope = _db.Database.BeginTransaction())
-                {
-                    var lastRecord = await _db.FuelConsumptions.OrderByDescending(x => x.DateTimeUtc)
-                        .FirstOrDefaultAsync();
-                    var entity = SetFuelConsumptionobject(context.Message.Events.OrderBy(x => x.DateTimeUtc).First());
-                    // ReSharper disable once ComplexConditionExpression
-                    if (lastRecord != null && (lastRecord.FuelUsed - entity.FuelUsed < 0) || lastRecord == null)
-                    {
-                        _db.FuelConsumptions.Add(entity);
-                        await contextFScope.SaveChangesAsync().ConfigureAwait(false);
-                    }
+                var fuelRecordMsg = context.Message.Events.OrderBy(x => x.DateTimeUtc).Last();
 
-                    scope.Commit();
+                var lastRecord = await _db.FuelConsumptions.OrderByDescending(x => x.DateTimeUtc)
+                    // ReSharper disable once TooManyChainedReferences
+                    .FirstOrDefaultAsync(x => x.VehicleId == fuelRecordMsg.VehicleId);
+                var entity = SetFuelConsumptionobject(fuelRecordMsg);
+                // ReSharper disable once ComplexConditionExpression
+                if (lastRecord != null && fuelRecordMsg.MileStoneCalculated || lastRecord==null )
+                {
+                    if (lastRecord!=null)
+                        entity.Milestone+= lastRecord.Milestone;
+
+                    _db.FuelConsumptions.Add(entity);
+                    await contextFScope.SaveChangesAsync().ConfigureAwait(false);
                 }
+
+              //  _semaphore.Release();
             }
         }
 
