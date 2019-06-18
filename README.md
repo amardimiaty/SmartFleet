@@ -17,7 +17,7 @@ to sing-in to the this part just use: customer@smartFleet/123456.
 - to  build the solution you have to install azure tools for Visual studio (the version used is Vs 2017 community ).
 - when every thing is Ok you can run the application as azure service by selecting SmartFleet.Azure a start up projet , this project will run tow roles one is the tcp Server role that listening to boxes connections on prot 34400. and the web role.
 - if you want to test the Server tcp  there is a small project called TeltonikaEmulator in test directory with some real data from real boxe (the file is attached as a resource ).
-
+- if you are interested to this project and you want to contribute contact me at adgroupe@hotmail.com.
 
 ![](https://github.com/pentest30/SmartFleet/blob/master/src0.png)
 ![](https://github.com/pentest30/SmartFleet/blob/master/src1.png)
