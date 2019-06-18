@@ -30,7 +30,7 @@ namespace TeltonikaListner
         }
         static void Main(string[] args)
         {
-            TcpListener listener = new TcpListener(IPAddress.Any, 34400);
+            TcpListener listener = new TcpListener(IPAddress.Any, 1884);
             //using of masstransit Bus / rabbitMq: for queuing data received from GPS devices (current account supports only 20  concurrent connections)
              listener.Start();
             while (true) // Add your exit flag here

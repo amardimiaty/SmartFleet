@@ -62,10 +62,7 @@ namespace SmartFleet.Service.Report
             // rearrange periods by date / status of driving on 24 hour scale
             // ReSharper disable once PossibleMultipleEnumeration
             foreach (var position in orderedEnumerable)
-            {
                 motionStatusChanged = MotionStatusChanged(position, periods, ref currentStatus, ref start);
-            }
-           
             // check if there is only one period or the last period is missing  to add both to the periods list 
             // ReSharper disable once ComplexConditionExpression
             if (motionStatusCount == 1 || !motionStatusChanged)
@@ -87,9 +84,8 @@ namespace SmartFleet.Service.Report
             }
             var tmp = new List<Periods>();
             // get rid of the periods with duration less than 60 sec
-            //GetRidOfShortPeriods(periods, tmp);
+            GetRidOfShortPeriods(periods, tmp);
             // create the final report
-            ReMergePeriods(periods, tmp);
             return BuildReport(positions, startPeriod, vehicleName, periods);
         }
 
@@ -145,7 +141,6 @@ namespace SmartFleet.Service.Report
             var max = periods.Count;
             foreach (var position in periods.Distinct())
             {
-
                 if (i < 100) i += 100 / max;
                 else i = 99;
                 UpdateProgress?.Invoke(i);
@@ -159,7 +154,7 @@ namespace SmartFleet.Service.Report
                 // set the ends of the period
                 SetEndsTrip(lastPosition, trgt);
                 // calculate distance , speeds , and duration
-                GetDistanceAndDuration(positions, lastPosition, firstPosition, trgt);
+                GetDistanceAndDuration(positions, trgt, position.Start, position.End);
                 var index = GetPreviousPositionIndexx(positions, lastPosition);
                 if (index == -1)
                     index = 0;
@@ -207,27 +202,24 @@ namespace SmartFleet.Service.Report
 
         // ReSharper disable once MethodTooLong
         // ReSharper disable once TooManyArguments
-        private static void GetDistanceAndDuration(List<Position> positions, Position lastPosition, Position firstPosition,
-            TargetViewModel trgt)
+        private static void GetDistanceAndDuration(List<Position> positions, TargetViewModel trgt, DateTime currenPosition, DateTime positionEnd)
         {
             // ReSharper disable once ComplexConditionExpression
-            if (lastPosition != null && firstPosition != null)
-            {
-                var index = GetPreviousPositionIndexx(positions, lastPosition);
-                if (index == -1)
-                    index = 0;
-                var p1 = new GeofenceHelper.Position();
-                p1.Latitude = positions.ElementAt(index).Lat;
-                p1.Longitude = positions.ElementAt(index).Long;
-                var p2 = new GeofenceHelper.Position();
-                p2.Latitude = firstPosition.Lat;
-                p2.Longitude = firstPosition.Long;
+            var points = positions.Where(x => x.Timestamp >= currenPosition && x.Timestamp <= positionEnd).ToList();
+            var avgSpeed = points.Average(x => x.Speed);
+            trgt.AvgSpeed = Math.Round(avgSpeed, 2);
+            trgt.MaxSpeed = Math.Round(points.Max(x => x.Speed), 2);
 
-                trgt.Distance = Math.Round(GeofenceHelper.HaversineFormula(p1,p2, GeofenceHelper.DistanceType.Kilometers), 2);
-                var avgSpeed = GetAvgSpeed(positions, firstPosition, lastPosition);
-                trgt.AvgSpeed = Math.Round((double) avgSpeed, 2);
-                trgt.MaxSpeed = Math.Round((double) GetMaxSpeed(positions, firstPosition, lastPosition), 2);
-              
+            trgt.Distance = 0;
+            // ReSharper disable once ComplexConditionExpression
+            if (points.Any())
+            {
+                var firstPos = points.First();
+                foreach (var p in points.Skip(1))
+                {
+                    trgt.Distance += Math.Round(GeofenceHelper.CalculateDistance(firstPos.Lat, firstPos.Long ,  p.Lat, p.Long ));
+                    firstPos = p;
+                }
             }
 
             if (double.IsNaN(trgt.Distance))
@@ -258,31 +250,18 @@ namespace SmartFleet.Service.Report
 
         private static void SetBegningsTrip(Position firstPosition, TargetViewModel trgt)
         {
-            if (firstPosition != null)
-            {
-                trgt.MotionStatus = firstPosition.MotionStatus.ToString();
+            if (firstPosition == null) return;
+            trgt.MotionStatus = firstPosition.MotionStatus.ToString();
 
-                trgt.StartPeriod = firstPosition.Timestamp.ToString("O");
-                trgt.StartPeriod1 = firstPosition.Timestamp.ToString("g");
+            trgt.StartPeriod = firstPosition.Timestamp.ToString("O");
+            trgt.StartPeriod1 = firstPosition.Timestamp.ToString("g");
 
-                trgt.Latitude = firstPosition.Lat;
-                trgt.Logitude = firstPosition.Long;
-                trgt.StartAddres = firstPosition.Address;
-                trgt.MotionStatus = firstPosition.MotionStatus.ToString();
-            }
+            trgt.Latitude = firstPosition.Lat;
+            trgt.Logitude = firstPosition.Long;
+            trgt.StartAddres = firstPosition.Address;
+            trgt.MotionStatus = firstPosition.MotionStatus.ToString();
         }
 
-        private static double GetAvgSpeed(List<Position> positions, Position firstPosition, Position lastPosition)
-        {
-            return positions.Where(x =>
-                    x.Timestamp >= firstPosition.Timestamp && x.Timestamp >= lastPosition.Timestamp)
-                .Average(x => x.Speed);
-        }
-        private static double GetMaxSpeed(List<Position> positions, Position firstPosition, Position lastPosition)
-        {
-            return positions.Where(x =>
-                    x.Timestamp >= firstPosition.Timestamp && x.Timestamp >= lastPosition.Timestamp)
-                .Max(x => x.Speed);
-        }
+     
     }
 }
