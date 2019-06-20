@@ -127,14 +127,8 @@ namespace TeltonicaService.Handlers
                    await context.Publish(speedEvents.OrderBy(x => x.EventUtc).LastOrDefault());
                 if (gpsDataEvents.Any())
                 {
-                    var finalgpsDataEvents = new List<TLGpsDataEvent>();
-                    var firstRecord = gpsDataEvents.Last();
-
-                    finalgpsDataEvents.Add(firstRecord);
-                    finalgpsDataEvents.AddRange(gpsDataEvents.Skip(1)
-                        .Where(tlGpsDataEvent => !(CalculateDistance(firstRecord.Lat, firstRecord.Long, tlGpsDataEvent.Lat, tlGpsDataEvent.Long) < 5)));
-                    await GeoReverseCodeGpsData(finalgpsDataEvents);
-                    foreach (var finalgpsDataEvent in finalgpsDataEvents)
+                    await GeoReverseCodeGpsData(gpsDataEvents);
+                    foreach (var finalgpsDataEvent in gpsDataEvents)
                         await context.Publish(finalgpsDataEvent);
                 }
 
@@ -143,7 +137,8 @@ namespace TeltonicaService.Handlers
                     var events = new TlFuelEevents
                     {
                         Id = Guid.NewGuid(),
-                        Events = tlFuelMilstoneEvents
+                        Events = tlFuelMilstoneEvents,
+                 TlGpsDataEvents = gpsDataEvents
                     };
                     await context.Publish(events);
 

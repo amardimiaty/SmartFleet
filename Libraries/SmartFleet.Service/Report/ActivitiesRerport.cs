@@ -212,18 +212,21 @@ namespace SmartFleet.Service.Report
 
             trgt.Distance = 0;
             // ReSharper disable once ComplexConditionExpression
-            if (points.Any())
+            if (points.Any() && trgt.MotionStatus!="Stopped")
             {
                 var firstPos = points.First();
-                foreach (var p in points.Skip(1))
+                foreach (var p in points.OrderBy(x=>x.Timestamp).Skip(1))
                 {
-                    trgt.Distance += Math.Round(GeofenceHelper.CalculateDistance(firstPos.Lat, firstPos.Long ,  p.Lat, p.Long ));
+                    var dis = Math.Round(GeofenceHelper.HaversineFormula(new GeofenceHelper.Position{ Latitude= firstPos.Lat,Longitude= firstPos.Long }, new GeofenceHelper.Position{Latitude = p.Lat,Longitude= p.Long }, GeofenceHelper.DistanceType.Kilometers),2);
+                    if (!double.IsNaN(dis))
+                        trgt.Distance += dis;
                     firstPos = p;
                 }
             }
 
             if (double.IsNaN(trgt.Distance))
                 trgt.Distance = 0;
+            trgt.Distance = Math.Round(trgt.Distance, 2);
             trgt.Duration = (DateTime.Parse(trgt.EndPeriod) - DateTime.Parse(trgt.StartPeriod)).TotalSeconds;
         }
 

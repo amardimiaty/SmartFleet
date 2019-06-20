@@ -12,6 +12,7 @@ using SmartFleet.Core.Data;
 using SmartFleet.Core.Domain.Gpsdevices;
 using SmartFleet.Core.Domain.Movement;
 using SmartFleet.Core.Domain.Vehicles;
+using SmartFleet.Core.Geofence;
 using SmartFleet.Core.ReverseGeoCoding;
 using SmartFleet.Data;
 
@@ -246,7 +247,6 @@ namespace DenormalizerService.Handler
         public async Task Consume(ConsumeContext<TlFuelEevents> context)
         {
             //await _semaphore.WaitAsync();
-
             using (var contextFScope = _dbContextScopeFactory.Create())
             {
                 _db = contextFScope.DbContexts.Get<SmartFleetObjectContext>();
@@ -259,14 +259,25 @@ namespace DenormalizerService.Handler
                 // ReSharper disable once ComplexConditionExpression
                 if (lastRecord != null && fuelRecordMsg.MileStoneCalculated || lastRecord==null )
                 {
-                    if (lastRecord!=null)
-                        entity.Milestone+= lastRecord.Milestone;
+                    if (lastRecord != null)
+                    {
+                        var firstPos = context.Message.TlGpsDataEvents.First();
+                        foreach (var p in context.Message.TlGpsDataEvents.Skip(1))
+                        {
+                            entity.Milestone +=
+                                Math.Round(GeofenceHelper.CalculateDistance(firstPos.Lat, firstPos.Long, p.Lat,
+                                    p.Long));
+                            firstPos = p;
+                        }
+                    }
 
-                    _db.FuelConsumptions.Add(entity);
-                    await contextFScope.SaveChangesAsync().ConfigureAwait(false);
                 }
+                else if (!fuelRecordMsg.MileStoneCalculated)
+                    entity.TotalFuelConsumed = fuelRecordMsg.FuelConsumption;
 
-              //  _semaphore.Release();
+                _db.FuelConsumptions.Add(entity);
+                await contextFScope.SaveChangesAsync().ConfigureAwait(false);
+                //  _semaphore.Release();
             }
         }
 

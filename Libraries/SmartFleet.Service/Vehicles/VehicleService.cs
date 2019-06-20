@@ -125,60 +125,57 @@ namespace SmartFleet.Service.Vehicles
                 .Include("Model");
         }
 
-        public double GetFuelConsuptionByPeriod(DateTime start, DateTime end,  Guid vehicleId)
+        public double GetFuelConsuptionByPeriod(DateTime start, DateTime end,  Guid vehicleId, double totalDistance)
         {
             var contextFScope = _dbContextScopeFactory.Create();
             _db = contextFScope.DbContexts.Get<SmartFleetObjectContext>();
             var l100Fuel = default(double);
             var fuelRecords = FuelConsumptions(start, end, vehicleId);
 
-            if (fuelRecords.Count > 0)
+            if (fuelRecords.Count <= 0) return l100Fuel;
+            var nextRecord = GetNextFuelConsumption(end, vehicleId);
+            if (nextRecord != null)
+                fuelRecords.Add(nextRecord);
+
+            //Gestion du nombre de litres consommés qui revient à 0 à chaque ignition OFF
+            var vehicleFuelZeroDetected = false;
+            var vehicleFuelConsummedReset = false;
+            var previousValidFuelConsumed = default(Int32);
+            var previousFuelConsummed = fuelRecords.First().FuelUsed;
+            var fuel = 0;
+            foreach (var record in fuelRecords)
             {
-                var nextRecord = GetNextFuelConsumption(end, vehicleId);
-                if (nextRecord != null)
-                    fuelRecords.Add(nextRecord);
-
-                //Gestion du nombre de litres consommés qui revient à 0 à chaque ignition OFF
-                var vehicleFuelZeroDetected = false;
-                var vehicleFuelConsummedReset = false;
-                var previousValidFuelConsumed = default(Int32);
-                var previousFuelConsummed = fuelRecords.First().FuelUsed;
-                var fuel = 0;
-                foreach (var record in fuelRecords)
+                //Si on détecté un retour à zéro et qu'une nouvelle valeure positif arrive
+                if (vehicleFuelZeroDetected && record.FuelUsed > 0)
                 {
-                    //Si on détecté un retour à zéro et qu'une nouvelle valeure positif arrive
-                    if (vehicleFuelZeroDetected && record.FuelUsed > 0)
-                    {
-                        //Détection d'un véhicule dont le nombre de litres de consommés revient à zéro à chaque ignition off
-                        if (record.FuelUsed < previousValidFuelConsumed)
-                            vehicleFuelConsummedReset = true;
-                        //Sinon il ne s'agissait que d'un pic négatif à zéro mais le nombre de litres consommés évolue normalement
-                        else
-                            fuel -= previousValidFuelConsumed;
-                        vehicleFuelZeroDetected = false;
-                    }
-                    //Si le nombre de litres consommés diminue
-                    else if (previousFuelConsummed - 5 > record.FuelUsed)
-                    {
-                        vehicleFuelZeroDetected = true;
-                        previousValidFuelConsumed = previousFuelConsummed;
-                        fuel += previousFuelConsummed;
-                    }
-
-                    previousFuelConsummed = record.FuelUsed;
+                    //Détection d'un véhicule dont le nombre de litres de consommés revient à zéro à chaque ignition off
+                    if (record.FuelUsed < previousValidFuelConsumed)
+                        vehicleFuelConsummedReset = true;
+                    //Sinon il ne s'agissait que d'un pic négatif à zéro mais le nombre de litres consommés évolue normalement
+                    else
+                        fuel -= previousValidFuelConsumed;
+                    vehicleFuelZeroDetected = false;
+                }
+                //Si le nombre de litres consommés diminue
+                else if (previousFuelConsummed - 5 > record.FuelUsed)
+                {
+                    vehicleFuelZeroDetected = true;
+                    previousValidFuelConsumed = previousFuelConsummed;
+                    fuel += previousFuelConsummed;
                 }
 
-                //S'il s'agit un véhicule dont le nombre total de litres consommés revient à zéro à chque ignition OFF
-                if (vehicleFuelConsummedReset)
-                    fuel += fuelRecords.Last().FuelUsed - fuelRecords.First().FuelUsed;
-                else
-                    fuel = fuelRecords.Last(p => p.FuelUsed > 0).FuelUsed -
-                                    fuelRecords.First(p => p.FuelUsed > 0).FuelUsed;
-                var Total_Distance = fuelRecords.Last().Milestone -
-                                     fuelRecords.First().Milestone;
-
-                l100Fuel = Math.Round(fuel * 100 / Total_Distance, 1);
+                previousFuelConsummed = record.FuelUsed;
             }
+
+            //S'il s'agit un véhicule dont le nombre total de litres consommés revient à zéro à chque ignition OFF
+            if (vehicleFuelConsummedReset)
+                fuel += fuelRecords.Last().FuelUsed - fuelRecords.First().FuelUsed;
+            else
+                fuel = fuelRecords.Last(p => p.FuelUsed > 0).FuelUsed -
+                       fuelRecords.First(p => p.FuelUsed > 0).FuelUsed;
+             
+            // ReSharper disable once ComplexConditionExpression
+            l100Fuel = Math.Round(fuel * 100 / totalDistance, 1);
 
             return l100Fuel;
         }

@@ -25,8 +25,7 @@ function reportController($scope, reportService, $compile, $http) {
     }
     $scope.thresholdsFuel = {
         '0': { color: 'green' },
-        '35': { color: 'yellow' },
-        '50': { color: "orange" },
+        '36': { color: 'orange' },
         '80': { color: 'red' }
     }
     //$scope.vehicles = [];
